@@ -4,6 +4,14 @@ Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi
 
 Main di: https://belpulang.netlify.app atau https://belpulang.win
 
+## Halte, gerobak & kendaraan (v1.7)
+
+- **Halte Bulungan** baru: tiang baja kuning, atap lengkung metal dengan rusuk kuning dan lis hijau, papan nama besar "HALTE BULUNGAN" (terbaca dari dua sisi), bangku hijau berkaki kuning, papan info bus, tiang lampu.
+- **Gerobak Es Gondrong** baru: rangka kayu kuning, panel biru, rak penuh botol warna-warni, krat merah-kuning, roda besar berjari-jari biru. Pedagangnya pakai model karakter baru, rambut gondrong dan berkumis.
+- **Kendaraan beragam**: Metromini, bus kota biru-putih, angkot hijau muda nomor 09, bajaj biru, sedan klasik, hatchback, MPV, SUV, mobil boks lama, jip, pikap, truk boks, mobil polisi, dan motor (bebek, vespa, matic, trail) dengan pengendara berhelm. Bodi membulat, kaca gelap mengkilap, lampu, dan velg.
+- Logo merek asli tidak dipakai, diganti tulisan umum (ES GONDRONG, BUS KOTA).
+- Tiap kendaraan cukup 1 potongan (Metromini dari sekitar 80 jadi 21) dan bentuknya dipakai bersama.
+
 ## Grafik (v1.6)
 
 - Tekstur dibuat langsung oleh kode (tanpa file gambar): aspal dengan retakan, tambalan, noda oli dan jejak ban; marka jalan pudar; trotoar paving dengan daun kering; rumput; beton.
