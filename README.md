@@ -4,6 +4,14 @@ Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi
 
 Main di: https://belpulang.netlify.app atau https://belpulang.win
 
+## Tampilan UI (v1.8)
+
+- Gaya grunge/urban, tidak kartun: menu dan tombol berupa strip lakban hitam bertekstur dengan tepi kasar dan sedikit miring, aksen merah bata.
+- Huruf baru: **Oswald** (judul, tombol, angka), **Barlow Condensed** (teks), **Special Elite** (label kecil ala mesin ketik).
+- Saat menu terbuka, latar game dibuat pudar ala novel grafis dengan cipratan tinta, plus label barcode di pojok kanan bawah yang menunjukkan nama layar.
+- HUD baru: panel gelap tipis bergaris merah, bar darah merah (berkedip saat sekarat), bar stamina emas, papan skor huruf ramping, tombol SERANG/TENDANG/HINDAR berupa lingkaran gelap bergaris tipis.
+- Tulisan pukulan (BUK!, PLAK!) jadi huruf tegas bergaris hitam, banner jadi strip lakban.
+
 ## Halte, gerobak & kendaraan (v1.7)
 
 - **Halte Bulungan** baru: tiang baja kuning, atap lengkung metal dengan rusuk kuning dan lis hijau, papan nama besar "HALTE BULUNGAN" (terbaca dari dua sisi), bangku hijau berkaki kuning, papan info bus, tiang lampu.
