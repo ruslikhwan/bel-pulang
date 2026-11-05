@@ -4,6 +4,15 @@ Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi
 
 Main di: https://belpulang.netlify.app atau https://belpulang.win
 
+## Voice chat (v1.4, online)
+
+- Tiga tombol di kanan atas (lobby dan saat main):
+  - **🎤 ON/OFF**: nyalakan mikrofon. Selalu mati tiap masuk room, browser akan minta izin mikrofon saat pertama dinyalakan.
+  - **KE: TIM / KE: SEMUA**: siapa yang bisa dengar suaramu. TIM = cuma teman satu sekolah, SEMUA = termasuk lawan.
+  - **🔊 DENGAR / 🔇 BISU**: matikan semua suara orang lain.
+- Nama yang sedang bicara muncul di bawah tombol (⚔ = dari tim lawan). Di daftar pemain lobby, 🎤 = mikrofonnya nyala.
+- Suara langsung antar-HP (WebRTC peer-to-peer), server Supabase cuma dipakai untuk menyambungkan. Di beberapa jaringan (misalnya Wi-Fi kantor/sekolah yang ketat) suara bisa gagal tersambung. Kalau sering terjadi, perlu ditambah server TURN.
+
 ## Stamina (v1.3)
 
 - Bar kuning di bawah bar darah, di HUD dan di atas kepala semua orang.
