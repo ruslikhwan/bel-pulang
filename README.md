@@ -4,6 +4,13 @@ Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi
 
 Main di: https://belpulang.netlify.app atau https://belpulang.win
 
+## Menu (v1.1.1)
+
+- Dibuka dengan layar Sporadis Games, lalu menu utama dengan latar anak-anak tawuran di depan SMEA 70.
+- **Single Player**: New Game, Last Game (lanjut level terakhir), Load Game (pilih profil tersimpan lalu masukkan PIN).
+- **Multiplayer**: tabel room yang sedang online (nama room, host, jumlah pemain, PIN, status). Room tanpa PIN bisa langsung JOIN, room ber-PIN minta PIN dulu. CREATE ROOM di kiri atas untuk jadi host, bisa diberi PIN opsional.
+- **Settings**: atur avatar (dipakai di single player dan online).
+
 ## Mode
 
 **Single-player (50 level)**
