@@ -378,7 +378,7 @@ details.howto summary{font-family:var(--display);font-size:12px;cursor:pointer;l
     <button type="button" class="mm-btn" id="mmMulti">MULTIPLAYER<small>SMEA 70 vs XTM · 50 vs 50 online</small></button>
     <button type="button" class="mm-btn" id="mmSettings">SETTINGS<small>Avatar &amp; mikrofon</small></button>
     <p class="hint" id="iosHint" hidden><b>Biar layar penuh di iPhone:</b> ketuk tombol Share di Safari, pilih <b>Add to Home Screen</b>, lalu buka game dari ikon Bel Pulang di layar utama.</p>
-    <p class="mm-foot">v1.5.1 · Sporadis Games</p>
+    <p class="mm-foot">v1.6 · Sporadis Games</p>
   </div>
   <div hidden><button class="cta" id="startBtn">MAIN LEVEL 1</button><button class="cta" id="onlineBtn">ONLINE</button><button class="cta alt" id="resetBtn" hidden>ULANG</button></div>
 </div>
@@ -487,7 +487,9 @@ details.howto summary{font-family:var(--display);font-size:12px;cursor:pointer;l
     <div class="sm-list">
       <button type="button" class="sm-opt hot" id="setAvatar">SET AVATAR<small id="setAvatarSub">Atur kulit, badan, baju, topi, dan kacamata</small></button>
       <button type="button" class="sm-opt" id="setMic">MIKROFON<small id="setMicSub">Izin mikrofon, tes suara, dan voice chat</small></button>
+      <button type="button" class="sm-opt" id="setGfx">GRAFIK: <span id="setGfxV">OTOMATIS</span><small id="setGfxSub">Ketuk untuk ganti: Otomatis, Rendah, Sedang, Tinggi</small></button>
     </div>
+    <button type="button" class="cta" id="gfxReload" hidden onclick="location.reload()">MUAT ULANG SEKARANG</button>
     <p class="hint" id="setNote" style="margin-top:10px">Avatar dipakai di single player dan online. Seragam tetap ikut sekolah saat main online.</p>
   </div>
 </div>
@@ -716,22 +718,41 @@ const G=16;
 
 /* ================= renderer ================= */
 const gameEl=$('#game');
+/* ---- kualitas grafik (v1.6) ---- */
+const GFX_KEY='belpulang-gfx';
+let gfxPref='auto';try{gfxPref=localStorage.getItem(GFX_KEY)||'auto';}catch(e){}
+function gfxAuto(){
+  const ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1);
+  const hc=navigator.hardwareConcurrency||4,mem=navigator.deviceMemory||4,dpr=window.devicePixelRatio||1;
+  if(ios)return dpr>=3?'high':'mid';
+  if(!/Android|Mobile/.test(ua))return 'high';
+  if(hc>=8&&mem>=6)return 'high';
+  if(hc<=4||mem<=3)return 'low';
+  return 'mid';
+}
+const GFX_LV=gfxPref==='auto'?gfxAuto():gfxPref;
+const GFXC={low:{tex:256,pr:1,prOn:1,shadow:0,phong:false,aniso:1,trees:false},mid:{tex:512,pr:1.5,prOn:1.25,shadow:1024,phong:true,aniso:4,trees:true},high:{tex:1024,pr:2,prOn:1.75,shadow:2048,phong:true,aniso:8,trees:true}};
+const gfx=GFXC[GFX_LV]||GFXC.mid;
+function gfxPR(online){return Math.min(window.devicePixelRatio||1,online?gfx.prOn:gfx.pr);}
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
-renderer.shadowMap.enabled=true;
+renderer.setPixelRatio(gfxPR(false));
+renderer.shadowMap.enabled=gfx.shadow>0;
 renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
 gameEl.appendChild(renderer.domElement);
 const scene=new THREE.Scene();
-scene.background=new THREE.Color(0xcfe3ea);
-scene.fog=new THREE.Fog(0xcfe3ea,40,95);
-const camera=new THREE.PerspectiveCamera(55,1,0.1,220);
-scene.add(new THREE.HemisphereLight(0xf4fbff,0x7a8a6a,0.8));
-const sun=new THREE.DirectionalLight(0xfff0d8,0.9);
-sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);
-Object.assign(sun.shadow.camera,{left:-24,right:24,top:24,bottom:-24,near:1,far:90});
+scene.background=new THREE.Color(0xd9e7ee);
+scene.fog=new THREE.Fog(0xd9e7ee,44,140);
+const camera=new THREE.PerspectiveCamera(55,1,0.1,260);
+// sore hari pulang sekolah: matahari hangat agak rendah, langit biru
+const hemi=new THREE.HemisphereLight(0xd6ecff,0x8a7458,0.78);scene.add(hemi);
+const sun=new THREE.DirectionalLight(0xffe0b0,1.0);
+sun.castShadow=gfx.shadow>0;sun.shadow.mapSize.set(gfx.shadow||512,gfx.shadow||512);sun.shadow.bias=-0.0006;sun.shadow.normalBias=0.02;
+Object.assign(sun.shadow.camera,{left:-26,right:26,top:26,bottom:-26,near:1,far:110});
 scene.add(sun);scene.add(sun.target);
 
-function lam(c,o){return new THREE.MeshLambertMaterial(Object.assign({color:c},o||{}));}
+const REPQ=[];
+function lam(c,o){const m=new THREE.MeshLambertMaterial(Object.assign({color:c},o||{}));if(o&&o.map&&REPQ.length)m.userData.rep=REPQ.pop();return m;}
 function addBox(w,h,d,c,x,y,z,cast){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),(c&&c.isMaterial)?c:lam(c));m.position.set(x,y,z);m.castShadow=!!cast;m.receiveShadow=true;scene.add(m);return m;}
 function flat(w,d,c,x,z,y){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),(c&&c.isMaterial)?c:lam(c));m.rotation.x=-Math.PI/2;m.position.set(x,y||0.02,z);m.receiveShadow=true;scene.add(m);return m;}
 
@@ -758,6 +779,193 @@ function textPlane(lines,bg,fg,w,h,pw,ph,font){
   return new THREE.Mesh(new THREE.PlaneGeometry(pw,ph),new THREE.MeshLambertMaterial({map:t,transparent:!bg,side:THREE.DoubleSide}));
 }
 
+/* ---------- tekstur prosedural ala game PS2 (v1.6) ---------- */
+function rng(seed){let x=(seed*2654435761)>>>0||1;return ()=>{x^=x<<13;x>>>=0;x^=x>>17;x^=x<<5;x>>>=0;return x/4294967296;};}
+function mkNoise(n,seed){
+  const r=rng(seed),g=new Float32Array(n*n);for(let i=0;i<g.length;i++)g[i]=r();
+  const W=v=>((v%n)+n)%n;
+  return (x,y)=>{const xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi,u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf);
+    const x0=W(xi),x1=W(xi+1),y0=W(yi)*n,y1=W(yi+1)*n,a=g[y0+x0],b=g[y0+x1],c=g[y1+x0],d=g[y1+x1];
+    return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v;};
+}
+// fbm yang bisa diulang (tileable): frekuensi dasar f, oktaf o
+function fbm(nz,u,v,f,o){let s=0,a=0.5,t=0;for(let i=0;i<o;i++){s+=a*nz(u*f,v*f);t+=a;f*=2;a*=0.5;}return s/t;}
+function pixTex(S,fn,after){
+  const c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d'),im=g.createImageData(S,S),d=im.data;
+  for(let y=0;y<S;y++)for(let x=0;x<S;x++){const o=(y*S+x)*4,col=fn(x/S,y/S,x,y);d[o]=col[0];d[o+1]=col[1];d[o+2]=col[2];d[o+3]=255;}
+  g.putImageData(im,0,0);if(after)after(g,S);
+  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=Math.min(gfx.aniso,renderer.capabilities.getMaxAnisotropy());return t;
+}
+function wrapDraw(g,S,fn){for(const dx of [-S,0,S])for(const dy of [-S,0,S]){g.save();g.translate(dx,dy);fn(g);g.restore();}}
+const cl=(v)=>v<0?0:v>255?255:v|0;
+const TX={};
+function texAsphalt(){
+  const S=gfx.tex,n1=mkNoise(16,11),n2=mkNoise(64,12),r=rng(13);
+  return pixTex(S,(u,v)=>{
+    const big=fbm(n1,u,v,1,3),mid=fbm(n2,u,v,1,2),gr=r();
+    // jalur ban: lebih gelap & halus di 4 jalur roda
+    const lane=[0.16,0.32,0.68,0.84].reduce((m,c)=>Math.max(m,Math.exp(-Math.pow((v-c)/0.035,2))),0);
+    let b=74+(big-0.5)*36+(mid-0.5)*16+(gr-0.5)*26-lane*10;
+    if(gr>0.985)b+=38;else if(gr<0.02)b-=22;
+    return [cl(b*0.98),cl(b*0.99),cl(b*1.04)];
+  },(g,S)=>{
+    const r2=rng(14);
+    // retakan
+    g.strokeStyle='rgba(25,25,28,0.32)';g.lineWidth=Math.max(1,S/700);
+    for(let i=0;i<4;i++){let x=r2()*S,y=r2()*S,a=r2()*6.3;g.beginPath();g.moveTo(x,y);const n=10+r2()*10|0;for(let k=0;k<n;k++){a+=(r2()-0.5)*0.9;x+=Math.cos(a)*S*0.012;y+=Math.sin(a)*S*0.012;g.lineTo(x,y);}wrapDraw(g,S,gg=>gg.stroke());}
+    // noda oli
+    for(let i=0;i<7;i++){const x=r2()*S,y=(r2()<0.5?0.24:0.76)*S+(r2()-0.5)*S*0.08,rad=S*(0.02+r2()*0.05);
+      wrapDraw(g,S,gg=>{const gr=gg.createRadialGradient(x,y,0,x,y,rad);gr.addColorStop(0,'rgba(15,15,18,0.45)');gr.addColorStop(1,'rgba(15,15,18,0)');gg.fillStyle=gr;gg.beginPath();gg.arc(x,y,rad,0,7);gg.fill();});}
+    // tambalan aspal
+    for(let i=0;i<3;i++){const x=r2()*S,y=r2()*S,w=S*(0.06+r2()*0.08),h=S*(0.04+r2()*0.06);wrapDraw(g,S,gg=>{gg.fillStyle='rgba(40,40,44,0.35)';gg.fillRect(x,y,w,h);});}
+  });
+}
+function texPaving(){
+  // paving block 50cm, tekstur = 4m x 4m (8x8 ubin), ada daun kering & kotoran
+  const S=gfx.tex,N=8,n1=mkNoise(8,21),n2=mkNoise(64,22),r=rng(23),tv=[];for(let i=0;i<N*N;i++)tv.push([r()*22-11,r()]);
+  return pixTex(S,(u,v)=>{
+    const cx=u*N,cy=v*N,ix=Math.floor(cx),iy=Math.floor(cy),fx=cx-ix,fy=cy-iy,T=tv[(iy%N)*N+(ix%N)];
+    const e=Math.min(fx,fy,1-fx,1-fy),grout=e<0.045;
+    const dirt=fbm(n1,u,v,1,3),grain=fbm(n2,u,v,1,2);
+    let b=grout?92:176+T[0]+(grain-0.5)*28-(dirt-0.5)*40-(e<0.09?10:0);
+    return [cl(b*1.02),cl(b*0.97),cl(b*0.88)];
+  },(g,S)=>{
+    const r2=rng(24),cols=['#a0662a','#8a5a2b','#b9873f','#6f4a24','#c79a4a'];
+    for(let i=0;i<70;i++){const x=r2()*S,y=r2()*S,sz=S*(0.006+r2()*0.01),a=r2()*6.3,c=cols[i%cols.length];
+      wrapDraw(g,S,gg=>{gg.save();gg.translate(x,y);gg.rotate(a);gg.fillStyle=c;gg.beginPath();gg.ellipse(0,0,sz*1.6,sz,0,0,7);gg.fill();gg.restore();});}
+    for(let i=0;i<5;i++){const x=r2()*S,y=r2()*S,rad=S*(0.03+r2()*0.05);wrapDraw(g,S,gg=>{const gr=gg.createRadialGradient(x,y,0,x,y,rad);gr.addColorStop(0,'rgba(60,50,40,0.28)');gr.addColorStop(1,'rgba(60,50,40,0)');gg.fillStyle=gr;gg.beginPath();gg.arc(x,y,rad,0,7);gg.fill();});}
+  });
+}
+function texGrass(){
+  const S=Math.min(512,gfx.tex),n1=mkNoise(8,31),n2=mkNoise(32,32),r=rng(33);
+  return pixTex(S,(u,v)=>{const a=fbm(n1,u,v,1,3),b=fbm(n2,u,v,1,2),gr=r();
+    const k=(a-0.5)*50+(b-0.5)*30+(gr-0.5)*36;const dry=a>0.62?(a-0.62)*140:0;
+    return [cl(88+k*0.6+dry*0.9),cl(128+k-dry*0.2),cl(62+k*0.35)];});
+}
+function texConcrete(tone){
+  const S=Math.min(512,gfx.tex),n1=mkNoise(8,41),n2=mkNoise(64,42),r=rng(43);
+  return pixTex(S,(u,v)=>{const a=fbm(n1,u,v,1,3),b=fbm(n2,u,v,1,2),gr=r();const k=(a-0.5)*34+(b-0.5)*20+(gr-0.5)*16;return [cl(tone+k),cl(tone+k),cl(tone+k+4)];},
+    (g,S)=>{g.strokeStyle='rgba(0,0,0,0.25)';g.lineWidth=2;g.strokeRect(0,0,S,S);});
+}
+function texBark(){
+  const S=256,n1=mkNoise(32,51),n2=mkNoise(8,52);
+  return pixTex(S,(u,v)=>{const a=fbm(n1,u*0.25,v*2,1,3),b=n2(u*8,v*2);const k=(a-0.5)*70+(b-0.5)*30;return [cl(96+k),cl(74+k*0.9),cl(56+k*0.7)];});
+}
+function texLeaves(){
+  const S=256,r=rng(61);
+  return pixTex(S,()=>{const k=r();return [cl(60+k*40),cl(110+k*55),cl(40+k*30)];},(g,S)=>{
+    for(let i=0;i<420;i++){const x=r()*S,y=r()*S,sz=3+r()*6,sh=r();g.fillStyle=sh<0.33?'rgba(30,70,25,0.8)':sh<0.66?'rgba(120,170,70,0.75)':'rgba(70,120,45,0.85)';
+      wrapDraw(g,S,gg=>{gg.beginPath();gg.ellipse(x,y,sz,sz*0.55,r()*6.3,0,7);gg.fill();});}
+  });
+}
+function texRoofTile(){
+  const S=256;
+  const c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d'),r=rng(71);
+  g.fillStyle='#a2472a';g.fillRect(0,0,S,S);
+  const rows=8,cols=8,rh=S/rows,cw=S/cols;
+  for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){const t=r();g.fillStyle=`rgb(${150+t*40|0},${62+t*20|0},${38+t*12|0})`;
+    const gr=g.createLinearGradient(x*cw,0,x*cw+cw,0);gr.addColorStop(0,'rgba(0,0,0,0.25)');gr.addColorStop(0.5,'rgba(255,255,255,0.08)');gr.addColorStop(1,'rgba(0,0,0,0.3)');
+    g.fillRect(x*cw+1,y*rh,cw-2,rh-2);g.fillStyle=gr;g.fillRect(x*cw+1,y*rh,cw-2,rh-2);g.fillStyle='rgba(0,0,0,0.35)';g.fillRect(x*cw,y*rh+rh-3,cw,3);}
+  for(let i=0;i<30;i++){g.fillStyle=`rgba(40,50,30,${0.1+r()*0.2})`;g.beginPath();g.arc(r()*S,r()*S,4+r()*14,0,7);g.fill();}
+  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;
+}
+function texFacade(){
+  // gedung sekolah 2 lantai: tembok krem, koridor, jendela nako, noda hujan
+  const W=1024,H=256,c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),r=rng(81);
+  g.fillStyle='#ece2cb';g.fillRect(0,0,W,H);
+  for(let i=0;i<60;i++){const x=r()*W,w=6+r()*26,y=r()*H*0.5;const gr=g.createLinearGradient(0,y,0,y+80+r()*90);gr.addColorStop(0,'rgba(90,80,60,0.16)');gr.addColorStop(1,'rgba(90,80,60,0)');g.fillStyle=gr;g.fillRect(x,y,w,170);}
+  const bay=W/9;
+  for(let f=0;f<2;f++){
+    const y0=f===0?H*0.54:H*0.06,fh=H*0.4;
+    for(let i=0;i<9;i++){const x0=i*bay;
+      g.fillStyle='#d9ccb0';g.fillRect(x0,y0-4,10,fh+8);g.fillRect(x0+bay-10,y0-4,10,fh+8);
+      const wx=x0+bay*0.2,ww=bay*0.6,wy=y0+fh*0.15,wh=fh*0.55;
+      const door=f===0&&(i===4);
+      if(door){g.fillStyle='#4a3524';g.fillRect(x0+bay*0.32,y0+fh*0.1,bay*0.36,fh*0.9);g.fillStyle='#2b1d12';g.fillRect(x0+bay*0.5-1,y0+fh*0.1,2,fh*0.9);continue;}
+      g.fillStyle='#f6f2e6';g.fillRect(wx-4,wy-4,ww+8,wh+8);
+      const gl=g.createLinearGradient(wx,wy,wx+ww,wy+wh);gl.addColorStop(0,'#5b7f9c');gl.addColorStop(0.45,'#9ec3dc');gl.addColorStop(0.55,'#3f5f7a');gl.addColorStop(1,'#2c4258');g.fillStyle=gl;g.fillRect(wx,wy,ww,wh);
+      g.fillStyle='rgba(240,240,235,0.9)';for(let k=1;k<6;k++)g.fillRect(wx,wy+wh*k/6,ww,1.5);g.fillRect(wx+ww/2-1.5,wy,3,wh);
+      g.fillStyle='#e8e0cc';g.fillRect(wx-6,wy+wh+4,ww+12,5);
+      g.fillStyle='rgba(60,50,40,0.16)';g.fillRect(wx,wy+wh+9,ww,10);
+    }
+    g.fillStyle='#d6c9ad';g.fillRect(0,y0+fh,W,H*0.05);g.fillStyle='rgba(0,0,0,0.18)';g.fillRect(0,y0+fh+H*0.05,W,3);
+  }
+  g.fillStyle='#8b8b84';g.fillRect(0,H-10,W,10);
+  // papan nama sekolah
+  g.fillStyle='#1d2340';g.fillRect(W/2-150,H*0.47,300,26);g.fillStyle='#fff6e6';g.font='bold 18px Bungee, Impact, sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('SMEA 70 JAKARTA',W/2,H*0.47+14);
+  return new THREE.CanvasTexture(c);
+}
+function texSky(){
+  const W=1024,H=512,c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),r=rng(91);
+  const gr=g.createLinearGradient(0,0,0,H);
+  gr.addColorStop(0,'#3f7fc4');gr.addColorStop(0.3,'#6aa3d8');gr.addColorStop(0.47,'#b4d3ea');gr.addColorStop(0.5,'#d9e7ee');gr.addColorStop(1,'#d9e7ee');
+  g.fillStyle=gr;g.fillRect(0,0,W,H);
+  // awan cumulus lembut
+  for(let i=0;i<46;i++){const cx=r()*W,cy=H*(0.18+r()*0.28),n=5+r()*7|0,sc=0.6+r()*1.3;
+    for(let k=0;k<n;k++){const x=cx+(r()-0.5)*70*sc,y=cy+(r()-0.5)*14*sc,rad=(14+r()*22)*sc*(1-(cy/H-0.18));
+      for(const dx of [-W,0,W]){const gg=g.createRadialGradient(x+dx,y,0,x+dx,y,rad);gg.addColorStop(0,'rgba(255,255,255,0.85)');gg.addColorStop(0.6,'rgba(250,250,252,0.45)');gg.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gg;g.beginPath();g.arc(x+dx,y,rad,0,7);g.fill();}
+      const sh=g.createRadialGradient(x,y+rad*0.45,0,x,y+rad*0.45,rad*0.8);sh.addColorStop(0,'rgba(150,165,185,0.18)');sh.addColorStop(1,'rgba(150,165,185,0)');g.fillStyle=sh;g.beginPath();g.arc(x,y+rad*0.45,rad*0.8,0,7);g.fill();}}
+  const t=new THREE.CanvasTexture(c);t.wrapS=THREE.RepeatWrapping;return t;
+}
+function texCity(){
+  const W=128,H=256,c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),r=rng(101);
+  g.fillStyle='#8f9aa6';g.fillRect(0,0,W,H);
+  for(let y=6;y<H-6;y+=12)for(let x=6;x<W-6;x+=14){g.fillStyle=r()<0.25?'#d9e3ea':r()<0.5?'#5d6b7a':'#6f7d8c';g.fillRect(x,y,9,7);}
+  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;
+}
+function texWorn(){
+  // cat marka jalan yang sudah pudar
+  const S=256,n=mkNoise(16,111),r=rng(112);
+  const c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d'),im=g.createImageData(S,S),d=im.data;
+  for(let y=0;y<S;y++)for(let x=0;x<S;x++){const o=(y*S+x)*4,a=fbm(n,x/S,y/S,1,3),k=r();d[o]=236;d[o+1]=236;d[o+2]=228;d[o+3]=cl((a>0.36?225:40)*(0.8+k*0.2));}
+  g.putImageData(im,0,0);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;
+}
+function texShade(radial){
+  const S=128,c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d');
+  const gr=radial?g.createRadialGradient(S/2,S/2,0,S/2,S/2,S/2):g.createLinearGradient(0,0,0,S);
+  gr.addColorStop(0,'rgba(0,0,0,0.42)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(0,0,S,S);return new THREE.CanvasTexture(c);
+}
+function texManhole(){
+  const S=128,c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d');
+  g.fillStyle='#3a3b3e';g.beginPath();g.arc(S/2,S/2,S/2-2,0,7);g.fill();g.strokeStyle='#58595d';g.lineWidth=5;g.stroke();
+  g.strokeStyle='#2a2b2e';g.lineWidth=3;for(let i=-3;i<=3;i++){g.beginPath();g.moveTo(S/2+i*14,12);g.lineTo(S/2+i*14,S-12);g.stroke();}
+  return new THREE.CanvasTexture(c);
+}
+// pengulangan tekstur lewat UV (bukan clone) supaya 1 tekstur = 1 upload GPU
+function rep(t,x,y){REPQ.push([x,y]);return t;}
+function mergeGeos(list){
+  let n=0;const parts=[];
+  for(const [g0,mx] of list){const g=g0.index?g0.toNonIndexed():g0.clone();g.applyMatrix4(mx);parts.push(g);n+=g.attributes.position.count;}
+  const pos=new Float32Array(n*3),nor=new Float32Array(n*3),uv=new Float32Array(n*2);let o=0;
+  for(const g of parts){const c=g.attributes.position.count;pos.set(g.attributes.position.array,o*3);if(g.attributes.normal)nor.set(g.attributes.normal.array,o*3);if(g.attributes.uv)uv.set(g.attributes.uv.array.subarray(0,c*2),o*2);o+=c;g.dispose();}
+  const out=new THREE.BufferGeometry();out.setAttribute('position',new THREE.BufferAttribute(pos,3));out.setAttribute('normal',new THREE.BufferAttribute(nor,3));out.setAttribute('uv',new THREE.BufferAttribute(uv,2));
+  out.computeBoundingSphere();out.computeBoundingBox();return out;
+}
+// gabungkan objek statis dengan material yang sama -> draw call jauh lebih sedikit
+function staticOptimize(){
+  const keep=new Set([...gate.leaves,skyDome]);const groups=new Map();
+  for(const m of [...scene.children]){
+    if(!m.isMesh||!m.visible||keep.has(m)||Array.isArray(m.material)||m.userData.keep)continue;
+    const mat=m.material,g=m.geometry;
+    if(mat.userData.rep&&!g.userData.repDone){const uv=g.attributes.uv,[rx,ry]=mat.userData.rep;if(uv){for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*rx,uv.getY(i)*ry);uv.needsUpdate=true;}g.userData.repDone=true;}
+    const key=[mat.type,mat.color?mat.color.getHex():0,mat.map?mat.map.uuid:'',mat.bumpMap?mat.bumpScale:0,mat.transparent?1:0,mat.opacity,mat.side,mat.depthWrite?1:0,mat.alphaTest,m.castShadow?1:0,m.receiveShadow?1:0,m.renderOrder].join('|');
+    if(!groups.has(key))groups.set(key,[]);groups.get(key).push(m);
+  }
+  for(const [,list] of groups){
+    if(list.length<2)continue;
+    list.forEach(m=>m.updateMatrixWorld(true));
+    const mm=new THREE.Mesh(mergeGeos(list.map(m=>[m.geometry,m.matrixWorld])),list[0].material);
+    mm.castShadow=list[0].castShadow;mm.receiveShadow=list[0].receiveShadow;mm.renderOrder=list[0].renderOrder;scene.add(mm);
+    for(const m of list){scene.remove(m);m.geometry.dispose();}
+  }
+}
+function groundMat(t,x,y,bump){
+  const map=rep(t,x,y),rr=REPQ.pop();
+  const m=gfx.phong?new THREE.MeshPhongMaterial({map,bumpMap:bump?map:null,bumpScale:bump||0,shininess:4,specular:0x0c0c0c}):new THREE.MeshLambertMaterial({map});
+  m.userData.rep=rr;return m;
+}
+let skyDome=null;
+
 /* ================= world =================
    x: along the street (enemies come from +x). z: toward camera.
    School wall z=-11.3 · north sidewalk -11..-7.5 · road -7.5..2.5 · south sidewalk + halte 2.5..7 */
@@ -767,15 +975,25 @@ const FOUNTAIN={x:-5.8,z:-9.2,r:4.2};
 let flagMesh=null, spandukGroup=null, zoneRing=null, stallNpc=null, healRing=null, fountainEffectT=0;
 const gate={hp:0,max:3000,lastHit:-99,broken:false,leaves:[],shake:0};
 (function buildWorld(){
-  flat(220,140,0x8a9a6c,0,0,0);
-  flat(220,10,0x46474c,0,-2.5,0.025);
-  const white=new THREE.MeshBasicMaterial({color:0xeeeeea});
-  flat(220,0.15,white,0,-7.25,0.03);flat(220,0.15,white,0,2.25,0.03);
-  for(let x=-110;x<110;x+=6)flat(3,0.15,white,x,-2.5,0.03);
-  for(let i=0;i<5;i++)flat(0.6,9.3,white,2.6+i*1.1,-2.5,0.031);
-  flat(220,3.6,0xc4b59a,0,-9.3,0.03);
-  flat(220,4.6,0xc4b59a,0,4.8,0.03);
-  const cb=lam(0x2a2a2a), cw=lam(0xf1f1ee);
+  TX.asphalt=texAsphalt();TX.paving=texPaving();TX.grass=texGrass();TX.concrete=texConcrete(150);TX.worn=texWorn();
+  flat(260,160,groundMat(TX.grass,52,32),0,0,0);
+  flat(260,10,groundMat(TX.asphalt,26,1,0.035),0,-2.5,0.025);
+  const wl=(w,d,x,z,y)=>{const m=flat(w,d,lam(0xf2f2ea,{map:rep(TX.worn,Math.max(1,w/3),Math.max(1,d/3)),transparent:true,depthWrite:false}),x,z,y);m.receiveShadow=true;return m;};
+  wl(220,0.15,0,-7.25,0.03);wl(220,0.15,0,2.25,0.03);
+  for(let x=-110;x<110;x+=6)wl(3,0.15,x,-2.5,0.03);
+  for(let i=0;i<5;i++)wl(0.6,9.3,2.6+i*1.1,-2.5,0.031);
+  flat(260,3.6,groundMat(TX.paving,65,0.9,0.03),0,-9.3,0.03);
+  flat(260,4.6,groundMat(TX.paving,65,1.15,0.03),0,4.8,0.03);
+  // bayangan kontak: kaki pagar & tepi trotoar (kesan lebih "berat")
+  const shL=new THREE.MeshBasicMaterial({map:texShade(false),transparent:true,depthWrite:false});
+  {const m=flat(260,1.1,shL,0,-10.55,0.036);m.receiveShadow=false;}
+  {const m=flat(260,0.6,shL,0,-7.0,0.032);m.rotation.z=Math.PI;m.receiveShadow=false;}
+  {const m=flat(260,0.6,shL,0,2.0,0.032);m.receiveShadow=false;}
+  // tutup gorong-gorong & saluran air
+  const mh=new THREE.MeshLambertMaterial({map:texManhole(),transparent:true});
+  [[-14,-4.2],[12,-0.8],[34,-4.6],[-30,-0.9]].forEach(([x,z])=>{const m=new THREE.Mesh(new THREE.CircleGeometry(0.42,20),mh);m.rotation.x=-Math.PI/2;m.position.set(x,0.033,z);m.receiveShadow=true;scene.add(m);});
+  const grate=lam(0x2b2c2f);for(let x=-48;x<60;x+=11){addBox(0.9,0.02,0.35,grate,x,0.03,ROAD_N+0.35);addBox(0.9,0.02,0.35,grate,x+5,0.03,ROAD_S-0.35);}
+  const cb=lam(0x2a2a2a,{map:TX.concrete}), cw=lam(0xf1f1ee,{map:TX.concrete});
   for(let x=-60;x<70;x+=1.2){const m=((x/1.2)|0)%2?cb:cw;addBox(1.2,0.16,0.3,m,x,0.08,ROAD_N-0.1);addBox(1.2,0.16,0.3,m,x,0.08,ROAD_S+0.1);}
   // ================= ORANGE FENCE (SMA 70 BULUNGAN) =================
   const fenceTex=canvasTex(256,128,(g,w,h)=>{
@@ -792,7 +1010,7 @@ const gate={hp:0,max:3000,lastHit:-99,broken:false,leaves:[],shake:0};
   const buildFenceSection=(startX,endX)=>{
     const len=endX-startX, cx=(startX+endX)/2;
     // Dark bottom foundation plinth
-    addBox(len,0.42,0.45,0x1e2024,cx,0.21,-11.4);
+    addBox(len,0.42,0.45,lam(0x4a4c50,{map:rep(TX.concrete,len/3,1)}),cx,0.21,-11.4);
     // Slat fence plane
     const tex=fenceTex.clone();
     tex.repeat.set(len*0.75,1);
@@ -834,14 +1052,14 @@ const gate={hp:0,max:3000,lastHit:-99,broken:false,leaves:[],shake:0};
   const bars=canvasTex(128,128,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='#1b1b1d';for(let x=0;x<w;x+=16)g.fillRect(x,0,6,h);g.fillRect(0,0,w,8);g.fillRect(0,h-8,w,8);g.fillRect(0,h/2-3,w,6);});
   const gm=new THREE.MeshLambertMaterial({map:bars,transparent:true,alphaTest:0.5,side:THREE.DoubleSide});
   [-1,1].forEach(s=>{const l=new THREE.Mesh(new THREE.PlaneGeometry(2.6,2.6),gm);l.rotation.y=s*1.35;l.position.set(s*2.35,1.3,-12.8);l.userData.s=s;scene.add(l);gate.leaves.push(l);});
-  flat(5.6,12,0x8f8f8a,0.2,-17,0.03);
+  flat(5.6,12,groundMat(TX.concrete,1.5,3,0.02),0.2,-17,0.03);
 
   // Bulungan Cup tournament banner on the orange fence
   const ban=textPlane([{t:'BULUNGAN CUP',s:62},{t:'TURNAMEN ANTAR SEKOLAH 2026',s:32}],'#1f4fa8','#ffffff',768,192,6,1.5);ban.position.set(24,1.55,-11.2);scene.add(ban);
 
   // ================= TOPIARY BUSHES: "SMEA 70" =================
   // Green lawn berm along the sidewalk in front of the orange fence
-  flat(44,2.2,0x3e7e32,25.5,-10.4,0.032);
+  flat(44,2.2,groundMat(TX.grass,9,0.5),25.5,-10.4,0.032);
 
   const hedgeM=lam(0x2d7734), hedgeTopM=lam(0x3ea047);
   const hb=(w,h,d,x,y,z)=>{
@@ -982,24 +1200,44 @@ const gate={hp:0,max:3000,lastHit:-99,broken:false,leaves:[],shake:0};
   addBox(0.12,7.5,0.12,0x474b50,30.2,3.75,-12.6);addBox(0.6,0.25,0.4,0x636e72,30.0,7.5,-12.8);
 
   // Trees framing the school perimeter and behind the court
+  // pohon: batang bertekstur, cabang, dan rimbun daun berlapis
+  const barkM=lam(0xffffff,{map:rep(texBark(),1,2)}),leafT=texLeaves(),leafMs=[0xd8f0c0,0xc4e2a8,0xe6f2c8,0xb8d79a].map(c=>lam(c,{map:leafT}));
+  const tree=(x,z,h)=>{
+    const t=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.36,h,8),barkM);t.position.set(x,h/2,z);t.castShadow=true;t.receiveShadow=true;scene.add(t);
+    if(!gfx.trees){const c=new THREE.Mesh(new THREE.IcosahedronGeometry(rand(2.4,3.2),1),pick(leafMs));c.position.set(x,h+0.8,z);c.castShadow=true;scene.add(c);return;}
+    for(let b=0;b<3;b++){const a=b*2.1+rand(-0.3,0.3),L=rand(1.6,2.4);const br=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.13,L,6),barkM);br.position.set(x+Math.cos(a)*L*0.35,h*0.78+L*0.3,z+Math.sin(a)*L*0.35);br.rotation.set(Math.sin(a)*0.8,0,-Math.cos(a)*0.8);br.castShadow=true;scene.add(br);}
+    const n=4+(Math.random()*2|0);
+    for(let i=0;i<n;i++){const rr=rand(1.3,2.1),a=i/n*6.28+rand(-0.4,0.4),d=i===0?0:rand(0.9,1.7);
+      const c=new THREE.Mesh(new THREE.IcosahedronGeometry(rr,1),pick(leafMs));c.position.set(x+Math.cos(a)*d,h+rand(0.1,1.3)+(i===0?0.6:0),z+Math.sin(a)*d);c.scale.y=rand(0.75,0.95);c.rotation.set(rand(0,3),rand(0,3),0);c.castShadow=true;c.receiveShadow=true;scene.add(c);}
+  };
   for(let x=-44;x<=48;x+=6.5){
     if(Math.abs(x)<3)continue;
-    const h=rand(5.5,8);
-    // If behind the court, place trees at the back perimeter (z=-24.5) so the court is open
     const treeZ=(x>=4&&x<=32)?rand(-24.5,-26.0):rand(-15.5,-17.5);
-    const tr=addBox(0.5,h,0.5,0x6b4a33,x+rand(-0.8,0.8),h/2,treeZ);
-    const cMesh=new THREE.Mesh(new THREE.IcosahedronGeometry(rand(2.4,3.3),0),lam(pick([0x3f7d3a,0x4a8a3c,0x356f34])));
-    cMesh.position.set(tr.position.x,h+0.8,tr.position.z);cMesh.rotation.y=rand(0,3);cMesh.castShadow=true;scene.add(cMesh);
+    tree(x+rand(-0.8,0.8),treeZ,rand(5,7));
   }
-  addBox(40,10,8,0xf0ede6,0,5,-27);
-  for(let i=0;i<9;i++)for(let f=0;f<2;f++)addBox(2,1.4,0.1,0x2b3d5c,-16+i*4,3+f*4,-22.95);
+  [-52,-38,-24,-12,30,46,60].forEach(x=>tree(x+rand(-1,1),rand(9.6,10.6),rand(5,6.5)));
+  // gedung sekolah 2 lantai dengan atap genteng
+  const facade=texFacade(),wallM=lam(0xece2cb,{map:TX.concrete}),roofT=texRoofTile();
+  const bld=new THREE.Mesh(new THREE.BoxGeometry(40,10,8),[wallM,wallM,wallM,wallM,lam(0xffffff,{map:facade}),wallM]);bld.position.set(0,5,-27);bld.receiveShadow=true;bld.castShadow=true;scene.add(bld);
+  const roofM=lam(0xffffff,{map:rep(roofT,10,1.5)});
+  [-1,1].forEach(s=>{const rf=new THREE.Mesh(new THREE.BoxGeometry(41.4,0.22,5.2),roofM);rf.position.set(0,11.25,-27+s*2.15);rf.rotation.x=s*0.5;rf.castShadow=true;scene.add(rf);});
+  const gab=new THREE.Shape();gab.moveTo(-4,0);gab.lineTo(4,0);gab.lineTo(0,2.3);gab.lineTo(-4,0);
+  const gabG=new THREE.ShapeGeometry(gab);[-20,20].forEach(x=>{const m=new THREE.Mesh(gabG,lam(0xe0d5bb,{side:THREE.DoubleSide}));m.rotation.y=Math.PI/2;m.position.set(x,10,-27);scene.add(m);});
+  addBox(40.6,0.35,1.2,0xd6c9ad,0,5.15,-22.5,true);
+  // langit dengan awan
+  skyDome=new THREE.Mesh(new THREE.SphereGeometry(200,32,16),new THREE.MeshBasicMaterial({map:texSky(),side:THREE.BackSide,fog:false,depthWrite:false,toneMapped:false}));
+  skyDome.renderOrder=-10;scene.add(skyDome);
+  // siluet gedung-gedung kota di kejauhan
+  const cityT=texCity();const r9=rng(5);
+  for(let i=0;i<30;i++){const w=10+r9()*16,h=18+r9()*42,x=-150+i*11+r9()*6,z=-108-r9()*28;
+    const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,w),lam([0xa7b1bb,0x9aa6b2,0xb3bcc4][i%3],{map:rep(cityT,w/8,h/16)}));m.position.set(x,h/2,z);scene.add(m);}
   const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.08,9,8),lam(0xdddddd));pole.position.set(-0.5,4.5,-19);scene.add(pole);
   flagMesh=new THREE.Group();flagMesh.position.set(-0.5,8.4,-19);scene.add(flagMesh);
   const fr=new THREE.Mesh(new THREE.PlaneGeometry(1.8,0.55),lam(0xd7263d,{side:THREE.DoubleSide}));fr.position.set(0.9,0.27,0);flagMesh.add(fr);
   const fw=new THREE.Mesh(new THREE.PlaneGeometry(1.8,0.55),lam(0xfafafa,{side:THREE.DoubleSide}));fw.position.set(0.9,-0.28,0);flagMesh.add(fw);
   // halte
   const hx=HALTE.x, hz=5.1;
-  flat(9.6,2.6,0x8d949c,hx,hz,0.04);
+  flat(9.6,2.6,groundMat(TX.concrete,3,1,0.02),hx,hz,0.04);
   [[-4.5,-1.1],[4.5,-1.1],[-4.5,1.1],[4.5,1.1]].forEach(([x,z])=>addBox(0.14,3,0.14,0x9aa3ac,hx+x,1.5,hz+z,true));
   const roof=new THREE.Mesh(new THREE.BoxGeometry(10,0.16,2.9),new THREE.MeshLambertMaterial({color:0x2f6db5,transparent:true,opacity:0.55}));roof.position.set(hx,3.05,hz);scene.add(roof);
   const glass=new THREE.Mesh(new THREE.PlaneGeometry(9,2),new THREE.MeshLambertMaterial({color:0xbfe0f0,transparent:true,opacity:0.3,side:THREE.DoubleSide}));glass.position.set(hx,1.4,hz+1.15);scene.add(glass);
@@ -1020,6 +1258,7 @@ const gate={hp:0,max:3000,lastHit:-99,broken:false,leaves:[],shake:0};
   zf.rotation.x=ze.rotation.x=-Math.PI/2;zoneRing.add(zf,ze);zoneRing.position.y=0.06;zoneRing.visible=false;scene.add(zoneRing);
   buildDrinkStallAndNpc();
 })();
+staticOptimize();
 
 function buildDrinkStallAndNpc(){
   const x=FOUNTAIN.x, z=FOUNTAIN.z;
@@ -2727,7 +2966,7 @@ function updateCamera(dt){
   if(shake>0){const s=shake*(reduced?0.3:1);camera.position.x+=rand(-s,s);camera.position.y+=rand(-s,s)*0.6;}
   look.set(tx,0.8,tz-0.6);camera.lookAt(look);
   const distC=camera.position.distanceTo(look);viewHalf=Math.tan(camera.fov*Math.PI/360)*distC*camera.aspect;
-  sun.position.set(tx-16,26,tz+12);sun.target.position.set(tx,0,tz);
+  sun.position.set(tx-22,24,tz+14);sun.target.position.set(tx,0,tz);if(skyDome)skyDome.position.copy(camera.position);
 }
 function updatePops(dt){
   const w=innerWidth,h=innerHeight;
@@ -2970,7 +3209,7 @@ function netLeave(){
   if(n.role==='host')dirRetract();
   try{if(n.ch){n.ch.untrack&&n.ch.untrack();sb().removeChannel(n.ch);}}catch(e){}
   try{if(n.up)sb().removeChannel(n.up);}catch(e){}
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.setPixelRatio(gfxPR(false));
 }
 function sendOnce(event,payload){if(!net||!net.ch)return;try{const r=net.ch.send({type:'broadcast',event,payload});if(r&&r.catch)r.catch(()=>{});}catch(e){}}
 
@@ -3099,7 +3338,7 @@ function netCommonStart(){
   spandukGroup.visible=false;zoneRing.visible=false;
   res=[0,0];START=[TEAM_SIZE,TEAM_SIZE];
   chain=0;bestChain=0;chainT=0;myKO=0;myInno=0;carKO=0;pendingEnd=null;shake=0;freeze=0;lastHud='';
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
+  renderer.setPixelRatio(gfxPR(true));
   ['#menu','#endOv','#pauseOv','#perkOv','#lobbyOv'].forEach(s=>$(s).hidden=true);
   $('#hud').hidden=false;$('#controls').hidden=false;$('#restartBtn').hidden=true;
   $lv.textContent='KAMU · ONLINE';$('#foeName').textContent='XTM';gateReset(true);mp11Reset(true);M.raid={ph:0,t:0,n:0};
@@ -3379,7 +3618,7 @@ function netBackToLobby(){
   clearAll();mp11Reset(false);gateReset(false);player=null;spectate=false;net.inGame=false;net.ended=false;net.waitingMatch=false;
   net.map=new Map();net.pd=new Map();net.cars=new Map();net.gnd=new Map();net.pj=new Map();
   ['#endOv','#pauseOv'].forEach(s=>$(s).hidden=true);$('#hud').hidden=true;$('#controls').hidden=true;
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.setPixelRatio(gfxPR(false));
   showRoom();dirAnnounce();
 }
 
@@ -3468,7 +3707,7 @@ function openSettings(){
   hideSubs();$('#menu').hidden=true;$('#mmProf').hidden=true;
   $('#setAvatarSub').textContent=activeProfile?('Avatar profil '+activeProfile.name):'Avatar tamu (tersimpan di HP ini)';
   $('#setOv').hidden=false;
-  micStatus();
+  micStatus();gfxUi();
 }
 $('#setAvatar').addEventListener('click',()=>{creatorFrom='settings';hideSubs();openCharacterCreator();});
 
@@ -3550,6 +3789,13 @@ function openMic(){
   micStatus();
 }
 $('#setMic').addEventListener('click',openMic);
+const GFX_NAMES={auto:'OTOMATIS',low:'RENDAH',mid:'SEDANG',high:'TINGGI'};
+function gfxUi(){const cur=(()=>{try{return localStorage.getItem(GFX_KEY)||'auto';}catch(e){return 'auto';}})();
+  $('#setGfxV').textContent=GFX_NAMES[cur]+(cur==='auto'?' ('+GFX_NAMES[GFX_LV]+')':'');
+  $('#setGfxSub').textContent=cur!==gfxPref?'Ketuk lagi untuk ganti. Berlaku setelah game dimuat ulang, ketuk MUAT ULANG di bawah.':'Rendah = paling ringan, Tinggi = paling bagus (iPhone 14 dan HP kencang).';
+  $('#gfxReload').hidden=cur===gfxPref;}
+$('#setGfx').addEventListener('click',()=>{const order=['auto','low','mid','high'];let cur='auto';try{cur=localStorage.getItem(GFX_KEY)||'auto';}catch(e){}
+  const nx=order[(order.indexOf(cur)+1)%order.length];try{localStorage.setItem(GFX_KEY,nx);}catch(e){}gfxUi();});
 $('#micAsk').addEventListener('click',micAsk);
 $('#micTest').addEventListener('click',micTest);
 $('#micRec').addEventListener('click',micRec);
@@ -3874,7 +4120,7 @@ loadSave();showMenu();
 for(let i=0;i<4;i++){if(spawnCar(i%2))cars[cars.length-1].x=rand(-40,50);}
 function frame(now){
   requestAnimationFrame(frame);
-  let dt=Math.min(0.05,(now-last)/1000);last=now;clock+=dt;
+  let dt=Math.max(0,Math.min(0.05,(now-last)/1000));last=now;clock+=dt;
   if(flagMesh)flagMesh.rotation.y=Math.sin(clock*2.2)*0.25;
   gateFrame(dt);bloodFrame(dt);busFrame(dt);
   if(raidZones&&raidZones.visible)raidZones.children.forEach(z=>z.children[1].material.opacity=0.55+0.4*Math.sin(clock*6));

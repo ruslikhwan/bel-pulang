@@ -4,6 +4,14 @@ Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi
 
 Main di: https://belpulang.netlify.app atau https://belpulang.win
 
+## Grafik (v1.6)
+
+- Tekstur dibuat langsung oleh kode (tanpa file gambar): aspal dengan retakan, tambalan, noda oli dan jejak ban; marka jalan pudar; trotoar paving dengan daun kering; rumput; beton.
+- Gedung sekolah 2 lantai dengan jendela nako, koridor, dan atap genteng. Pohon dengan batang, cabang, dan daun berlapis. Langit biru berawan dan siluet gedung kota di kejauhan.
+- Cahaya sore yang hangat, bayangan lebih halus, dan gradasi warna sinematik.
+- **Settings → Grafik**: Otomatis / Rendah / Sedang / Tinggi. Otomatis memilih Tinggi untuk iPhone layar retina (iPhone 14 dll.) dan HP kencang, Rendah untuk HP lemah (tanpa bayangan, tekstur kecil). Berlaku setelah game dimuat ulang.
+- Benda-benda statis digabung supaya beban gambar (draw call) turun sekitar sepertiga.
+
 ## Warga & poin (v1.5)
 
 - Warga lewat di trotoar depan sekolah dan sisi halte: **orang kantoran** (jas, dasi, tas kerja), **ibu dan anak** (ibu berhijab menggandeng anak kecil), dan **supir mobil**. Kalau ada yang berantem di dekatnya, warga panik dan lari sambil teriak.
