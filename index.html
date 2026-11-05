@@ -230,6 +230,12 @@ button:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
 .grid-btn.active{background:var(--amber);color:var(--navy);font-weight:900;border-color:var(--navy)}
 .creator-actions{display:flex;flex-direction:column;gap:8px}
 
+
+/* Modal & Overlay z-index elevations */
+#authOv{ z-index: 100 !important; backdrop-filter: blur(4px); }
+#creatorOv{ z-index: 95 !important; backdrop-filter: blur(4px); }
+#btnCreateProf, #btnLoadProf, #btnGuestPlay{ position:relative; z-index:5; cursor:pointer; touch-action:manipulation; }
+
 </style>
 
 <div id="game"></div>
@@ -496,376 +502,7 @@ button:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js">
-/* ================= CHARACTER STUDIO & ACCOUNT CONTROLLER ================= */
-let crScene = null, crCamera = null, crRenderer = null, crCharGroup = null, crCharData = null;
-let crRotation = 0, crTime = 0;
-let crIsDragging = false, crDragStartX = 0, crDragStartRot = 0;
-let authMode = 'create'; // 'create' or 'login'
-
-function initPalettes(){
-  const sPal = $('#skinPalette');
-  if(sPal && !sPal.children.length){
-    SKIN_TONES.forEach((st, idx) => {
-      const sw = document.createElement('div');
-      sw.className = 'color-swatch' + (idx === 2 ? ' active' : '');
-      sw.style.background = st.css;
-      sw.title = st.name;
-      sw.dataset.hex = st.hex;
-      sw.addEventListener('click', () => {
-        sPal.querySelectorAll('.color-swatch').forEach(el => el.classList.remove('active'));
-        sw.classList.add('active');
-        tempAppearance.skin = st.hex;
-        updateCreatorModel();
-      });
-      sPal.appendChild(sw);
-    });
-  }
-
-  const hPal = $('#hoodiePalette');
-  if(hPal && !hPal.children.length){
-    HOODIE_COLORS.forEach((hc, idx) => {
-      const sw = document.createElement('div');
-      sw.className = 'color-swatch' + (idx === 0 ? ' active' : '');
-      sw.style.background = hc.css;
-      sw.title = hc.name;
-      sw.dataset.hex = hc.hex;
-      sw.addEventListener('click', () => {
-        hPal.querySelectorAll('.color-swatch').forEach(el => el.classList.remove('active'));
-        sw.classList.add('active');
-        tempAppearance.hoodieColor = hc.hex;
-        updateCreatorModel();
-      });
-      hPal.appendChild(sw);
-    });
-  }
-}
-
-function initCreatorPreview(){
-  if(crRenderer) return;
-  const canvas = document.getElementById('creatorCanvas');
-  if(!canvas) return;
-
-  crScene = new THREE.Scene();
-  crCamera = new THREE.PerspectiveCamera(38, canvas.width / canvas.height, 0.1, 50);
-  crCamera.position.set(0, 1.45, 4.3);
-  crCamera.lookAt(0, 1.32, 0);
-
-  crRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-  crRenderer.setSize(canvas.width, canvas.height);
-  crRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-
-  // Studio lighting
-  const amb = new THREE.AmbientLight(0xffffff, 0.85);
-  crScene.add(amb);
-  const dir = new THREE.DirectionalLight(0xfff7ea, 1.25);
-  dir.position.set(2, 4, 3.5);
-  crScene.add(dir);
-  const rim = new THREE.DirectionalLight(0x8cc8ee, 0.65);
-  rim.position.set(-2, 3, -3);
-  crScene.add(rim);
-
-  // Soft shadow ground disc
-  const disc = new THREE.Mesh(
-    new THREE.CircleGeometry(0.85, 36),
-    new THREE.MeshBasicMaterial({ color: 0x1d2340, transparent: true, opacity: 0.18 })
-  );
-  disc.rotation.x = -Math.PI / 2;
-  disc.position.y = 0.01;
-  crScene.add(disc);
-
-  crCharGroup = new THREE.Group();
-  crScene.add(crCharGroup);
-
-  // Drag interaction to rotate character
-  canvas.addEventListener('mousedown', e => {
-    crIsDragging = true;
-    crDragStartX = e.clientX;
-    crDragStartRot = crRotation;
-  });
-  window.addEventListener('mousemove', e => {
-    if(!crIsDragging) return;
-    const dx = e.clientX - crDragStartX;
-    crRotation = crDragStartRot + dx * 0.018;
-  });
-  window.addEventListener('mouseup', () => { crIsDragging = false; });
-
-  canvas.addEventListener('touchstart', e => {
-    if(!e.touches.length) return;
-    crIsDragging = true;
-    crDragStartX = e.touches[0].clientX;
-    crDragStartRot = crRotation;
-  }, { passive: true });
-  window.addEventListener('touchmove', e => {
-    if(!crIsDragging || !e.touches.length) return;
-    const dx = e.touches[0].clientX - crDragStartX;
-    crRotation = crDragStartRot + dx * 0.018;
-  }, { passive: true });
-  window.addEventListener('touchend', () => { crIsDragging = false; });
-}
-
-function updateCreatorModel(){
-  if(!crCharGroup) return;
-  while(crCharGroup.children.length > 0){
-    const obj = crCharGroup.children[0];
-    crCharGroup.remove(obj);
-    if(obj.traverse){
-      obj.traverse(c => {
-        if(c.geometry && c.geometry.dispose) c.geometry.dispose();
-      });
-    }
-  }
-  const charObj = makeChar(Object.assign({ isCustom: true }, tempAppearance));
-  crCharData = charObj;
-  crCharGroup.add(charObj.group);
-}
-
-function creatorLoop(){
-  if($('#creatorOv').hidden) return;
-  requestAnimationFrame(creatorLoop);
-  crTime += 0.035;
-  if(crCharGroup){
-    crCharGroup.rotation.y = crRotation;
-    if(crCharData && crCharData.rig){
-      crCharData.rig.position.y = Math.sin(crTime * 2.2) * 0.015;
-    }
-  }
-  if(crRenderer && crScene && crCamera){
-    crRenderer.render(crScene, crCamera);
-  }
-}
-
-function syncCreatorUIWithTemp(){
-  initPalettes();
-  // Skin palette
-  const sPal = $('#skinPalette');
-  if(sPal){
-    sPal.querySelectorAll('.color-swatch').forEach(sw => {
-      sw.classList.toggle('active', parseInt(sw.dataset.hex) === tempAppearance.skin);
-    });
-  }
-  // Build
-  $('#buildGroup').querySelectorAll('.pill-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.val === tempAppearance.build);
-  });
-  // Outfit
-  $('#outfitGroup').querySelectorAll('.pill-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.val === tempAppearance.outfit);
-  });
-  $('#hoodieColorSection').hidden = (tempAppearance.outfit !== 'hoodie');
-  // Hoodie palette
-  const hPal = $('#hoodiePalette');
-  if(hPal){
-    hPal.querySelectorAll('.color-swatch').forEach(sw => {
-      sw.classList.toggle('active', parseInt(sw.dataset.hex) === tempAppearance.hoodieColor);
-    });
-  }
-  // Hat
-  $('#hatGroup').querySelectorAll('.grid-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.val === tempAppearance.hat);
-  });
-  // Glasses
-  $('#glassesGroup').querySelectorAll('.grid-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.val === tempAppearance.glasses);
-  });
-  // Prof tag
-  if($('#crProfTag')){
-    $('#crProfTag').textContent = activeProfile ? activeProfile.name : 'Model Kustom';
-  }
-}
-
-function openCharacterCreator(){
-  $('#menu').hidden = true;
-  $('#creatorOv').hidden = false;
-  if(activeProfile && activeProfile.appearance){
-    tempAppearance = Object.assign({}, activeProfile.appearance);
-  }
-  syncCreatorUIWithTemp();
-  initCreatorPreview();
-  updateCreatorModel();
-  requestAnimationFrame(creatorLoop);
-}
-
-function closeCharacterCreator(){
-  $('#creatorOv').hidden = true;
-  showMenu();
-}
-
-// Attach UI Event Listeners for Character Studio
-$('#rotLeftBtn').addEventListener('click', () => { crRotation += 0.5; });
-$('#rotRightBtn').addEventListener('click', () => { crRotation -= 0.5; });
-
-$('#buildGroup').addEventListener('click', e => {
-  const btn = e.target.closest('.pill-btn');
-  if(!btn) return;
-  $('#buildGroup').querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  tempAppearance.build = btn.dataset.val;
-  updateCreatorModel();
-});
-
-$('#outfitGroup').addEventListener('click', e => {
-  const btn = e.target.closest('.pill-btn');
-  if(!btn) return;
-  $('#outfitGroup').querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  tempAppearance.outfit = btn.dataset.val;
-  $('#hoodieColorSection').hidden = (tempAppearance.outfit !== 'hoodie');
-  updateCreatorModel();
-});
-
-$('#hatGroup').addEventListener('click', e => {
-  const btn = e.target.closest('.grid-btn');
-  if(!btn) return;
-  $('#hatGroup').querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  tempAppearance.hat = btn.dataset.val;
-  updateCreatorModel();
-});
-
-$('#glassesGroup').addEventListener('click', e => {
-  const btn = e.target.closest('.grid-btn');
-  if(!btn) return;
-  $('#glassesGroup').querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  tempAppearance.glasses = btn.dataset.val;
-  updateCreatorModel();
-});
-
-$('#crSavePlayBtn').addEventListener('click', () => {
-  if(activeProfile){
-    activeProfile.appearance = Object.assign({}, tempAppearance);
-    writeSave();
-  }
-  $('#creatorOv').hidden = true;
-  startLevel();
-});
-
-$('#crCancelBtn').addEventListener('click', () => {
-  if(activeProfile){
-    activeProfile.appearance = Object.assign({}, tempAppearance);
-    writeSave();
-  }
-  closeCharacterCreator();
-});
-
-// Profile & Auth Modal Handlers
-function openAuthModal(mode){
-  authMode = mode;
-  $('#authErr').hidden = true;
-  $('#authErr').textContent = '';
-  $('#authName').value = '';
-  $('#authPin').value = '';
-  
-  if(mode === 'create'){
-    $('#authTitle').textContent = 'BUAT PROFIL BARU';
-    $('#authSub').textContent = 'Simpan model karakter 3D kustom dan level progres kamu.';
-    $('#authSubmitBtn').textContent = 'LANJUT KE KUSTOMISASI ➔';
-  } else {
-    $('#authTitle').textContent = 'MASUK KE PROFIL';
-    $('#authSub').textContent = 'Masukkan nama dan 4 digit PIN kamu untuk memuat profil dan level tersimpan.';
-    $('#authSubmitBtn').textContent = 'MASUK & MUAT PROFIL';
-  }
-  $('#authOv').hidden = false;
-  setTimeout(() => { $('#authName').focus(); }, 100);
-}
-
-$('#btnCreateProf').addEventListener('click', () => openAuthModal('create'));
-$('#btnLoadProf').addEventListener('click', () => openAuthModal('login'));
-
-$('#btnGuestPlay').addEventListener('click', () => {
-  setActiveProfileId(null);
-  activeProfile = null;
-  loadSave();
-  updateProfileUI();
-  $('#guestChoiceBox').hidden = true;
-});
-
-$('#menuEditCharBtn').addEventListener('click', () => {
-  openCharacterCreator();
-});
-
-$('#menuSwitchBtn').addEventListener('click', () => {
-  setActiveProfileId(null);
-  activeProfile = null;
-  loadSave();
-  updateProfileUI();
-});
-
-$('#authCancelBtn').addEventListener('click', () => {
-  $('#authOv').hidden = true;
-});
-
-$('#authSubmitBtn').addEventListener('click', () => {
-  const name = $('#authName').value.trim();
-  const pin = $('#authPin').value.trim();
-  const errEl = $('#authErr');
-  errEl.hidden = true;
-
-  if(!name || name.length < 2){
-    errEl.textContent = 'Nama harus minimal 2 karakter.';
-    errEl.hidden = false;
-    return;
-  }
-  if(!/^[0-9]{4}$/.test(pin)){
-    errEl.textContent = 'PIN harus berupa 4 digit angka.';
-    errEl.hidden = false;
-    return;
-  }
-
-  const id = name.toLowerCase();
-  const accs = getAccounts();
-
-  if(authMode === 'create'){
-    if(accs[id]){
-      errEl.textContent = 'Nama "' + name + '" sudah terdaftar! Pilih MASUKKAN PIN atau pakai nama lain.';
-      errEl.hidden = false;
-      return;
-    }
-    const newProf = {
-      id: id,
-      name: name,
-      pin: pin,
-      level: 1,
-      perks: {},
-      appearance: Object.assign({}, tempAppearance),
-      createdAt: Date.now()
-    };
-    accs[id] = newProf;
-    saveAccounts(accs);
-    setActiveProfileId(id);
-    activeProfile = newProf;
-    level = 1; perks = {};
-    writeSave();
-    $('#authOv').hidden = true;
-    openCharacterCreator();
-  } else {
-    // Login / Load mode
-    if(!accs[id]){
-      errEl.textContent = 'Profil "' + name + '" belum terdaftar. Silakan buat profil baru.';
-      errEl.hidden = false;
-      return;
-    }
-    if(accs[id].pin !== pin){
-      errEl.textContent = 'PIN salah! Coba ingat kembali 4 digit PIN kamu.';
-      errEl.hidden = false;
-      return;
-    }
-    setActiveProfileId(id);
-    activeProfile = accs[id];
-    level = Math.min(50, Math.max(1, (activeProfile.level || 1)|0));
-    perks = activeProfile.perks || {};
-    writeSave();
-    $('#authOv').hidden = true;
-    updateProfileUI();
-    popup('Selamat datang kembali, ' + activeProfile.name + '!', {x:0, y:2, z:0}, 2.5, 'info');
-  }
-});
-
-// Initialize on script execution
-initPalettes();
-
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (function(){
 "use strict";
@@ -2699,13 +2336,11 @@ function saveName(n){try{localStorage.setItem('belpulang-name',n);}catch(e){}}
 
 function openLobby(){
   netLeave();
-  ['#menu','#endOv','#pauseOv','#perkOv'].forEach(s=>$(s).hidden=true);
+  ['#menu','#endOv','#pauseOv','#perkOv','#creatorOv','#authOv'].forEach(s=>$(s).hidden=true);
   mode='lobby';
-  $('#lbName').value=$('#lbName').value||getName();
-  $('#lbJoin').hidden=false;$('#lbRoom').hidden=true;lbMsg('');
-  if(!/netlify\.app$|^localhost$|^127\.0\.0\.1$/.test(location.hostname)&&!window.__BP_MOCK){
-    lbMsg('Mode online hanya bisa dimainkan lewat belpulang.netlify.app. Buka link itu di browser HP.');
-  }
+  $('#lbName').value = (activeProfile && activeProfile.name) ? activeProfile.name : ($('#lbName').value || getName());
+  $('#lbJoin').hidden=false;$('#lbRoom').hidden=true;
+  lbMsg('Mode tawuran online siap! Buat room atau masukkan kode 4 huruf dari teman.');
   $('#lobbyOv').hidden=false;
 }
 function roomCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ';let c='';for(let i=0;i<4;i++)c+=A[Math.floor(Math.random()*A.length)];return c;}
@@ -3141,6 +2776,392 @@ function frame(now){
   updatePops(dt);
   renderer.render(scene,camera);
 }
+
+/* ================= CHARACTER STUDIO & ACCOUNT CONTROLLER ================= */
+let crScene = null, crCamera = null, crRenderer = null, crCharGroup = null, crCharData = null;
+let crRotation = 0, crTime = 0;
+let crIsDragging = false, crDragStartX = 0, crDragStartRot = 0;
+let authMode = 'create'; // 'create' or 'login'
+
+function initPalettes(){
+  const sPal = $('#skinPalette');
+  if(sPal && !sPal.children.length){
+    SKIN_TONES.forEach((st, idx) => {
+      const sw = document.createElement('div');
+      sw.className = 'color-swatch' + (idx === 2 ? ' active' : '');
+      sw.style.background = st.css;
+      sw.title = st.name;
+      sw.dataset.hex = st.hex;
+      sw.addEventListener('click', () => {
+        sPal.querySelectorAll('.color-swatch').forEach(el => el.classList.remove('active'));
+        sw.classList.add('active');
+        tempAppearance.skin = st.hex;
+        updateCreatorModel();
+      });
+      sPal.appendChild(sw);
+    });
+  }
+
+  const hPal = $('#hoodiePalette');
+  if(hPal && !hPal.children.length){
+    HOODIE_COLORS.forEach((hc, idx) => {
+      const sw = document.createElement('div');
+      sw.className = 'color-swatch' + (idx === 0 ? ' active' : '');
+      sw.style.background = hc.css;
+      sw.title = hc.name;
+      sw.dataset.hex = hc.hex;
+      sw.addEventListener('click', () => {
+        hPal.querySelectorAll('.color-swatch').forEach(el => el.classList.remove('active'));
+        sw.classList.add('active');
+        tempAppearance.hoodieColor = hc.hex;
+        updateCreatorModel();
+      });
+      hPal.appendChild(sw);
+    });
+  }
+}
+
+function initCreatorPreview(){
+  const canvas = document.getElementById('creatorCanvas');
+  if(!canvas) return;
+
+  if(!crRenderer){
+    crScene = new THREE.Scene();
+    crCamera = new THREE.PerspectiveCamera(38, canvas.width / canvas.height, 0.1, 50);
+    crCamera.position.set(0, 1.35, 4.0);
+    crCamera.lookAt(0, 1.15, 0);
+
+    crRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+    crRenderer.setSize(canvas.width, canvas.height);
+    crRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+    // Studio lighting
+    const amb = new THREE.AmbientLight(0xffffff, 0.9);
+    crScene.add(amb);
+    const dir = new THREE.DirectionalLight(0xfff7ea, 1.3);
+    dir.position.set(2, 4, 3.5);
+    crScene.add(dir);
+    const rim = new THREE.DirectionalLight(0x8cc8ee, 0.7);
+    rim.position.set(-2, 3, -3);
+    crScene.add(rim);
+
+    // Soft shadow ground disc
+    const disc = new THREE.Mesh(
+      new THREE.CircleGeometry(0.85, 36),
+      new THREE.MeshBasicMaterial({ color: 0x1d2340, transparent: true, opacity: 0.18 })
+    );
+    disc.rotation.x = -Math.PI / 2;
+    disc.position.y = 0.01;
+    crScene.add(disc);
+
+    crCharGroup = new THREE.Group();
+    crScene.add(crCharGroup);
+
+    // Drag interaction to rotate character
+    canvas.addEventListener('mousedown', e => {
+      crIsDragging = true;
+      crDragStartX = e.clientX;
+      crDragStartRot = crRotation;
+    });
+    window.addEventListener('mousemove', e => {
+      if(!crIsDragging) return;
+      const dx = e.clientX - crDragStartX;
+      crRotation = crDragStartRot + dx * 0.018;
+    });
+    window.addEventListener('mouseup', () => { crIsDragging = false; });
+
+    canvas.addEventListener('touchstart', e => {
+      if(!e.touches.length) return;
+      crIsDragging = true;
+      crDragStartX = e.touches[0].clientX;
+      crDragStartRot = crRotation;
+    }, { passive: true });
+    window.addEventListener('touchmove', e => {
+      if(!crIsDragging || !e.touches.length) return;
+      const dx = e.touches[0].clientX - crDragStartX;
+      crRotation = crDragStartRot + dx * 0.018;
+    }, { passive: true });
+    window.addEventListener('touchend', () => { crIsDragging = false; });
+  }
+}
+
+function updateCreatorModel(){
+  if(!crCharGroup) return;
+  while(crCharGroup.children.length > 0){
+    const obj = crCharGroup.children[0];
+    crCharGroup.remove(obj);
+    if(obj.traverse){
+      obj.traverse(c => {
+        if(c.geometry && c.geometry.dispose) c.geometry.dispose();
+      });
+    }
+  }
+  const charObj = makeChar(Object.assign({ isCustom: true }, tempAppearance));
+  crCharData = charObj;
+  crCharGroup.add(charObj.group);
+}
+
+function creatorLoop(){
+  if($('#creatorOv').hidden) return;
+  requestAnimationFrame(creatorLoop);
+  crTime += 0.035;
+  if(crCharGroup){
+    crCharGroup.rotation.y = crRotation;
+    if(crCharData && crCharData.rig){
+      crCharData.rig.position.y = Math.sin(crTime * 2.2) * 0.015;
+    }
+  }
+  if(crRenderer && crScene && crCamera){
+    crRenderer.render(crScene, crCamera);
+  }
+}
+
+function syncCreatorUIWithTemp(){
+  initPalettes();
+  // Skin palette
+  const sPal = $('#skinPalette');
+  if(sPal){
+    sPal.querySelectorAll('.color-swatch').forEach(sw => {
+      sw.classList.toggle('active', parseInt(sw.dataset.hex) === tempAppearance.skin);
+    });
+  }
+  // Build
+  $('#buildGroup').querySelectorAll('.pill-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.val === tempAppearance.build);
+  });
+  // Outfit
+  $('#outfitGroup').querySelectorAll('.pill-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.val === tempAppearance.outfit);
+  });
+  $('#hoodieColorSection').hidden = (tempAppearance.outfit !== 'hoodie');
+  // Hoodie palette
+  const hPal = $('#hoodiePalette');
+  if(hPal){
+    hPal.querySelectorAll('.color-swatch').forEach(sw => {
+      sw.classList.toggle('active', parseInt(sw.dataset.hex) === tempAppearance.hoodieColor);
+    });
+  }
+  // Hat
+  $('#hatGroup').querySelectorAll('.grid-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.val === tempAppearance.hat);
+  });
+  // Glasses
+  $('#glassesGroup').querySelectorAll('.grid-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.val === tempAppearance.glasses);
+  });
+  // Prof tag
+  if($('#crProfTag')){
+    $('#crProfTag').textContent = activeProfile ? activeProfile.name : 'Model Kustom';
+  }
+}
+
+function openCharacterCreator(){
+  $('#menu').hidden = true;
+  $('#authOv').hidden = true;
+  $('#creatorOv').hidden = false;
+  if(activeProfile && activeProfile.appearance){
+    tempAppearance = Object.assign({}, activeProfile.appearance);
+  }
+  initCreatorPreview();
+  syncCreatorUIWithTemp();
+  updateCreatorModel();
+  requestAnimationFrame(creatorLoop);
+}
+
+function closeCharacterCreator(){
+  $('#creatorOv').hidden = true;
+  showMenu();
+}
+
+// Attach UI Event Listeners for Character Studio
+if($('#rotLeftBtn')) $('#rotLeftBtn').addEventListener('click', () => { crRotation += 0.5; });
+if($('#rotRightBtn')) $('#rotRightBtn').addEventListener('click', () => { crRotation -= 0.5; });
+
+if($('#buildGroup')) $('#buildGroup').addEventListener('click', e => {
+  const btn = e.target.closest('.pill-btn');
+  if(!btn) return;
+  $('#buildGroup').querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  tempAppearance.build = btn.dataset.val;
+  updateCreatorModel();
+});
+
+if($('#outfitGroup')) $('#outfitGroup').addEventListener('click', e => {
+  const btn = e.target.closest('.pill-btn');
+  if(!btn) return;
+  $('#outfitGroup').querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  tempAppearance.outfit = btn.dataset.val;
+  $('#hoodieColorSection').hidden = (tempAppearance.outfit !== 'hoodie');
+  updateCreatorModel();
+});
+
+if($('#hatGroup')) $('#hatGroup').addEventListener('click', e => {
+  const btn = e.target.closest('.grid-btn');
+  if(!btn) return;
+  $('#hatGroup').querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  tempAppearance.hat = btn.dataset.val;
+  updateCreatorModel();
+});
+
+if($('#glassesGroup')) $('#glassesGroup').addEventListener('click', e => {
+  const btn = e.target.closest('.grid-btn');
+  if(!btn) return;
+  $('#glassesGroup').querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  tempAppearance.glasses = btn.dataset.val;
+  updateCreatorModel();
+});
+
+if($('#crSavePlayBtn')) $('#crSavePlayBtn').addEventListener('click', () => {
+  if(activeProfile){
+    activeProfile.appearance = Object.assign({}, tempAppearance);
+    writeSave();
+  }
+  $('#creatorOv').hidden = true;
+  startLevel();
+});
+
+if($('#crCancelBtn')) $('#crCancelBtn').addEventListener('click', () => {
+  if(activeProfile){
+    activeProfile.appearance = Object.assign({}, tempAppearance);
+    writeSave();
+  }
+  closeCharacterCreator();
+});
+
+// Profile & Auth Modal Handlers
+function openAuthModal(mode){
+  authMode = mode;
+  $('#authErr').hidden = true;
+  $('#authErr').textContent = '';
+  $('#authName').value = '';
+  $('#authPin').value = '';
+  
+  if(mode === 'create'){
+    $('#authTitle').textContent = 'BUAT PROFIL BARU';
+    $('#authSub').textContent = 'Simpan model karakter 3D kustom dan level progres kamu.';
+    $('#authSubmitBtn').textContent = 'LANJUT KE KUSTOMISASI ➔';
+  } else {
+    $('#authTitle').textContent = 'MASUK KE PROFIL';
+    $('#authSub').textContent = 'Masukkan nama dan 4 digit PIN kamu untuk memuat profil dan level tersimpan.';
+    $('#authSubmitBtn').textContent = 'MASUK & MUAT PROFIL';
+  }
+  $('#authOv').hidden = false;
+  setTimeout(() => { $('#authName').focus(); }, 100);
+}
+
+if($('#btnCreateProf')) $('#btnCreateProf').addEventListener('click', () => openAuthModal('create'));
+if($('#btnLoadProf')) $('#btnLoadProf').addEventListener('click', () => openAuthModal('login'));
+
+if($('#btnGuestPlay')) $('#btnGuestPlay').addEventListener('click', () => {
+  setActiveProfileId(null);
+  activeProfile = null;
+  loadSave();
+  updateProfileUI();
+  $('#guestChoiceBox').hidden = true;
+  popup('Bermain sebagai Karakter Tamu!', {x:0, y:2, z:0}, 2, 'info');
+});
+
+if($('#menuEditCharBtn')) $('#menuEditCharBtn').addEventListener('click', () => {
+  openCharacterCreator();
+});
+
+if($('#menuSwitchBtn')) $('#menuSwitchBtn').addEventListener('click', () => {
+  setActiveProfileId(null);
+  activeProfile = null;
+  loadSave();
+  updateProfileUI();
+  popup('Profil ditutup. Silakan pilih atau buat profil baru.', {x:0, y:2, z:0}, 2, 'info');
+});
+
+if($('#authCancelBtn')) $('#authCancelBtn').addEventListener('click', () => {
+  $('#authOv').hidden = true;
+});
+
+// Close auth modal when clicking background overlay
+if($('#authOv')) $('#authOv').addEventListener('click', e => {
+  if(e.target === $('#authOv')) $('#authOv').hidden = true;
+});
+
+// Enter key shortcuts in auth inputs
+if($('#authName')) $('#authName').addEventListener('keydown', e => {
+  if(e.key === 'Enter') $('#authPin').focus();
+});
+if($('#authPin')) $('#authPin').addEventListener('keydown', e => {
+  if(e.key === 'Enter') $('#authSubmitBtn').click();
+});
+
+if($('#authSubmitBtn')) $('#authSubmitBtn').addEventListener('click', () => {
+  const name = ($('#authName').value || '').trim();
+  const pin = ($('#authPin').value || '').trim();
+  const errEl = $('#authErr');
+  errEl.hidden = true;
+
+  if(!name || name.length < 2){
+    errEl.textContent = 'Nama harus minimal 2 karakter.';
+    errEl.hidden = false;
+    return;
+  }
+  if(!/^[0-9]{4}$/.test(pin)){
+    errEl.textContent = 'PIN harus berupa 4 digit angka.';
+    errEl.hidden = false;
+    return;
+  }
+
+  const id = name.toLowerCase();
+  const accs = getAccounts();
+
+  if(authMode === 'create'){
+    if(accs[id]){
+      errEl.textContent = 'Nama "' + name + '" sudah terdaftar! Pilih MASUKKAN PIN atau gunakan nama lain.';
+      errEl.hidden = false;
+      return;
+    }
+    const newProf = {
+      id: id,
+      name: name,
+      pin: pin,
+      level: 1,
+      perks: {},
+      appearance: Object.assign({}, tempAppearance),
+      createdAt: Date.now()
+    };
+    accs[id] = newProf;
+    saveAccounts(accs);
+    setActiveProfileId(id);
+    activeProfile = newProf;
+    level = 1; perks = {};
+    writeSave();
+    $('#authOv').hidden = true;
+    openCharacterCreator();
+  } else {
+    // Login / Load mode
+    if(!accs[id]){
+      errEl.textContent = 'Profil "' + name + '" belum terdaftar. Silakan buat profil baru.';
+      errEl.hidden = false;
+      return;
+    }
+    if(accs[id].pin !== pin){
+      errEl.textContent = 'PIN salah! Coba ingat kembali 4 digit PIN kamu.';
+      errEl.hidden = false;
+      return;
+    }
+    setActiveProfileId(id);
+    activeProfile = accs[id];
+    level = Math.min(50, Math.max(1, (activeProfile.level || 1)|0));
+    perks = activeProfile.perks || {};
+    writeSave();
+    $('#authOv').hidden = true;
+    updateProfileUI();
+    popup('Selamat datang kembali, ' + activeProfile.name + '!', {x:0, y:2, z:0}, 2.5, 'info');
+  }
+});
+
+// Initialize studio palettes
+initPalettes();
+
 requestAnimationFrame(frame);
 })();
 </script>
