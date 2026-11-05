@@ -13,8 +13,12 @@ Main di: https://belpulang.netlify.app atau https://belpulang.win
 
 **Online (SMEA 70 vs XTM)**
 - Satu orang membuat room dan membagikan kode 4 huruf, yang lain gabung pakai kode itu.
-- 50 orang per sekolah, kursi kosong diisi bot. Darah semua sama, tidak ada bangkit lagi.
-- XTM menang kalau gerbang SMEA 70 rubuh dan ada yang masuk sekolah. SMEA 70 menang kalau waktu 4 menit habis dan gerbang masih berdiri. Sekolah yang pasukannya habis duluan kalah.
+- 50 orang per sekolah langsung turun semua sejak awal, kursi kosong diisi bot. Darah semua sama, tidak ada bangkit lagi. Nama pemain tampil di atas kepala.
+- SMEA 70 keluar dari gerbang. XTM turun dari Metromini yang parkir di halte sebelah kanan (markas XTM).
+- Bot SMEA 70 menjaga gerbang dan memukul mundur, sebagian maju menghancurkan Metromini. Bot XTM merubuhkan gerbang dan menghabisi lawan.
+- XTM menang kalau gerbang SMEA 70 rubuh dan ada yang masuk sekolah. SMEA 70 menang kalau Metromini XTM hancur, atau waktu 4 menit habis dan gerbang masih berdiri. Sekolah yang pasukannya habis duluan kalah.
+- Razia Wito tiap 1 menit: dalam 5 detik SMEA 70 harus masuk ke dalam gerbang dan XTM ke halte Metromini. Yang masih di luar saat razia: BUSTED (tumbang).
+- Molotov: dilempar, membakar area selama beberapa detik.
 - Kill feed, papan skor KO, dan pilihan senjata awal di lobby.
 - Pembuat room menjadi host yang menjalankan pertandingan, jadi host harus tetap membuka game sampai ronde selesai.
 
@@ -42,6 +46,7 @@ Main di: https://belpulang.netlify.app atau https://belpulang.win
 | Payung | 11 | 10 ayunan |
 | Katana | 42 | 7 ayunan |
 | Celurit | 55 | 5 ayunan |
+| Molotov | 8 + api 14/detik | Lempar 1x, membakar area |
 
 ## Teknis
 
