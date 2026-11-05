@@ -49,7 +49,7 @@ Main di: https://belpulang.netlify.app atau https://belpulang.win
 
 **Online (SMEA 70 vs XTM)**
 - Satu orang membuat room dan membagikan kode 4 huruf, yang lain gabung pakai kode itu.
-- 50 orang per sekolah, kursi kosong diisi bot. Bot turun bergelombang: 15 di awal, bantuan 8–10 orang tiap 20 detik (lebih cepat untuk tim yang tertinggal). Darah semua 150. Pemain yang tumbang tidak bangkit lagi dan menonton sampai ronde selesai (bisa ganti kamera ke teman). Nama pemain tampil di atas kepala.
+- 50 orang per sekolah, kursi kosong diisi bot. Bot turun bergelombang: 15 di awal, bantuan 8–10 orang tiap 20 detik (lebih cepat untuk tim yang tertinggal). Darah semua 450. Pemain yang tumbang tidak bangkit lagi dan menonton sampai ronde selesai (bisa ganti kamera ke teman). Nama pemain tampil di atas kepala.
 - SMEA 70 keluar dari gerbang. XTM turun dari Metromini yang parkir di halte sebelah kanan (markas XTM).
 - Bot SMEA 70 menjaga gerbang dan memukul mundur, sebagian maju menghancurkan Metromini. Bot XTM merubuhkan gerbang dan menghabisi lawan.
 - XTM menang kalau gerbang SMEA 70 rubuh dan ada yang masuk sekolah. SMEA 70 menang kalau Metromini XTM hancur, atau waktu 6 menit habis dan gerbang masih berdiri. Sekolah yang pasukannya habis duluan kalah.

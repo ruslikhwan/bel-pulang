@@ -378,7 +378,7 @@ details.howto summary{font-family:var(--display);font-size:12px;cursor:pointer;l
     <button type="button" class="mm-btn" id="mmMulti">MULTIPLAYER<small>SMEA 70 vs XTM · 50 vs 50 online</small></button>
     <button type="button" class="mm-btn" id="mmSettings">SETTINGS<small>Avatar &amp; mikrofon</small></button>
     <p class="hint" id="iosHint" hidden><b>Biar layar penuh di iPhone:</b> ketuk tombol Share di Safari, pilih <b>Add to Home Screen</b>, lalu buka game dari ikon Bel Pulang di layar utama.</p>
-    <p class="mm-foot">v1.5 · Sporadis Games</p>
+    <p class="mm-foot">v1.5.1 · Sporadis Games</p>
   </div>
   <div hidden><button class="cta" id="startBtn">MAIN LEVEL 1</button><button class="cta" id="onlineBtn">ONLINE</button><button class="cta alt" id="resetBtn" hidden>ULANG</button></div>
 </div>
@@ -652,7 +652,7 @@ details.howto summary{font-family:var(--display);font-size:12px;cursor:pointer;l
         <div class="team t0"><h3><span>SMEA 70</span><span id="lbN0" class="num">0</span></h3><ul id="lbT0"></ul><span class="bots" id="lbB0"></span><button id="lbPick0">PILIH SMEA 70</button></div>
         <div class="team t1"><h3><span>XTM</span><span id="lbN1" class="num">0</span></h3><ul id="lbT1"></ul><span class="bots" id="lbB1"></span><button id="lbPick1">PILIH XTM</button></div>
       </div>
-      <p class="hint"><b>SMEA 70</b> (50 orang) keluar dari gerbang dan bertahan. <b>XTM</b> (50 orang) turun dari Metromini di sebelah kanan. Darah semua 150, tidak ada bangkit lagi kalau tumbang, ronde 6 menit. Bot turun bergelombang: 15 di awal, bantuan tiap 20 detik sampai 50 orang. XTM menang kalau gerbang rubuh dan ada yang masuk sekolah. SMEA 70 menang kalau Metromini XTM hancur atau waktu habis. Pasukan yang habis duluan kalah. Tiap 90 detik Wito razia: dalam 6 detik SMEA 70 masuk gerbang dan XTM lari ke halte Metromini. Yang masih di luar ditahan 20 detik, lalu keluar lagi dari markas.</p>
+      <p class="hint"><b>SMEA 70</b> (50 orang) keluar dari gerbang dan bertahan. <b>XTM</b> (50 orang) turun dari Metromini di sebelah kanan. Darah semua 450, tidak ada bangkit lagi kalau tumbang, ronde 6 menit. Bot turun bergelombang: 15 di awal, bantuan tiap 20 detik sampai 50 orang. XTM menang kalau gerbang rubuh dan ada yang masuk sekolah. SMEA 70 menang kalau Metromini XTM hancur atau waktu habis. Pasukan yang habis duluan kalah. Tiap 90 detik Wito razia: dalam 6 detik SMEA 70 masuk gerbang dan XTM lari ke halte Metromini. Yang masih di luar ditahan 20 detik, lalu keluar lagi dari markas.</p>
       <label class="lbl2" for="lbWpn">SENJATA AWALMU</label>
       <select class="inp" id="lbWpn"></select>
       <button class="cta" id="lbStart">MULAI TAWURAN</button>
@@ -1166,7 +1166,7 @@ function gateFrame(dt){
 const XH={x:26,z:4.3,r:5.8};                       // XTM halte: parked Metromini + safe zone during raids
 const XBUS_BOX={x0:21.6,x1:30.4,z0:3.1,z1:5.5};
 const xbus={hp:0,max:3000,broken:false,g:null,shake:0,sign:null};
-const RAID_EVERY=90, RAID_WARN=6, RAID_HOLD=6, JAIL_T=20, NET_HP=150, WAVE_FIRST=15, WAVE_EVERY=20, FIELD_CAP=30;
+const RAID_EVERY=90, RAID_WARN=6, RAID_HOLD=6, JAIL_T=20, NET_HP=450, WAVE_FIRST=15, WAVE_EVERY=20, FIELD_CAP=30;
 const BUSTED={name:'busted',busted:true,words:['BUSTED!']};
 const MOLO_FIRE={name:'molotov',words:['PANAS!']};
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
