@@ -4,6 +4,16 @@ Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi
 
 Main di: https://belpulang.netlify.app atau https://belpulang.win
 
+## Warga & poin (v1.5)
+
+- Warga lewat di trotoar depan sekolah dan sisi halte: **orang kantoran** (jas, dasi, tas kerja), **ibu dan anak** (ibu berhijab menggandeng anak kecil), dan **supir mobil**. Kalau ada yang berantem di dekatnya, warga panik dan lari sambil teriak.
+- Sesekali mobil yang lewat dekat tawuran mengerem dan berhenti, supirnya turun lalu kabur dan ngumpet. Kalau sudah aman, supirnya balik ke mobil dan jalan lagi. Kalau supirnya tumbang, mobilnya ditinggal di jalan (bikin macet) lalu diderek.
+- Warga bisa kena pukulan, lemparan, api molotov, hantaman bos, dan tertabrak mobil. **Membunuh warga = −1 poin** untuk pemain yang membunuhnya (bot dan mobil tidak kena hukuman).
+- Poin = KO − warga + bonus markas. Single player: poin tampil di layar menang dan kalah. Online: papan skor akhir punya kolom KO, WARGA, BONUS, POIN dan diurutkan dari poin tertinggi. Kill feed menampilkan "X mencelakai warga −1 POIN".
+- Bonus markas (online): +1 poin per 150 damage ke gerbang/Metromini lawan, dan +5 untuk semua pemain tim yang berhasil menjebol markas lawan.
+
+**Serbu markas (online):** kalau pasukan lawan sudah habis, ronde belum selesai. Tim yang menang punya 60 detik untuk menjebol markas lawan (SMEA 70 → Metromini XTM, XTM → gerbang SMEA 70) demi bonus poin. Semua bot tim pemenang ikut menyerbu markas. Kalau 60 detik habis atau waktu ronde habis, tim itu tetap menang tanpa bonus jebol markas.
+
 ## Voice chat (v1.4, online)
 
 - Tiga tombol di kanan atas (lobby dan saat main):
