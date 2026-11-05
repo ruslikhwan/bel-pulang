@@ -1205,17 +1205,21 @@ const VEH=[
   {k:'polisi',w:4.4,d:1.9,dmg:28,sp:[9,10],wt:0}
 ];
 const wheelGeo=new THREE.CylinderGeometry(0.36,0.36,0.25,12),wheelM=lam(0x1b1b1b),glassM=lam(0x26323d),lightM=new THREE.MeshBasicMaterial({color:0xfff2b0});
-let metro640Mat=null,metroBadgeMat=null,metroPlateMat=null;
-function getMetroMats(){
-  if(!metro640Mat){
-    const t640=canvasTex(256,96,(g,w,h)=>{
+const METRO_LINES=['610','69','74'];
+const metroLineMats={};
+let metroBadgeMat=null,metroPlateMat=null;
+function getMetroMats(lineNum){
+  const ln=lineNum||'610';
+  if(!metroLineMats[ln]){
+    const tLine=canvasTex(256,96,(g,w,h)=>{
       g.fillStyle='#144272';g.fillRect(0,0,w,h);
-      g.fillStyle='#ffffff';g.font='bold 68px Impact, Bungee, sans-serif';
+      g.fillStyle='#ffffff';g.font='bold '+(ln.length>2?'64px':'72px')+' Impact, Bungee, sans-serif';
       g.textAlign='center';g.textBaseline='middle';
-      g.fillText('640',w/2,h/2+2);
+      g.fillText(ln,w/2,h/2+2);
     });
-    metro640Mat=new THREE.MeshLambertMaterial({map:t640,side:THREE.DoubleSide});
-
+    metroLineMats[ln]=new THREE.MeshLambertMaterial({map:tLine,side:THREE.DoubleSide});
+  }
+  if(!metroBadgeMat){
     const tBadge=canvasTex(384,96,(g,w,h)=>{
       g.clearRect(0,0,w,h);
       g.fillStyle='#ffd123';g.font='italic bold 58px "Brush Script MT", cursive, Impact, sans-serif';
@@ -1233,7 +1237,7 @@ function getMetroMats(){
     });
     metroPlateMat=new THREE.MeshLambertMaterial({map:tPlate,side:THREE.DoubleSide});
   }
-  return {metro640Mat,metroBadgeMat,metroPlateMat};
+  return {metroLineMat:metroLineMats[ln],metroBadgeMat,metroPlateMat,lineNum:ln};
 }
 function makeVehicle(v){
   const g=new THREE.Group();const add=(w,h,d,m,x,y,z)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),(m&&m.isMaterial)?m:lam(m));o.position.set(x,y,z);o.castShadow=true;g.add(o);return o;};
@@ -1255,7 +1259,9 @@ function makeVehicle(v){
     add(0.4,0.6,0.45,0x1f9d55,-0.15,1.25,0);add(0.32,0.3,0.32,0x1f9d55,-0.1,1.72,0);add(0.3,0.5,0.25,0x22325f,0.05,0.85,0);
   }else if(v.k==='bus'){
     const bw=v.w, bd=v.d; // Metromini: 8.8m x 2.4m
-    const mats=getMetroMats();
+    const lineNum=v.line||pick(METRO_LINES);
+    const mats=getMetroMats(lineNum);
+    g.userData.lineNum=lineNum;
     const colOrange=0xeb581e, colBlue=0x1976d2, colWhite=0xf4f6f8, colDark=0x1b1c1e, colGlass=0x1d2733;
 
     // --- Undercarriage & chassis ---
@@ -1324,10 +1330,10 @@ function makeVehicle(v){
 
     // --- Front Fascia (+X) ---
     add(0.04, 0.86, bd-0.24, colGlass, bw/2+0.02, 1.84, 0);
-    // Blue Sun-Visor with bold "640" route text:
-    const v640=new THREE.Mesh(new THREE.PlaneGeometry(1.3,0.36), mats.metro640Mat);
-    v640.rotation.y=Math.PI/2;
-    v640.position.set(bw/2+0.045, 2.10, 0.3); g.add(v640);
+    // Blue Sun-Visor with route line text:
+    const vLine=new THREE.Mesh(new THREE.PlaneGeometry(1.3,0.36), mats.metroLineMat);
+    vLine.rotation.y=Math.PI/2;
+    vLine.position.set(bw/2+0.045, 2.10, 0.3); g.add(vLine);
     add(0.05, 0.34, bd-0.28, 0x144272, bw/2+0.035, 2.10, 0);
 
     // Black wiper blades:
@@ -1393,11 +1399,13 @@ function spawnCar(lane,kind){
   if(kind==='polisi')v=VEH.find(o=>o.k==='polisi');
   const dir=lane===0?1:-1, z=lane===0?LANE_E:LANE_W, x=dir>0?-75:85;
   for(const c of cars)if(c.lane===lane&&Math.abs(c.x-x)<c.w/2+v.w/2+5)return false;
-  const g=makeVehicle(v);g.rotation.y=dir>0?0:Math.PI;
+  const lineNum=v.k==='bus'?(v.line||pick(METRO_LINES)):null;
+  const vCopy=v.k==='bus'?Object.assign({},v,{line:lineNum}):v;
+  const g=makeVehicle(vCopy);g.rotation.y=dir>0?0:Math.PI;
   const zz=z+(v.k==='motor'?rand(-1.2,1.2):0);
   const spd=rand(v.sp[0],v.sp[1]);
-  cars.push({id:++uid,g,lane,dir,x,z:zz,w:v.w,d:v.d,dmg:v.dmg,speed:spd,cur:spd,honk:0,k:v.k,drop:drop?{phase:'arrive',t:0,n:Math.min(res[1],Math.floor(rand(5,9)))}:null});
-  if(drop&&mode==='play')banner('METROMINI DATANG!','Anak '+teamName(1)+' turun di Halte Bulungan',2400);
+  cars.push({id:++uid,g,lane,dir,x,z:zz,w:v.w,d:v.d,dmg:v.dmg,speed:spd,cur:spd,honk:0,k:v.k,line:lineNum,drop:drop?{phase:'arrive',t:0,n:Math.min(res[1],Math.floor(rand(5,9)))}:null});
+  if(drop&&mode==='play')banner('METROMINI '+(lineNum||'610')+' DATANG!','Anak '+teamName(1)+' turun di Halte Bulungan',2400);
   return true;
 }
 function spawnFromBus(c){
