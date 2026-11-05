@@ -30,6 +30,17 @@ button:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
 .bar{height:12px;background:rgba(255,246,230,.2);border-radius:6px;overflow:hidden;margin-top:5px;display:flex}
 .bar i{display:block;height:100%;width:100%;background:#2ecc71;border-radius:6px;transition:width .12s}
 .bar.st{height:7px;margin-top:4px}
+.mic-stat{display:flex;flex-direction:column;gap:2px;border:2px solid var(--navy);border-radius:10px;padding:8px 12px;background:#fff;margin:4px 0 8px}
+.mic-stat b{font-family:var(--display);font-weight:400;font-size:15px}.mic-stat span{font-size:12.5px;font-weight:700;opacity:.75}
+.mic-stat.ok{background:#e9f8ee;border-color:#27ae60}.mic-stat.bad{background:#fde9e7;border-color:var(--red)}
+.mic-test{display:flex;align-items:center;gap:8px;margin-top:10px}
+.mic-meter{flex:1;height:14px;border-radius:7px;background:rgba(29,35,64,.15);overflow:hidden}.mic-meter i{display:block;height:100%;width:0;background:#27ae60;transition:width .08s}
+.mic-b{border:2px solid var(--navy);background:var(--cream);color:var(--navy);border-radius:8px;padding:6px 10px;font-size:12px;white-space:nowrap}
+.mic-b.on{background:#27ae60;color:#fff}
+.mic-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;font-weight:800;padding:8px 0;border-bottom:1px dashed rgba(29,35,64,.2)}
+.mic-row input[type=checkbox]{width:22px;height:22px;accent-color:#27ae60}
+.mic-row select{font:inherit;font-size:12px;border:2px solid var(--navy);border-radius:8px;padding:4px 6px;max-width:55%;background:#fff;color:var(--navy)}
+.mic-guide ol{margin:6px 0 0;padding-left:18px;font-size:12.5px;font-weight:600;line-height:1.45}.mic-guide li{margin:3px 0}
 #vcBox{position:fixed;z-index:60;right:calc(10px + env(safe-area-inset-right,0px));top:calc(58px + env(safe-area-inset-top,0px));display:flex;flex-direction:column;align-items:flex-end;gap:5px;pointer-events:none}
 #vcBox button{pointer-events:auto;font-family:var(--display);font-size:11px;letter-spacing:.03em;border:2px solid rgba(255,246,230,.35);border-radius:999px;background:rgba(8,10,22,.78);color:var(--cream);padding:6px 9px;min-width:66px;text-align:center}
 #vcBox button.on{background:#1f9d55;border-color:#7ef0a8}
@@ -363,9 +374,9 @@ details.howto summary{font-family:var(--display);font-size:12px;cursor:pointer;l
     <p class="mm-sub">SMEA 70 · DEPAN HALTE BULUNGAN</p>
     <button type="button" class="mm-btn" id="mmSingle">SINGLE PLAYER<small>50 level, misi beda tiap level</small></button>
     <button type="button" class="mm-btn" id="mmMulti">MULTIPLAYER<small>SMEA 70 vs XTM · 50 vs 50 online</small></button>
-    <button type="button" class="mm-btn" id="mmSettings">SETTINGS<small>Atur avatar</small></button>
+    <button type="button" class="mm-btn" id="mmSettings">SETTINGS<small>Avatar &amp; mikrofon</small></button>
     <p class="hint" id="iosHint" hidden><b>Biar layar penuh di iPhone:</b> ketuk tombol Share di Safari, pilih <b>Add to Home Screen</b>, lalu buka game dari ikon Bel Pulang di layar utama.</p>
-    <p class="mm-foot">v1.4 · Sporadis Games</p>
+    <p class="mm-foot">v1.4.1 · Sporadis Games</p>
   </div>
   <div hidden><button class="cta" id="startBtn">MAIN LEVEL 1</button><button class="cta" id="onlineBtn">ONLINE</button><button class="cta alt" id="resetBtn" hidden>ULANG</button></div>
 </div>
@@ -473,8 +484,43 @@ details.howto summary{font-family:var(--display);font-size:12px;cursor:pointer;l
     <div class="sm-head"><h2 class="title">SETTINGS</h2><button type="button" class="sm-back" data-back>← KEMBALI</button></div>
     <div class="sm-list">
       <button type="button" class="sm-opt hot" id="setAvatar">SET AVATAR<small id="setAvatarSub">Atur kulit, badan, baju, topi, dan kacamata</small></button>
+      <button type="button" class="sm-opt" id="setMic">MIKROFON<small id="setMicSub">Izin mikrofon, tes suara, dan voice chat</small></button>
     </div>
     <p class="hint" id="setNote" style="margin-top:10px">Avatar dipakai di single player dan online. Seragam tetap ikut sekolah saat main online.</p>
+  </div>
+</div>
+
+<div class="ov" id="micOv" hidden>
+  <div class="card sm-card">
+    <div class="sm-head"><h2 class="title">MIKROFON</h2><button type="button" class="sm-back" data-back="set">← KEMBALI</button></div>
+    <div class="mic-stat" id="micStat"><b id="micStatT">Mengecek izin…</b><span id="micStatD"></span></div>
+    <button type="button" class="cta" id="micAsk">IZINKAN MIKROFON</button>
+    <div class="mic-test">
+      <div class="mic-meter" aria-hidden="true"><i id="micLvl"></i></div>
+      <button type="button" class="mic-b" id="micTest">TES MIC</button>
+      <button type="button" class="mic-b" id="micRec">REKAM 3 DETIK</button>
+    </div>
+    <p class="hint" id="micTestMsg" style="margin:4px 0 0">Tekan TES MIC lalu bicara. Bar hijau harus bergerak.</p>
+    <label class="mic-row" id="micDevRow" hidden>Mikrofon<select id="micDev"></select></label>
+    <label class="mic-row">Mic otomatis nyala saat masuk room<input type="checkbox" id="micAuto"></label>
+    <label class="mic-row">Peredam bising<input type="checkbox" id="micNs"></label>
+    <label class="mic-row">Suaraku awalnya didengar<select id="micTo"><option value="0">Tim saja</option><option value="1">Semua (termasuk lawan)</option></select></label>
+    <details class="howto mic-guide" id="gIos"><summary>CARA IZINKAN DI IPHONE / IPAD</summary>
+      <ol>
+        <li><b>Safari:</b> ketuk ikon <b>aA</b> di kolom alamat → <b>Pengaturan Situs Web</b> → <b>Mikrofon</b> → pilih <b>Izinkan</b>.</li>
+        <li>Kalau tidak ada pilihannya: buka <b>Pengaturan</b> iPhone → <b>Safari</b> (iOS 18: Pengaturan → Aplikasi → Safari) → <b>Mikrofon</b> → <b>Izinkan</b> atau <b>Tanya</b>.</li>
+        <li><b>Chrome di iPhone:</b> Pengaturan iPhone → <b>Chrome</b> → nyalakan <b>Mikrofon</b>.</li>
+        <li>Muat ulang game, lalu tekan <b>IZINKAN MIKROFON</b> dan pilih <b>Izinkan</b>.</li>
+      </ol>
+    </details>
+    <details class="howto mic-guide" id="gAnd"><summary>CARA IZINKAN DI ANDROID</summary>
+      <ol>
+        <li><b>Chrome:</b> ketuk ikon di kiri alamat (gembok atau ikon setelan) → <b>Izin</b> → <b>Mikrofon</b> → <b>Izinkan</b>.</li>
+        <li>Kalau Chrome sendiri diblokir: <b>Setelan</b> HP → <b>Aplikasi</b> → <b>Chrome</b> → <b>Izin</b> → <b>Mikrofon</b> → <b>Izinkan hanya saat aplikasi digunakan</b>.</li>
+        <li>Muat ulang game, lalu tekan <b>IZINKAN MIKROFON</b> dan pilih <b>Izinkan</b>.</li>
+      </ol>
+    </details>
+    <p class="hint" style="margin-top:8px">Game dibuka dari Instagram, TikTok, atau Facebook? Mikrofon sering tidak bisa di sana. Buka <b>belpulang.netlify.app</b> langsung di Safari atau Chrome.</p>
   </div>
 </div>
 
@@ -2900,8 +2946,11 @@ function sendOnce(event,payload){if(!net||!net.ch)return;try{const r=net.ch.send
 const VC_ICE=[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:stun.cloudflare.com:3478']}];
 const VC_KEY='belpulang-vc';
 const vc={ch:null,code:'',peers:{},mic:null,on:false,all:false,mute:false,info:{},last:'',talk:{},meAn:null,tick:null,box:null};
-try{const o=JSON.parse(localStorage.getItem(VC_KEY)||'{}');vc.all=!!o.all;vc.mute=!!o.mute;}catch(e){}
-function vcSave(){try{localStorage.setItem(VC_KEY,JSON.stringify({all:vc.all,mute:vc.mute}));}catch(e){}}
+vc.ns=true;vc.auto=false;vc.dev='';
+try{const o=JSON.parse(localStorage.getItem(VC_KEY)||'{}');vc.all=!!o.all;vc.mute=!!o.mute;vc.ns=o.ns!==false;vc.auto=!!o.auto;vc.dev=o.dev||'';}catch(e){}
+function vcSave(){try{localStorage.setItem(VC_KEY,JSON.stringify({all:vc.all,mute:vc.mute,ns:vc.ns,auto:vc.auto,dev:vc.dev}));}catch(e){}}
+function micCons(){const a={echoCancellation:true,noiseSuppression:vc.ns,autoGainControl:true};if(vc.dev)a.deviceId={ideal:vc.dev};return {audio:a,video:false};}
+function micErr(e){const n=e&&e.name;if(n==='NotAllowedError'||n==='SecurityError')return 'Izin mikrofon ditolak. Buka Settings → Mikrofon untuk cara mengizinkan.';if(n==='NotFoundError'||n==='OverconstrainedError')return 'Mikrofon tidak ditemukan di HP ini.';if(n==='NotReadableError')return 'Mikrofon sedang dipakai aplikasi lain (telepon, rekam suara). Tutup dulu lalu coba lagi.';return 'Mikrofon tidak bisa dipakai di browser ini.';}
 function vcOk(){return !!(window.RTCPeerConnection&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);}
 function vcMeta(){return {pid:myPid,team:net?net.me.team:0,name:net?net.me.name:'',on:vc.on,all:vc.all};}
 function vcTrack(){if(!vc.ch)return;const m=vcMeta(),k=JSON.stringify(m);if(k===vc.last)return;vc.last=k;try{const r=vc.ch.track(m);if(r&&r.catch)r.catch(()=>{});}catch(e){}vcRouteAll();}
@@ -2913,7 +2962,7 @@ function vcStart(code){
   ch.on('presence',{event:'sync'},()=>{if(vc.ch===ch)vcSync();})
     .on('presence',{event:'leave'},()=>{if(vc.ch===ch)setTimeout(()=>{if(vc.ch===ch)vcSync();},300);})
     .on('broadcast',{event:'sig'},({payload})=>{if(vc.ch===ch&&payload&&payload.to===myPid)vcSig(payload);});
-  ch.subscribe(st=>{if(vc.ch===ch&&st==='SUBSCRIBED')vcTrack();});
+  ch.subscribe(st=>{if(vc.ch===ch&&st==='SUBSCRIBED'){vcTrack();if(vc.auto&&!vc.on)vcMicOn();}});
   vc.tick=setInterval(vcMeter,180);
   vcUi();
 }
@@ -2971,11 +3020,11 @@ function vcRouteAll(){for(const pid in vc.peers)vcRoute(pid);}
 async function vcMicOn(){
   initAudio();
   try{
-    const ms=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false});
+    const ms=await navigator.mediaDevices.getUserMedia(micCons());
     if(!vc.ch){ms.getTracks().forEach(t=>t.stop());return;}
     vc.mic=ms.getAudioTracks()[0];vc.on=true;
     try{if(actx){const an=actx.createAnalyser();an.fftSize=256;actx.createMediaStreamSource(ms).connect(an);vc.meAn=an;}}catch(e){}
-  }catch(e){vc.on=false;vcToast('Mikrofon tidak bisa dipakai. Izinkan akses mikrofon di browser.');}
+  }catch(e){vc.on=false;vcToast(micErr(e));}
   vcTrack();vcUi();
 }
 function vcMicOff(){if(vc.mic){try{vc.mic.stop();}catch(e){}}vc.mic=null;vc.meAn=null;vc.on=false;vcRouteAll();}
@@ -3315,8 +3364,8 @@ const GUEST_AP_KEY='belpulang-guest-ap';
 function readGuestAp(){try{const a=JSON.parse(localStorage.getItem(GUEST_AP_KEY)||'null');return a&&typeof a==='object'?a:null;}catch(e){return null;}}
 function saveGuestAp(a){try{localStorage.setItem(GUEST_AP_KEY,JSON.stringify(a));}catch(e){}}
 function getMyAp(){return (activeProfile&&activeProfile.appearance)||readGuestAp();}
-const SUBS=['#spOv','#loadOv','#mpOv','#crRoomOv','#pinOv','#setOv'];
-function hideSubs(){SUBS.forEach(s=>$(s).hidden=true);}
+const SUBS=['#spOv','#loadOv','#mpOv','#crRoomOv','#pinOv','#setOv','#micOv'];
+function hideSubs(){SUBS.forEach(s=>$(s).hidden=true);if(typeof micTestStop==='function')micTestStop();}
 let creatorFrom='', afterLogin=null, pendingRoom=null, pinTarget=null;
 
 /* ---- splash ---- */
@@ -3380,8 +3429,95 @@ function openSettings(){
   hideSubs();$('#menu').hidden=true;$('#mmProf').hidden=true;
   $('#setAvatarSub').textContent=activeProfile?('Avatar profil '+activeProfile.name):'Avatar tamu (tersimpan di HP ini)';
   $('#setOv').hidden=false;
+  micStatus();
 }
 $('#setAvatar').addEventListener('click',()=>{creatorFrom='settings';hideSubs();openCharacterCreator();});
+
+/* ---- settings: mikrofon ---- */
+const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
+const isAndroid=/Android/.test(navigator.userAgent);
+const mt={ms:null,an:null,raf:0,rec:null};
+async function micPerm(){
+  if(!window.isSecureContext||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return 'nosupport';
+  try{if(navigator.permissions&&navigator.permissions.query){const r=await navigator.permissions.query({name:'microphone'});return r.state;}}catch(e){}
+  try{return localStorage.getItem('belpulang-mic-ok')==='1'?'granted':'unknown';}catch(e){return 'unknown';}
+}
+async function micStatus(){
+  const st=await micPerm(),box=$('#micStat'),T=$('#micStatT'),D=$('#micStatD');
+  box.classList.remove('ok','bad');
+  const map={granted:['✅ MIKROFON DIIZINKAN','Voice chat siap dipakai. Nyalakan 🎤 di room online.','ok'],
+    denied:['❌ IZIN MIKROFON DITOLAK','Browser memblokir mikrofon. Ikuti cara izinkan di bawah, lalu muat ulang game.','bad'],
+    prompt:['⏳ BELUM DIIZINKAN','Tekan IZINKAN MIKROFON, lalu pilih Izinkan di pop-up browser.',''],
+    unknown:['❔ STATUS BELUM DIKETAHUI','Tekan IZINKAN MIKROFON untuk mengecek.',''],
+    nosupport:['❌ BROWSER TIDAK MENDUKUNG','Buka belpulang.netlify.app langsung di Safari (iPhone) atau Chrome (Android).','bad']};
+  const m=map[st]||map.unknown;T.textContent=m[0];D.textContent=m[1];if(m[2])box.classList.add(m[2]);
+  $('#micAsk').hidden=st==='granted'||st==='nosupport';
+  $('#setMicSub').textContent=st==='granted'?'Mikrofon diizinkan ✓':st==='denied'?'Izin mikrofon ditolak, ketuk untuk cara izinkan':'Izin mikrofon, tes suara, dan voice chat';
+  if(st==='denied'){(isAndroid?$('#gAnd'):$('#gIos')).open=true;}
+  if(st==='granted')micDevices();
+  return st;
+}
+async function micDevices(){
+  try{const ds=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='audioinput');const sel=$('#micDev');
+    $('#micDevRow').hidden=ds.length<2;if(ds.length<2)return;
+    sel.innerHTML='';const o0=document.createElement('option');o0.value='';o0.textContent='Bawaan HP';sel.appendChild(o0);
+    ds.forEach((d,i)=>{if(d.deviceId==='default'||d.deviceId==='communications')return;const o=document.createElement('option');o.value=d.deviceId;o.textContent=d.label||('Mikrofon '+(i+1));sel.appendChild(o);});
+    sel.value=vc.dev&&[...sel.options].some(o=>o.value===vc.dev)?vc.dev:'';}catch(e){}
+}
+async function micGet(){
+  initAudio();if(actx&&actx.state==='suspended')actx.resume();
+  const ms=await navigator.mediaDevices.getUserMedia(micCons());
+  try{localStorage.setItem('belpulang-mic-ok','1');}catch(e){}
+  return ms;
+}
+async function micAsk(){
+  try{const ms=await micGet();ms.getTracks().forEach(t=>t.stop());$('#micTestMsg').textContent='Mikrofon diizinkan ✓ Tekan TES MIC untuk coba suara.';}
+  catch(e){$('#micTestMsg').textContent=micErr(e).replace('Buka Settings → Mikrofon untuk cara mengizinkan.','Ikuti cara izinkan di bawah.');try{localStorage.removeItem('belpulang-mic-ok');}catch(_){}}
+  const st=await micStatus();if(st!=='granted'&&!$('#micTestMsg').textContent.includes('✓'))(isAndroid?$('#gAnd'):$('#gIos')).open=true;
+}
+function micTestStop(){
+  cancelAnimationFrame(mt.raf);mt.raf=0;
+  if(mt.rec&&mt.rec.state==='recording'){try{mt.rec.stop();}catch(e){}}
+  if(mt.ms){mt.ms.getTracks().forEach(t=>t.stop());mt.ms=null;}mt.an=null;
+  const l=$('#micLvl');if(l)l.style.width='0';const b=$('#micTest');if(b){b.classList.remove('on');b.textContent='TES MIC';}
+}
+async function micTest(){
+  if(mt.ms){micTestStop();return;}
+  try{mt.ms=await micGet();}catch(e){$('#micTestMsg').textContent=micErr(e);micStatus();return;}
+  micStatus();
+  try{mt.an=actx.createAnalyser();mt.an.fftSize=512;actx.createMediaStreamSource(mt.ms).connect(mt.an);}catch(e){mt.an=null;}
+  $('#micTest').classList.add('on');$('#micTest').textContent='STOP';$('#micTestMsg').textContent='Bicara sekarang. Bar hijau bergerak = mikrofon jalan.';
+  const buf=new Uint8Array(512);
+  const loop=()=>{if(!mt.ms)return;if(mt.an){mt.an.getByteTimeDomainData(buf);let s=0;for(let i=0;i<buf.length;i++){const v=(buf[i]-128)/128;s+=v*v;}$('#micLvl').style.width=Math.min(100,Math.sqrt(s/buf.length)*450)+'%';}mt.raf=requestAnimationFrame(loop);};loop();
+}
+async function micRec(){
+  if(!window.MediaRecorder){$('#micTestMsg').textContent='Browser ini tidak bisa merekam. Pakai TES MIC saja.';return;}
+  const was=!!mt.ms;if(!was){await micTest();if(!mt.ms)return;}
+  const chunks=[];let rec;try{rec=new MediaRecorder(mt.ms);}catch(e){$('#micTestMsg').textContent='Browser ini tidak bisa merekam. Pakai TES MIC saja.';return;}
+  mt.rec=rec;const b=$('#micRec');b.disabled=true;b.textContent='MEREKAM…';
+  rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data);};
+  rec.onstop=()=>{b.disabled=false;b.textContent='REKAM 3 DETIK';if(!chunks.length)return;
+    const url=URL.createObjectURL(new Blob(chunks,{type:rec.mimeType||'audio/mp4'}));const a=new Audio(url);a.setAttribute('playsinline','');
+    $('#micTestMsg').textContent='Memutar rekamanmu…';a.onended=()=>{URL.revokeObjectURL(url);$('#micTestMsg').textContent='Suaramu terdengar? Berarti mic siap untuk voice chat.';};
+    a.play().catch(()=>{$('#micTestMsg').textContent='Rekaman tidak bisa diputar otomatis. Coba lagi.';});};
+  rec.start();$('#micTestMsg').textContent='Merekam 3 detik, bicara sekarang…';
+  setTimeout(()=>{if(rec.state==='recording')rec.stop();if(!was)setTimeout(()=>{if(!$('#micOv').hidden)micTestStop();},50);},3000);
+}
+function openMic(){
+  hideSubs();$('#menu').hidden=true;$('#mmProf').hidden=true;$('#micOv').hidden=false;
+  $('#micAuto').checked=vc.auto;$('#micNs').checked=vc.ns;$('#micTo').value=vc.all?'1':'0';
+  $('#gIos').open=isIOS;$('#gAnd').open=isAndroid;
+  $('#micTestMsg').textContent='Tekan TES MIC lalu bicara. Bar hijau harus bergerak.';
+  micStatus();
+}
+$('#setMic').addEventListener('click',openMic);
+$('#micAsk').addEventListener('click',micAsk);
+$('#micTest').addEventListener('click',micTest);
+$('#micRec').addEventListener('click',micRec);
+$('#micAuto').addEventListener('change',e=>{vc.auto=e.target.checked;vcSave();});
+$('#micNs').addEventListener('change',e=>{vc.ns=e.target.checked;vcSave();if(mt.ms){micTestStop();micTest();}});
+$('#micTo').addEventListener('change',e=>{vc.all=e.target.value==='1';vcSave();vcUi();});
+$('#micDev').addEventListener('change',e=>{vc.dev=e.target.value;vcSave();if(mt.ms){micTestStop();micTest();}});
 
 /* ---- multiplayer: room directory ---- */
 let dirCh=null, dirReady=false, dirWatching=false, dirPendingMeta=null;
@@ -3489,7 +3625,7 @@ $('#mmSingle').addEventListener('click',()=>{initAudio();openSp();});
 $('#mmMulti').addEventListener('click',()=>{initAudio();openMp();});
 $('#mmSettings').addEventListener('click',()=>{initAudio();openSettings();});
 $('#mmProf').addEventListener('click',()=>openLoad());
-document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.back==='sp')openSp();else openMain();}));
+document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.back==='sp')openSp();else if(b.dataset.back==='set')openSettings();else openMain();}));
 
 /* ---- attract mode: kids brawling in front of SMEA 70 behind the menu ---- */
 let attractOn=false;

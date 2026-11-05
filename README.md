@@ -10,6 +10,7 @@ Main di: https://belpulang.netlify.app atau https://belpulang.win
   - **🎤 ON/OFF**: nyalakan mikrofon. Selalu mati tiap masuk room, browser akan minta izin mikrofon saat pertama dinyalakan.
   - **KE: TIM / KE: SEMUA**: siapa yang bisa dengar suaramu. TIM = cuma teman satu sekolah, SEMUA = termasuk lawan.
   - **🔊 DENGAR / 🔇 BISU**: matikan semua suara orang lain.
+- **Settings → Mikrofon**: cek status izin, tombol IZINKAN MIKROFON, tes mic (bar suara + rekam 3 detik lalu diputar), pilih mikrofon, mic otomatis nyala saat masuk room, peredam bising, dan pilihan awal suara ke tim/semua. Ada panduan izin untuk iPhone (Safari/Chrome) dan Android (Chrome) kalau izinnya pernah ditolak.
 - Nama yang sedang bicara muncul di bawah tombol (⚔ = dari tim lawan). Di daftar pemain lobby, 🎤 = mikrofonnya nyala.
 - Suara langsung antar-HP (WebRTC peer-to-peer), server Supabase cuma dipakai untuk menyambungkan. Di beberapa jaringan (misalnya Wi-Fi kantor/sekolah yang ketat) suara bisa gagal tersambung. Kalau sering terjadi, perlu ditambah server TURN.
 
