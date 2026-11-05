@@ -37,6 +37,8 @@ button:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
 #misPanel{grid-column:1 / -1;padding:6px 10px}
 #misA{background:var(--amber);width:0}
 #misB{background:var(--blue);width:0;margin-left:auto}
+#misBarW.tug #misA{border-radius:6px 0 0 6px}
+#misBarW.tug #misB{margin-left:0;border-radius:0 6px 6px 0}
 #misPanel.danger{animation:pulse .5s infinite alternate}
 @keyframes pulse{to{background:var(--red)}}
 .vs{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}
@@ -1332,7 +1334,7 @@ function setupMission(){
   M={type:cfg.mission,t:0,a:0,b:0,phase:'fight',vip:null,boss:null,sirenT:0,timer:0,bossT:5};
   spandukGroup.visible=M.type==='spanduk';
   zoneRing.visible=M.type==='spanduk'||M.type==='halte';
-  if(M.type==='spanduk'){zoneRing.position.set(SPANDUK.x,0.06,SPANDUK.z);zoneRing.scale.setScalar(SPANDUK.r);}
+  if(M.type==='spanduk'){zoneRing.position.set(SPANDUK.x,0.06,SPANDUK.z);zoneRing.scale.setScalar(SPANDUK.r);M.a=50;M.b=50;}
   if(M.type==='halte'){zoneRing.position.set(HALTE.x,0.06,HALTE.z);zoneRing.scale.setScalar(HALTE.r);M.timer=70+Math.min(50,level);}
   if(M.type==='polisi'){M.timer=60+Math.min(40,level);}
   if(M.type==='kawal'){
@@ -1361,8 +1363,8 @@ function updateMission(dt){
   }
   if(M.type==='spanduk'){
     const a=inZone(SPANDUK,0),b=inZone(SPANDUK,1);
-    if(a>b)M.a=Math.min(100,M.a+dt*(2.2+0.9*Math.min(a-b,4)));
-    else if(b>a)M.b=Math.min(100,M.b+dt*(2+0.8*Math.min(b-a,4))*(1+level*0.006));
+    if(a>b){const rate=dt*(2.2+0.9*Math.min(a-b,4));M.a=Math.min(100,M.a+rate);M.b=100-M.a;}
+    else if(b>a){const rate=dt*(2+0.8*Math.min(b-a,4))*(1+level*0.006);M.b=Math.min(100,M.b+rate);M.a=100-M.b;}
     zoneColor(a>b?0xffb627:b>a?0x6fb7ea:0xfff6e6);
     if(M.a>=100)finish(true,'Spanduk Bulungan Cup dikuasai SMEA 70.');
     else if(M.b>=100)finish(false,'SMA Seberang menguasai spanduk Bulungan Cup duluan.');
@@ -1394,14 +1396,14 @@ function updateMission(dt){
 }
 
 /* ================= HUD ================= */
-const $hpFill=$('#hpFill'),$hpTxt=$('#hpTxt'),$wTxt=$('#wTxt'),$usN=$('#usN'),$themN=$('#themN'),$usBar=$('#usBar'),$themBar=$('#themBar'),$combo=$('#combo'),$atk=$('#atkBtn'),$swap=$('#swapBtn'),$edge=$('#edge'),$misT=$('#misT'),$misV=$('#misV'),$misA=$('#misA'),$misB=$('#misB'),$misP=$('#misPanel'),$lv=$('#lvTxt');
+const $hpFill=$('#hpFill'),$hpTxt=$('#hpTxt'),$wTxt=$('#wTxt'),$usN=$('#usN'),$themN=$('#themN'),$usBar=$('#usBar'),$themBar=$('#themBar'),$combo=$('#combo'),$atk=$('#atkBtn'),$swap=$('#swapBtn'),$edge=$('#edge'),$misT=$('#misT'),$misV=$('#misV'),$misA=$('#misA'),$misB=$('#misB'),$misBarW=$('#misBarW'),$misP=$('#misPanel'),$lv=$('#lvTxt');
 let lastHud='';
 const fmt=s=>{s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
 function missionHud(){
   const t=M.type;let T=MIS[t].t,V='',A=0,B=0,danger=false;
   if(net){T='GERBANG '+(gate.hp>0?Math.ceil(gate.hp/gate.max*100)+'%':'RUBUH!');V='⏱ '+fmt(M.timer||0);A=gate.hp/gate.max;danger=gate.hp<gate.max*0.3||(M.timer||0)<30;return {T,V,A,B,danger};}
   if(t==='tawuran'||t==='hujan'){const fo=player?1-player.team:1;V=teamLeft(fo)+' musuh';A=1-teamLeft(fo)/START[fo];if(net)T='TAWURAN ONLINE';}
-  else if(t==='spanduk'){V=Math.floor(M.a)+'% vs '+Math.floor(M.b)+'%';A=M.a/100;B=M.b/100;danger=M.b>70;}
+  else if(t==='spanduk'){const ap=Math.round(M.a),bp=100-ap;V=ap+'% vs '+bp+'%';A=M.a/100;B=M.b/100;danger=M.b>70;}
   else if(t==='halte'){V=fmt(M.timer);A=1-M.timer/(70+Math.min(50,level));B=M.b/100;danger=M.b>60;}
   else if(t==='polisi'){if(M.phase==='escape'){T='KABUR KE GERBANG!';V=fmt(M.timer);A=M.timer/16;danger=true;}else{T='WITO DATANG';V=fmt(M.timer);A=1-M.timer/(60+Math.min(40,level));}}
   else if(t==='kawal'){const v=M.vip;V=v?'Nyawa Conge '+Math.max(0,Math.ceil(v.hp)):'';A=v?Math.min(1,Math.max(0,(4.4-v.pos.z)/18)):0;B=v?1-v.hp/v.maxHp:0;danger=v&&v.hp<v.maxHp*0.35;}
@@ -1428,6 +1430,7 @@ function hud(){
       else{$swap.innerHTML='BUANG<br><small>(E)</small>';}
     }
     if(chain>=2){$combo.innerHTML=chain+' HIT<small>beruntun</small>';$combo.style.opacity=1;}else $combo.style.opacity=0;
+    $misBarW.classList.toggle('tug',M.type==='spanduk');
     $misT.textContent=mh.T;$misV.textContent=mh.V;$misA.style.width=Math.max(0,Math.min(100,mh.A*100))+'%';$misB.style.width=Math.max(0,Math.min(100,mh.B*100))+'%';
     $misA.style.background=M.type==='bos'?'var(--red)':'';
     $misP.classList.toggle('danger',!!mh.danger);
