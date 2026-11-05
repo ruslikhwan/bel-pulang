@@ -2,7 +2,7 @@
 
 Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi). Jalan di browser HP, dimainkan landscape, tanpa instal.
 
-Main di: https://belpulang.netlify.app
+Main di: https://belpulang.netlify.app atau https://belpulang.win
 
 ## Mode
 
