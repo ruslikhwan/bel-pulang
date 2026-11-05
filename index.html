@@ -1431,11 +1431,17 @@ function press(a){if(mode!=='play'||!player||player.state==='down')return;
   if(net&&net.role==='client'){netAct(a);return;}
   if(a==='swap'){trySwap();return;}
   player.buf=a;player.bufT=0.28;}
-addEventListener('keydown',e=>{keys[e.code]=true;if(e.repeat)return;
+addEventListener('keydown',e=>{
+  if(e.target && (e.target.tagName==='INPUT' || e.target.tagName==='TEXTAREA' || e.target.isContentEditable)) return;
+  keys[e.code]=true;if(e.repeat)return;
   if(e.code==='KeyJ')press('atk');if(e.code==='KeyK')press('kick');if(e.code==='KeyE'||e.code==='KeyQ')press('swap');
   if(e.code==='Space'||e.code==='KeyL'){press('dodge');e.preventDefault();}
-  if(e.code==='Escape'||e.code==='KeyP'){mode==='play'?pause():mode==='paused'&&resume();}});
-addEventListener('keyup',e=>{keys[e.code]=false;});
+  if(e.code==='Escape'||e.code==='KeyP'){mode==='play'?pause():mode==='paused'&&resume();}
+});
+addEventListener('keyup',e=>{
+  if(e.target && (e.target.tagName==='INPUT' || e.target.tagName==='TEXTAREA' || e.target.isContentEditable)) return;
+  keys[e.code]=false;
+});
 document.querySelectorAll('.b').forEach(b=>{
   b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();b.classList.add('down');press(b.dataset.a);});
   const up=()=>b.classList.remove('down');b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);b.addEventListener('pointerleave',up);
