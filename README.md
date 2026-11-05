@@ -4,6 +4,15 @@ Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi
 
 Main di: https://belpulang.netlify.app atau https://belpulang.win
 
+## Stamina (v1.3)
+
+- Bar kuning di bawah bar darah, di HUD dan di atas kepala semua orang.
+- Tiap pukul, tendang, lempar, dan hindar makan stamina. Makin besar damage senjatanya, makin boros: tangan kosong 8, tendangan 14, katana 21, celurit 25, hindar 12.
+- Stamina pulih sendiri kalau berhenti menyerang sebentar, lebih cepat kalau diam. Kalau habis muncul tulisan CAPEK! dan tidak bisa menyerang, jadi harus mundur dulu.
+- Bot yang kehabisan stamina kabur menjauhi lawan sampai staminanya pulih.
+- Single player: stamina awal 100, naik +4 tiap level (Level 50 = 296) dan pulihnya makin cepat. Ada perk baru **Napas Panjang** (+20 stamina, pulih 15% lebih cepat).
+- Online: semua pemain stamina 100.
+
 ## Menu (v1.2)
 
 - Dibuka dengan layar Sporadis Games, lalu menu utama dengan latar anak-anak tawuran di depan SMEA 70.
@@ -37,13 +46,14 @@ Main di: https://belpulang.netlify.app atau https://belpulang.win
 | Joystick kiri | WASD / panah | Jalan |
 | SERANG | J | Pukul, ayun senjata, atau lempar. 3x pukul beruntun = pukulan atas |
 | TENDANG | K | Lawan terpental jauh |
-| HINDAR | Spasi | Lolos dari serangan |
+| HINDAR | Spasi | Lolos dari serangan (makan stamina) |
 | TUKAR | E | Tukar senjata dengan yang ada di tanah |
 
 ## Senjata
 
 | Senjata | Damage | Pakai |
 |---|---|---|
+| Tangan kosong | 10 | Stamina 8 per pukulan |
 | Batu | 14 | Lempar 3x |
 | Botol kaca | 24 | Lempar 2x |
 | Ikat pinggang | 17 | 12 ayunan |
