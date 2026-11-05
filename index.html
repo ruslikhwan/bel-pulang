@@ -191,6 +191,45 @@ button:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
 @keyframes rot{0%,25%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
 @media (orientation: portrait) and (pointer: coarse){ #rotate{display:flex} }
 @media (prefers-reduced-motion: reduce){ #rotate .ph{animation:none;transform:rotate(-90deg)} #misPanel.danger{animation:none;background:var(--red)} }
+
+/* === ACCOUNT & CHARACTER CREATOR STYLES === */
+.profile-card{background:rgba(255,255,255,0.85);border:2.5px solid var(--navy);border-radius:14px;padding:12px 14px;margin-bottom:12px;box-shadow:0 4px 0 var(--navy);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.profile-avatar-circle{width:42px;height:42px;border-radius:50%;background:var(--navy);color:var(--amber);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:20px;box-shadow:0 2px 0 rgba(0,0,0,0.2);flex-shrink:0}
+.profile-name-text{font-family:var(--display);font-size:16px;color:var(--navy);line-height:1.1;letter-spacing:0.02em}
+.profile-badge-text{font-size:11px;font-weight:800;color:#27ae60;letter-spacing:0.04em}
+.b-tiny{background:var(--navy);color:var(--cream);border:none;border-radius:6px;padding:5px 9px;font-size:11px;font-family:var(--display);cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.3);transition:transform 0.08s}
+.b-tiny:active{transform:translateY(2px);box-shadow:none}
+.b-tiny.alt{background:var(--cream);color:var(--navy);border:1.5px solid var(--navy)}
+.guest-choice-card{background:rgba(255,255,255,0.78);border:2.5px dashed var(--navy);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.guest-choice-title{font-family:var(--display);font-size:12px;letter-spacing:0.05em;color:var(--navy2);margin-bottom:10px;text-align:center}
+.creator-card{max-width:520px;max-height:92vh;overflow-y:auto;padding:16px}
+.creator-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.prof-tag{font-family:var(--display);background:var(--navy);color:var(--amber);font-size:11px;padding:4px 10px;border-radius:8px;border:1.5px solid var(--navy2)}
+.creator-stage{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,#cbe4ef 0%,#87b2c7 100%);border-radius:12px;border:2.5px solid var(--navy);box-shadow:inset 0 4px 12px rgba(0,0,0,0.12);margin:8px 0 14px;padding:6px;overflow:hidden}
+#creatorCanvas{display:block;border-radius:8px;cursor:grab;touch-action:none}
+#creatorCanvas:active{cursor:grabbing}
+.stage-controls{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:280px;padding:4px 8px}
+.btn-rot{background:var(--navy);color:var(--cream);font-family:var(--display);font-size:16px;border:none;border-radius:50%;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 rgba(0,0,0,0.3)}
+.btn-rot:active{transform:translateY(2px);box-shadow:none}
+.stage-hint{font-size:11px;font-weight:800;color:var(--navy2);letter-spacing:0.04em}
+.creator-opts{display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
+.opt-group{background:rgba(255,255,255,0.72);border:2px solid var(--navy);border-radius:10px;padding:10px 12px}
+.opt-label{font-family:var(--display);font-size:11px;letter-spacing:0.06em;color:var(--navy);display:block;margin-bottom:6px}
+.opt-sublabel{font-size:11px;font-weight:800;color:var(--navy2);display:block;margin-bottom:4px}
+.skin-palette,.hoodie-palette{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.color-swatch{width:32px;height:32px;border-radius:50%;border:2px solid var(--navy);cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.2);position:relative;transition:transform 0.1s}
+.color-swatch:active{transform:scale(0.92)}
+.color-swatch.active{transform:scale(1.18);outline:3px solid var(--amber);outline-offset:2px;box-shadow:0 4px 0 rgba(0,0,0,0.3)}
+.pill-btn-group{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px}
+.pill-btn{background:var(--cream);border:2px solid var(--navy);border-radius:8px;padding:7px 10px;font-family:var(--body);font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 3px 0 var(--navy);color:var(--navy);transition:all 0.08s;text-align:center}
+.pill-btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--navy)}
+.pill-btn.active{background:var(--navy);color:var(--cream);border-color:var(--navy)}
+.select-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:6px}
+.grid-btn{background:var(--cream);border:2px solid var(--navy);border-radius:8px;padding:8px 6px;font-family:var(--body);font-weight:700;font-size:12px;text-align:center;cursor:pointer;box-shadow:0 3px 0 var(--navy);color:var(--navy);transition:all 0.08s}
+.grid-btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--navy)}
+.grid-btn.active{background:var(--amber);color:var(--navy);font-weight:900;border-color:var(--navy)}
+.creator-actions{display:flex;flex-direction:column;gap:8px}
+
 </style>
 
 <div id="game"></div>
@@ -248,9 +287,145 @@ button:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
     <div class="wl" id="wList"></div>
     <p class="hint">Kendaraan tidak berhenti dan bikin damage besar. Senjata otomatis diambil saat tangan kosong. Di laptop: WASD jalan, J serang, K tendang, Spasi hindar, E/Q ganti atau buang senjata. Dekat gerbang ada Warung Minuman Gondrong untuk pulihkan darah.</p>
     <p class="hint" id="iosHint" hidden><b>Biar layar penuh di iPhone:</b> ketuk tombol Share di Safari, pilih <b>Add to Home Screen</b>, lalu buka game dari ikon Bel Pulang di layar utama.</p>
+        <!-- Profile & Account Section -->
+    <div id="profileSection" style="margin:12px 0 16px">
+      <!-- Active Profile View -->
+      <div id="activeProfBox" class="profile-card" hidden>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div id="profAvatarCircle" class="profile-avatar-circle">?</div>
+          <div>
+            <div id="profDisplayName" class="profile-name-text">Nama</div>
+            <div id="profLevelBadge" class="profile-badge-text">LEVEL 1 • PROFIL AKTIF</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button type="button" id="menuEditCharBtn" class="b-tiny" title="Kustom Model 3D">✏️ EDIT</button>
+          <button type="button" id="menuSwitchBtn" class="b-tiny alt" title="Ganti Profil / Logout">🔄 GANTI</button>
+        </div>
+      </div>
+
+      <!-- Guest / Choice View -->
+      <div id="guestChoiceBox" class="guest-choice-card">
+        <p class="guest-choice-title">👤 PILIH PROFIL / MODEL KARAKTER:</p>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button type="button" id="btnCreateProf" class="cta" style="background:#27ae60;font-size:14px;padding:11px">✨ BUAT PROFIL & KUSTOM MODEL</button>
+          <button type="button" id="btnLoadProf" class="cta alt" style="font-size:13px;padding:9px">🔑 MASUKKAN PIN (MUAT PROFIL)</button>
+          <button type="button" id="btnGuestPlay" class="b-tiny alt" style="background:none;border:none;box-shadow:none;text-decoration:underline;color:var(--navy2);padding:4px;font-size:12px;font-family:var(--body);font-weight:700">Atau main sebagai Karakter Default (Tamu)</button>
+        </div>
+      </div>
+    </div>
+
     <button class="cta" id="startBtn">MAIN LEVEL 1</button>
     <button class="cta" id="onlineBtn" style="background:var(--navy)">MAIN ONLINE · 50 VS 50</button>
     <button class="cta alt" id="resetBtn" hidden>ULANG DARI LEVEL 1</button>
+  </div>
+</div>
+
+
+<!-- Modal: Buat Profil / Masuk PIN -->
+<div class="ov" id="authOv" hidden>
+  <div class="card" style="max-width:390px">
+    <p class="kicker" id="authKicker">PROFIL & DATA TERSIMPAN</p>
+    <h2 class="title" id="authTitle" style="font-size:32px">BUAT PROFIL</h2>
+    <p class="story" id="authSub" style="margin-bottom:14px">Simpan model karakter kustom dan progres level kamu.</p>
+    
+    <label class="lbl2" for="authName">NAMA KARAKTER</label>
+    <input class="inp" id="authName" maxlength="14" autocomplete="off" placeholder="mis. Budi / Rusli">
+
+    <label class="lbl2" for="authPin" style="margin-top:12px">PIN 4 DIGIT</label>
+    <input class="inp" id="authPin" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" autocomplete="off" placeholder="4 digit angka (mis. 1234)">
+
+    <p id="authErr" style="color:var(--red);font-size:13px;font-weight:800;margin:10px 0 0" hidden></p>
+
+    <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+      <button type="button" class="cta" id="authSubmitBtn">LANJUT</button>
+      <button type="button" class="cta alt" id="authCancelBtn">BATAL</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: 3D Character Studio -->
+<div class="ov" id="creatorOv" hidden>
+  <div class="card creator-card">
+    <div class="creator-header">
+      <div>
+        <p class="kicker">KUSTOMISASI MODEL 3D</p>
+        <h2 class="title" style="font-size:32px">STUDIO KARAKTER</h2>
+      </div>
+      <span class="prof-tag" id="crProfTag">Budi</span>
+    </div>
+
+    <!-- 3D Preview Stage -->
+    <div class="creator-stage">
+      <canvas id="creatorCanvas" width="280" height="290"></canvas>
+      <div class="stage-controls">
+        <button type="button" class="btn-rot" id="rotLeftBtn" title="Putar Kiri">⟲</button>
+        <span class="stage-hint">Geser untuk memutar</span>
+        <button type="button" class="btn-rot" id="rotRightBtn" title="Putar Kanan">⟳</button>
+      </div>
+    </div>
+
+    <!-- Customization Options -->
+    <div class="creator-opts">
+      <!-- 1. Warna Kulit -->
+      <div class="opt-group">
+        <label class="opt-label">WARNA KULIT</label>
+        <div class="skin-palette" id="skinPalette"></div>
+      </div>
+
+      <!-- 2. Bentuk Tubuh -->
+      <div class="opt-group">
+        <label class="opt-label">BENTUK TUBUH</label>
+        <div class="pill-btn-group" id="buildGroup">
+          <button type="button" class="pill-btn" data-val="slim">Ramping</button>
+          <button type="button" class="pill-btn active" data-val="normal">Standar</button>
+          <button type="button" class="pill-btn" data-val="buff">Kekar</button>
+        </div>
+      </div>
+
+      <!-- 3. Pakaian (Outfit) -->
+      <div class="opt-group">
+        <label class="opt-label">PAKAIAN (OUTFIT)</label>
+        <div class="pill-btn-group" id="outfitGroup">
+          <button type="button" class="pill-btn active" data-val="uniform">Seragam SMA 70</button>
+          <button type="button" class="pill-btn" data-val="hoodie">Hoodie</button>
+        </div>
+        <!-- Hoodie Color Sub-palette -->
+        <div id="hoodieColorSection" hidden style="margin-top:10px">
+          <label class="opt-sublabel">WARNA HOODIE</label>
+          <div class="hoodie-palette" id="hoodiePalette"></div>
+        </div>
+      </div>
+
+      <!-- 4. Topi & Aksesoris Kepala -->
+      <div class="opt-group">
+        <label class="opt-label">TOPI & KEPALA</label>
+        <div class="select-grid" id="hatGroup">
+          <button type="button" class="grid-btn active" data-val="none">Tanpa Topi</button>
+          <button type="button" class="grid-btn" data-val="cap_sma">Topi SMA 70</button>
+          <button type="button" class="grid-btn" data-val="beanie">Kupluk / Beanie</button>
+          <button type="button" class="grid-btn" data-val="peci">Peci Hitam</button>
+          <button type="button" class="grid-btn" data-val="bandana">Ikat Kepala</button>
+        </div>
+      </div>
+
+      <!-- 5. Kacamata -->
+      <div class="opt-group">
+        <label class="opt-label">KACAMATA</label>
+        <div class="select-grid" id="glassesGroup">
+          <button type="button" class="grid-btn active" data-val="none">Tanpa Kacamata</button>
+          <button type="button" class="grid-btn" data-val="classic">Kacamata Kotak</button>
+          <button type="button" class="grid-btn" data-val="sun">Kacamata Hitam</button>
+          <button type="button" class="grid-btn" data-val="round">Kacamata Bulat</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="creator-actions">
+      <button type="button" class="cta" id="crSavePlayBtn" style="background:#27ae60">SIMPAN & MAIN</button>
+      <button type="button" class="cta alt" id="crCancelBtn">KEMBALI KE MENU</button>
+    </div>
   </div>
 </div>
 
@@ -321,7 +496,376 @@ button:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js">
+/* ================= CHARACTER STUDIO & ACCOUNT CONTROLLER ================= */
+let crScene = null, crCamera = null, crRenderer = null, crCharGroup = null, crCharData = null;
+let crRotation = 0, crTime = 0;
+let crIsDragging = false, crDragStartX = 0, crDragStartRot = 0;
+let authMode = 'create'; // 'create' or 'login'
+
+function initPalettes(){
+  const sPal = $('#skinPalette');
+  if(sPal && !sPal.children.length){
+    SKIN_TONES.forEach((st, idx) => {
+      const sw = document.createElement('div');
+      sw.className = 'color-swatch' + (idx === 2 ? ' active' : '');
+      sw.style.background = st.css;
+      sw.title = st.name;
+      sw.dataset.hex = st.hex;
+      sw.addEventListener('click', () => {
+        sPal.querySelectorAll('.color-swatch').forEach(el => el.classList.remove('active'));
+        sw.classList.add('active');
+        tempAppearance.skin = st.hex;
+        updateCreatorModel();
+      });
+      sPal.appendChild(sw);
+    });
+  }
+
+  const hPal = $('#hoodiePalette');
+  if(hPal && !hPal.children.length){
+    HOODIE_COLORS.forEach((hc, idx) => {
+      const sw = document.createElement('div');
+      sw.className = 'color-swatch' + (idx === 0 ? ' active' : '');
+      sw.style.background = hc.css;
+      sw.title = hc.name;
+      sw.dataset.hex = hc.hex;
+      sw.addEventListener('click', () => {
+        hPal.querySelectorAll('.color-swatch').forEach(el => el.classList.remove('active'));
+        sw.classList.add('active');
+        tempAppearance.hoodieColor = hc.hex;
+        updateCreatorModel();
+      });
+      hPal.appendChild(sw);
+    });
+  }
+}
+
+function initCreatorPreview(){
+  if(crRenderer) return;
+  const canvas = document.getElementById('creatorCanvas');
+  if(!canvas) return;
+
+  crScene = new THREE.Scene();
+  crCamera = new THREE.PerspectiveCamera(38, canvas.width / canvas.height, 0.1, 50);
+  crCamera.position.set(0, 1.45, 4.3);
+  crCamera.lookAt(0, 1.32, 0);
+
+  crRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+  crRenderer.setSize(canvas.width, canvas.height);
+  crRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+  // Studio lighting
+  const amb = new THREE.AmbientLight(0xffffff, 0.85);
+  crScene.add(amb);
+  const dir = new THREE.DirectionalLight(0xfff7ea, 1.25);
+  dir.position.set(2, 4, 3.5);
+  crScene.add(dir);
+  const rim = new THREE.DirectionalLight(0x8cc8ee, 0.65);
+  rim.position.set(-2, 3, -3);
+  crScene.add(rim);
+
+  // Soft shadow ground disc
+  const disc = new THREE.Mesh(
+    new THREE.CircleGeometry(0.85, 36),
+    new THREE.MeshBasicMaterial({ color: 0x1d2340, transparent: true, opacity: 0.18 })
+  );
+  disc.rotation.x = -Math.PI / 2;
+  disc.position.y = 0.01;
+  crScene.add(disc);
+
+  crCharGroup = new THREE.Group();
+  crScene.add(crCharGroup);
+
+  // Drag interaction to rotate character
+  canvas.addEventListener('mousedown', e => {
+    crIsDragging = true;
+    crDragStartX = e.clientX;
+    crDragStartRot = crRotation;
+  });
+  window.addEventListener('mousemove', e => {
+    if(!crIsDragging) return;
+    const dx = e.clientX - crDragStartX;
+    crRotation = crDragStartRot + dx * 0.018;
+  });
+  window.addEventListener('mouseup', () => { crIsDragging = false; });
+
+  canvas.addEventListener('touchstart', e => {
+    if(!e.touches.length) return;
+    crIsDragging = true;
+    crDragStartX = e.touches[0].clientX;
+    crDragStartRot = crRotation;
+  }, { passive: true });
+  window.addEventListener('touchmove', e => {
+    if(!crIsDragging || !e.touches.length) return;
+    const dx = e.touches[0].clientX - crDragStartX;
+    crRotation = crDragStartRot + dx * 0.018;
+  }, { passive: true });
+  window.addEventListener('touchend', () => { crIsDragging = false; });
+}
+
+function updateCreatorModel(){
+  if(!crCharGroup) return;
+  while(crCharGroup.children.length > 0){
+    const obj = crCharGroup.children[0];
+    crCharGroup.remove(obj);
+    if(obj.traverse){
+      obj.traverse(c => {
+        if(c.geometry && c.geometry.dispose) c.geometry.dispose();
+      });
+    }
+  }
+  const charObj = makeChar(Object.assign({ isCustom: true }, tempAppearance));
+  crCharData = charObj;
+  crCharGroup.add(charObj.group);
+}
+
+function creatorLoop(){
+  if($('#creatorOv').hidden) return;
+  requestAnimationFrame(creatorLoop);
+  crTime += 0.035;
+  if(crCharGroup){
+    crCharGroup.rotation.y = crRotation;
+    if(crCharData && crCharData.rig){
+      crCharData.rig.position.y = Math.sin(crTime * 2.2) * 0.015;
+    }
+  }
+  if(crRenderer && crScene && crCamera){
+    crRenderer.render(crScene, crCamera);
+  }
+}
+
+function syncCreatorUIWithTemp(){
+  initPalettes();
+  // Skin palette
+  const sPal = $('#skinPalette');
+  if(sPal){
+    sPal.querySelectorAll('.color-swatch').forEach(sw => {
+      sw.classList.toggle('active', parseInt(sw.dataset.hex) === tempAppearance.skin);
+    });
+  }
+  // Build
+  $('#buildGroup').querySelectorAll('.pill-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.val === tempAppearance.build);
+  });
+  // Outfit
+  $('#outfitGroup').querySelectorAll('.pill-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.val === tempAppearance.outfit);
+  });
+  $('#hoodieColorSection').hidden = (tempAppearance.outfit !== 'hoodie');
+  // Hoodie palette
+  const hPal = $('#hoodiePalette');
+  if(hPal){
+    hPal.querySelectorAll('.color-swatch').forEach(sw => {
+      sw.classList.toggle('active', parseInt(sw.dataset.hex) === tempAppearance.hoodieColor);
+    });
+  }
+  // Hat
+  $('#hatGroup').querySelectorAll('.grid-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.val === tempAppearance.hat);
+  });
+  // Glasses
+  $('#glassesGroup').querySelectorAll('.grid-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.val === tempAppearance.glasses);
+  });
+  // Prof tag
+  if($('#crProfTag')){
+    $('#crProfTag').textContent = activeProfile ? activeProfile.name : 'Model Kustom';
+  }
+}
+
+function openCharacterCreator(){
+  $('#menu').hidden = true;
+  $('#creatorOv').hidden = false;
+  if(activeProfile && activeProfile.appearance){
+    tempAppearance = Object.assign({}, activeProfile.appearance);
+  }
+  syncCreatorUIWithTemp();
+  initCreatorPreview();
+  updateCreatorModel();
+  requestAnimationFrame(creatorLoop);
+}
+
+function closeCharacterCreator(){
+  $('#creatorOv').hidden = true;
+  showMenu();
+}
+
+// Attach UI Event Listeners for Character Studio
+$('#rotLeftBtn').addEventListener('click', () => { crRotation += 0.5; });
+$('#rotRightBtn').addEventListener('click', () => { crRotation -= 0.5; });
+
+$('#buildGroup').addEventListener('click', e => {
+  const btn = e.target.closest('.pill-btn');
+  if(!btn) return;
+  $('#buildGroup').querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  tempAppearance.build = btn.dataset.val;
+  updateCreatorModel();
+});
+
+$('#outfitGroup').addEventListener('click', e => {
+  const btn = e.target.closest('.pill-btn');
+  if(!btn) return;
+  $('#outfitGroup').querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  tempAppearance.outfit = btn.dataset.val;
+  $('#hoodieColorSection').hidden = (tempAppearance.outfit !== 'hoodie');
+  updateCreatorModel();
+});
+
+$('#hatGroup').addEventListener('click', e => {
+  const btn = e.target.closest('.grid-btn');
+  if(!btn) return;
+  $('#hatGroup').querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  tempAppearance.hat = btn.dataset.val;
+  updateCreatorModel();
+});
+
+$('#glassesGroup').addEventListener('click', e => {
+  const btn = e.target.closest('.grid-btn');
+  if(!btn) return;
+  $('#glassesGroup').querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  tempAppearance.glasses = btn.dataset.val;
+  updateCreatorModel();
+});
+
+$('#crSavePlayBtn').addEventListener('click', () => {
+  if(activeProfile){
+    activeProfile.appearance = Object.assign({}, tempAppearance);
+    writeSave();
+  }
+  $('#creatorOv').hidden = true;
+  startLevel();
+});
+
+$('#crCancelBtn').addEventListener('click', () => {
+  if(activeProfile){
+    activeProfile.appearance = Object.assign({}, tempAppearance);
+    writeSave();
+  }
+  closeCharacterCreator();
+});
+
+// Profile & Auth Modal Handlers
+function openAuthModal(mode){
+  authMode = mode;
+  $('#authErr').hidden = true;
+  $('#authErr').textContent = '';
+  $('#authName').value = '';
+  $('#authPin').value = '';
+  
+  if(mode === 'create'){
+    $('#authTitle').textContent = 'BUAT PROFIL BARU';
+    $('#authSub').textContent = 'Simpan model karakter 3D kustom dan level progres kamu.';
+    $('#authSubmitBtn').textContent = 'LANJUT KE KUSTOMISASI ➔';
+  } else {
+    $('#authTitle').textContent = 'MASUK KE PROFIL';
+    $('#authSub').textContent = 'Masukkan nama dan 4 digit PIN kamu untuk memuat profil dan level tersimpan.';
+    $('#authSubmitBtn').textContent = 'MASUK & MUAT PROFIL';
+  }
+  $('#authOv').hidden = false;
+  setTimeout(() => { $('#authName').focus(); }, 100);
+}
+
+$('#btnCreateProf').addEventListener('click', () => openAuthModal('create'));
+$('#btnLoadProf').addEventListener('click', () => openAuthModal('login'));
+
+$('#btnGuestPlay').addEventListener('click', () => {
+  setActiveProfileId(null);
+  activeProfile = null;
+  loadSave();
+  updateProfileUI();
+  $('#guestChoiceBox').hidden = true;
+});
+
+$('#menuEditCharBtn').addEventListener('click', () => {
+  openCharacterCreator();
+});
+
+$('#menuSwitchBtn').addEventListener('click', () => {
+  setActiveProfileId(null);
+  activeProfile = null;
+  loadSave();
+  updateProfileUI();
+});
+
+$('#authCancelBtn').addEventListener('click', () => {
+  $('#authOv').hidden = true;
+});
+
+$('#authSubmitBtn').addEventListener('click', () => {
+  const name = $('#authName').value.trim();
+  const pin = $('#authPin').value.trim();
+  const errEl = $('#authErr');
+  errEl.hidden = true;
+
+  if(!name || name.length < 2){
+    errEl.textContent = 'Nama harus minimal 2 karakter.';
+    errEl.hidden = false;
+    return;
+  }
+  if(!/^[0-9]{4}$/.test(pin)){
+    errEl.textContent = 'PIN harus berupa 4 digit angka.';
+    errEl.hidden = false;
+    return;
+  }
+
+  const id = name.toLowerCase();
+  const accs = getAccounts();
+
+  if(authMode === 'create'){
+    if(accs[id]){
+      errEl.textContent = 'Nama "' + name + '" sudah terdaftar! Pilih MASUKKAN PIN atau pakai nama lain.';
+      errEl.hidden = false;
+      return;
+    }
+    const newProf = {
+      id: id,
+      name: name,
+      pin: pin,
+      level: 1,
+      perks: {},
+      appearance: Object.assign({}, tempAppearance),
+      createdAt: Date.now()
+    };
+    accs[id] = newProf;
+    saveAccounts(accs);
+    setActiveProfileId(id);
+    activeProfile = newProf;
+    level = 1; perks = {};
+    writeSave();
+    $('#authOv').hidden = true;
+    openCharacterCreator();
+  } else {
+    // Login / Load mode
+    if(!accs[id]){
+      errEl.textContent = 'Profil "' + name + '" belum terdaftar. Silakan buat profil baru.';
+      errEl.hidden = false;
+      return;
+    }
+    if(accs[id].pin !== pin){
+      errEl.textContent = 'PIN salah! Coba ingat kembali 4 digit PIN kamu.';
+      errEl.hidden = false;
+      return;
+    }
+    setActiveProfileId(id);
+    activeProfile = accs[id];
+    level = Math.min(50, Math.max(1, (activeProfile.level || 1)|0));
+    perks = activeProfile.perks || {};
+    writeSave();
+    $('#authOv').hidden = true;
+    updateProfileUI();
+    popup('Selamat datang kembali, ' + activeProfile.name + '!', {x:0, y:2, z:0}, 2.5, 'info');
+  }
+});
+
+// Initialize on script execution
+initPalettes();
+
+</script>
 <script>
 (function(){
 "use strict";
@@ -787,24 +1331,120 @@ const LOOK=[
 ];
 function makeChar(c){
   const g=new THREE.Group(), rig=new THREE.Group();g.add(rig);
-  const mats=[];const M=col=>{const m=lam(col);mats.push(m);return m;};
-  const skin=M(c.skin), shirt=M(c.shirt), pants=M(c.pants), hair=M(c.hair), shoe=M(0x1d1d1d);
-  const top=c.vest?M(c.vest):shirt;
+  const mats=[];const M=(col,opt)=>{const m=lam(col,opt);mats.push(m);return m;};
+  
+  const skinCol = c.skin || pick(SKINS);
+  const hairCol = c.hair || pick(HAIRS);
+  const skin = M(skinCol), hair = M(hairCol), shoe = M(0x1d1d1d);
+  
+  const isHoodie = c.outfit === 'hoodie';
+  const hoodieCol = c.hoodieColor || 0x1e1e24;
+  const shirtCol = isHoodie ? hoodieCol : (c.shirt || 0xf7f7f5);
+  const pantsCol = isHoodie ? 0x2b2d42 : (c.pants || 0x80858e);
+  
+  const shirt = M(shirtCol), pants = M(pantsCol);
+  const top = c.vest ? M(c.vest) : shirt;
   const bx=(w,h,d,m)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);b.castShadow=true;return b;};
-  const leg=x=>{const p=new THREE.Group();p.position.set(x,0.85,0);const l=bx(0.25,0.72,0.27,pants);l.position.y=-0.36;p.add(l);const s=bx(0.27,0.14,0.36,shoe);s.position.set(0,-0.78,0.05);p.add(s);rig.add(p);return p;};
-  const legL=leg(-0.15), legR=leg(0.15);
-  const torso=bx(0.62,0.66,0.36,top);torso.position.y=1.18;rig.add(torso);
+  
+  // Body build scale factors
+  let torsoW = 0.62, torsoD = 0.36, armThick = 1.0, armOffset = 0.42, legThick = 1.0, legSpacing = 0.15;
+  if(c.build === 'slim'){
+    torsoW = 0.54; torsoD = 0.32; armThick = 0.86; armOffset = 0.37; legThick = 0.88; legSpacing = 0.13;
+  } else if(c.build === 'buff'){
+    torsoW = 0.74; torsoD = 0.42; armThick = 1.22; armOffset = 0.49; legThick = 1.18; legSpacing = 0.17;
+  }
+  
+  // Legs
+  const leg=x=>{
+    const p=new THREE.Group();p.position.set(x,0.85,0);
+    const l=bx(0.25*legThick,0.72,0.27*legThick,pants);l.position.y=-0.36;p.add(l);
+    const s=bx(0.27*legThick,0.14,0.36*legThick,shoe);s.position.set(0,-0.78,0.05);p.add(s);
+    rig.add(p);return p;
+  };
+  const legL=leg(-legSpacing), legR=leg(legSpacing);
+  
+  // Torso
+  const torso=bx(torsoW,0.66,torsoD,top);torso.position.y=1.18;rig.add(torso);
   if(c.vest){const st=bx(0.2,0.62,0.02,shirt);st.position.set(0,1.18,0.185);rig.add(st);}
-  const belt=bx(0.64,0.08,0.38,M(0x262626));belt.position.y=0.86;rig.add(belt);
-  const arm=x=>{const p=new THREE.Group();p.position.set(x,1.46,0);const a=bx(0.2,0.3,0.22,top);a.position.y=-0.15;p.add(a);const fa=bx(0.17,0.26,0.19,skin);fa.position.y=-0.42;p.add(fa);const h=bx(0.19,0.18,0.21,skin);h.position.y=-0.62;p.add(h);rig.add(p);return p;};
-  const armL=arm(-0.42), armR=arm(0.42);
+  
+  // If Hoodie: Kangaroo pocket + back hood drape + drawstrings
+  if(isHoodie){
+    const pocket=bx(torsoW*0.68,0.22,0.06,shirt);pocket.position.set(0,1.04,torsoD*0.5+0.02);rig.add(pocket);
+    const hoodDrape=bx(torsoW*0.72,0.26,0.16,shirt);hoodDrape.position.set(0,1.48,-torsoD*0.5-0.06);hoodDrape.rotation.x=0.15;rig.add(hoodDrape);
+    [-0.07,0.07].forEach(dx=>{const str=bx(0.02,0.18,0.02,M(0xf5f5f5));str.position.set(dx,1.34,torsoD*0.5+0.02);rig.add(str);});
+  } else if(!c.vest && c.isCustom){
+    const badge=bx(0.10,0.12,0.02,M(0xd7263d));badge.position.set(-0.16,1.26,torsoD*0.5+0.01);rig.add(badge);
+  }
+  
+  // Belt
+  const belt=bx(torsoW+0.02,0.08,torsoD+0.02,M(0x262626));belt.position.y=0.86;rig.add(belt);
+  
+  // Arms
+  const arm=x=>{
+    const p=new THREE.Group();p.position.set(x,1.46,0);
+    const upperMat = top;
+    const lowerMat = isHoodie ? top : skin;
+    const a=bx(0.2*armThick,0.3,0.22*armThick,upperMat);a.position.y=-0.15;p.add(a);
+    const fa=bx(0.17*armThick,0.26,0.19*armThick,lowerMat);fa.position.y=-0.42;p.add(fa);
+    const h=bx(0.19*armThick,0.18,0.21*armThick,skin);h.position.y=-0.62;p.add(h);
+    rig.add(p);return p;
+  };
+  const armL=arm(-armOffset), armR=arm(armOffset);
+  
+  // Head
   const head=bx(0.42,0.42,0.42,skin);head.position.y=1.76;rig.add(head);
-  const hr=bx(0.46,0.14,0.46,hair);hr.position.y=2.0;rig.add(hr);
-  const hb=bx(0.46,0.22,0.1,hair);hb.position.set(0,1.88,-0.19);rig.add(hb);
+  
+  // Hair (if not covered by full beanie/peci)
+  if(c.hat !== 'peci' && c.hat !== 'beanie'){
+    const hr=bx(0.46,0.14,0.46,hair);hr.position.y=2.0;rig.add(hr);
+    const hb=bx(0.46,0.22,0.1,hair);hb.position.set(0,1.88,-0.19);rig.add(hb);
+  }
+  
+  // Eyes
   const eyeM=M(0x111111);
   [-0.09,0.09].forEach(x=>{const e=new THREE.Mesh(new THREE.BoxGeometry(0.06,0.07,0.02),eyeM);e.position.set(x,1.8,0.215);rig.add(e);});
-  if(c.band){const b=bx(0.47,0.07,0.47,M(c.band));b.position.y=1.93;rig.add(b);}
+  
+  // Hats / Headwear
+  if(c.hat === 'cap_sma'){
+    const capMat = M(0x2b3463);
+    const cap=bx(0.48,0.18,0.48,capMat);cap.position.y=2.05;rig.add(cap);
+    const brim=bx(0.44,0.04,0.24,capMat);brim.position.set(0,1.96,0.32);brim.rotation.x=0.12;rig.add(brim);
+    const emb=bx(0.20,0.11,0.02,M(0xffffff));emb.position.set(0,2.05,0.245);rig.add(emb);
+  } else if(c.hat === 'beanie'){
+    const bCol = c.hoodieColor || 0xd7263d;
+    const beanie=bx(0.48,0.26,0.48,M(bCol));beanie.position.y=2.07;rig.add(beanie);
+    const cuff=bx(0.50,0.10,0.50,M(0x1d2340));cuff.position.y=1.93;rig.add(cuff);
+  } else if(c.hat === 'peci'){
+    const peci=bx(0.46,0.24,0.46,M(0x141414));peci.position.y=2.06;rig.add(peci);
+  } else if(c.hat === 'bandana' || c.band){
+    const bandCol = c.band || 0xd7263d;
+    const b=bx(0.47,0.08,0.47,M(bandCol));b.position.y=1.94;rig.add(b);
+    const knot=bx(0.12,0.18,0.04,M(0xffffff));knot.position.set(0,1.88,-0.25);knot.rotation.z=0.18;rig.add(knot);
+  }
+  
   if(c.bandage){const b=bx(0.47,0.12,0.47,M(0xfafafa));b.position.y=1.72;b.rotation.z=0.2;rig.add(b);}
+  
+  // Glasses / Eyewear
+  if(c.glasses === 'classic'){
+    const gMat = M(0x181818);
+    [-0.10,0.10].forEach(x=>{
+      const frame=bx(0.13,0.10,0.03,gMat);frame.position.set(x,1.8,0.23);rig.add(frame);
+      const lens=bx(0.10,0.07,0.01,M(0xa8d0e6,{transparent:true,opacity:0.42}));lens.position.set(x,1.8,0.236);rig.add(lens);
+    });
+    const bridge=bx(0.08,0.025,0.03,gMat);bridge.position.set(0,1.8,0.23);rig.add(bridge);
+  } else if(c.glasses === 'sun'){
+    const sgMat = M(0x0a0a0f);
+    const sg=bx(0.38,0.11,0.04,sgMat);sg.position.set(0,1.8,0.23);rig.add(sg);
+    const topBar=bx(0.40,0.02,0.04,M(0x222222));topBar.position.set(0,1.86,0.235);rig.add(topBar);
+  } else if(c.glasses === 'round'){
+    const goldMat = M(0xd4af37);
+    [-0.10,0.10].forEach(x=>{
+      const ring=new THREE.Mesh(new THREE.RingGeometry(0.045,0.065,16),goldMat);
+      ring.position.set(x,1.8,0.235);rig.add(ring);
+    });
+    const bridge=bx(0.07,0.02,0.02,goldMat);bridge.position.set(0,1.8,0.235);rig.add(bridge);
+  }
+  
   return {group:g,rig,legL,legR,armL,armR,mats};
 }
 
@@ -878,11 +1518,114 @@ const PERKS=[
   {k:'kebal',t:'Kulit Tebal',d:'Damage dari kendaraan -20%',max:3}
 ];
 const SAVE_KEY='belpulang-save-v1';
+const ACCOUNTS_KEY='belpulang_accounts_v2';
+const ACTIVE_PROFILE_KEY='belpulang_active_profile_v2';
+
+const SKIN_TONES = [
+  { name: 'Cerah', hex: 0xf3c49f, css: '#f3c49f' },
+  { name: 'Kuning Langsat', hex: 0xe5b083, css: '#e5b083' },
+  { name: 'Sawo Matang', hex: 0xc68e5f, css: '#c68e5f' },
+  { name: 'Alami', hex: 0xb98058, css: '#b98058' },
+  { name: 'Eksotis', hex: 0xa86f48, css: '#a86f48' },
+  { name: 'Gelap', hex: 0x7a4b2a, css: '#7a4b2a' }
+];
+
+const HOODIE_COLORS = [
+  { name: 'Hitam', hex: 0x1e1e24, css: '#1e1e24' },
+  { name: 'Abu-abu', hex: 0x6c757d, css: '#6c757d' },
+  { name: 'Maroon', hex: 0x800e13, css: '#800e13' },
+  { name: 'Navy', hex: 0x14213d, css: '#14213d' },
+  { name: 'Hijau Army', hex: 0x2d4a22, css: '#2d4a22' },
+  { name: 'Mustard', hex: 0xd48b28, css: '#d48b28' },
+  { name: 'Putih', hex: 0xf0f0f2, css: '#f0f0f2' },
+  { name: 'Moka', hex: 0x583101, css: '#583101' }
+];
+
+let activeProfile = null;
+let tempAppearance = {
+  skin: 0xc68e5f,
+  build: 'normal',
+  outfit: 'uniform',
+  hoodieColor: 0x1e1e24,
+  hat: 'none',
+  glasses: 'none'
+};
+
+function getAccounts(){
+  try{ return JSON.parse(localStorage.getItem(ACCOUNTS_KEY) || '{}'); }catch(e){ return {}; }
+}
+function saveAccounts(accs){
+  try{ localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accs)); }catch(e){}
+}
+function getActiveProfileId(){
+  try{ return localStorage.getItem(ACTIVE_PROFILE_KEY) || null; }catch(e){ return null; }
+}
+function setActiveProfileId(id){
+  try{
+    if(id) localStorage.setItem(ACTIVE_PROFILE_KEY, id);
+    else localStorage.removeItem(ACTIVE_PROFILE_KEY);
+  }catch(e){}
+}
+
 let level=1, perks={};
 let net=null;
 const P=k=>net?0:(perks[k]||0);
-function loadSave(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(s&&s.level){level=Math.min(50,Math.max(1,s.level|0));perks=s.perks||{};}}catch(e){}}
-function writeSave(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({level,perks}));}catch(e){}}
+
+function loadSave(){
+  try{
+    const activeId = getActiveProfileId();
+    const accs = getAccounts();
+    if(activeId && accs[activeId]){
+      activeProfile = accs[activeId];
+      level = Math.min(50, Math.max(1, (activeProfile.level || 1)|0));
+      perks = activeProfile.perks || {};
+      if(!activeProfile.appearance) activeProfile.appearance = Object.assign({}, tempAppearance);
+    } else {
+      activeProfile = null;
+      const s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+      if(s && s.level){
+        level = Math.min(50, Math.max(1, s.level|0));
+        perks = s.perks || {};
+      }
+    }
+  }catch(e){}
+}
+
+function writeSave(){
+  try{
+    if(activeProfile){
+      activeProfile.level = level;
+      activeProfile.perks = perks;
+      activeProfile.updatedAt = Date.now();
+      const accs = getAccounts();
+      accs[activeProfile.id] = activeProfile;
+      saveAccounts(accs);
+    }
+    localStorage.setItem(SAVE_KEY, JSON.stringify({level, perks}));
+  }catch(e){}
+}
+
+function updateProfileUI(){
+  const activeProfBox = $('#activeProfBox');
+  const guestChoiceBox = $('#guestChoiceBox');
+  if(activeProfile){
+    if(activeProfBox) activeProfBox.hidden = false;
+    if(guestChoiceBox) guestChoiceBox.hidden = true;
+    const nameEl = $('#profDisplayName');
+    if(nameEl) nameEl.textContent = activeProfile.name;
+    const badgeEl = $('#profLevelBadge');
+    if(badgeEl) badgeEl.textContent = 'LEVEL ' + (activeProfile.level || 1) + ' • PROFIL AKTIF';
+    const av = $('#profAvatarCircle');
+    if(av) av.textContent = (activeProfile.name || '?')[0].toUpperCase();
+    $('#startBtn').textContent = (level > 1 ? 'LANJUT LEVEL ' + level : 'MAIN LEVEL 1') + ' (' + activeProfile.name + ')';
+  } else {
+    if(activeProfBox) activeProfBox.hidden = true;
+    if(guestChoiceBox) guestChoiceBox.hidden = false;
+    $('#startBtn').textContent = level > 1 ? 'LANJUT LEVEL ' + level : 'MAIN LEVEL 1 (TAMU)';
+  }
+  const c = levelCfg(level);
+  $('#menuLv').textContent = 'LEVEL ' + level + ' DARI 50 • ' + (c.boss ? 'BOS ' + c.boss : MIS[c.mission].t);
+}
 
 /* ================= state ================= */
 let uid=0, mode='menu', player=null, fighters=[], parts=[], ground=[], projs=[], cars=[], pops=[];
@@ -892,9 +1635,19 @@ let freeze=0, shake=0, chain=0, bestChain=0, chainT=0, myKO=0, carKO=0, pendingE
 
 function makeFighter(team,isPlayer,opt){
   opt=opt||{};
-  const look=LOOK[team]();if(isPlayer)look.band=0xd7263d;
-  if(opt.boss){look.vest=0x1d1d1f;look.band=0xffd23f;}
-  if(opt.vip){look.bandage=true;}
+  let look;
+  if(isPlayer){
+    if(activeProfile && activeProfile.appearance){
+      look=Object.assign({isCustom:true}, activeProfile.appearance);
+    } else {
+      look=LOOK[0]();
+      look.band=0xd7263d;
+    }
+  } else {
+    look=LOOK[team]();
+    if(opt.boss){look.vest=0x1d1d1f;look.band=0xffd23f;}
+    if(opt.vip){look.bandage=true;}
+  }
   const r=makeChar(look);scene.add(r.group);
   const sc=opt.boss?1.5:(isPlayer?1:rand(0.95,1.06));r.group.scale.setScalar(sc);
   const f={team,isPlayer,r,sc,pos:r.group.position,kv:new V3(),face:0,state:'idle',t:0,hp:100,maxHp:100,dmgMul:1,spd:4.1,kbMul:1,reach:1,
@@ -1839,7 +2592,7 @@ function startLevel(){
   dropGround('batu',3,5,-9.2);dropGround(pickWeaponType(),0,8,4.6);
   camPos.set(4,16,22);
   ['#menu','#endOv','#pauseOv','#perkOv'].forEach(s=>$(s).hidden=true);$('#hud').hidden=false;$('#controls').hidden=false;
-  $lv.textContent='KAMU · LV '+level;$('#restartBtn').hidden=false;
+  $lv.textContent = (activeProfile ? activeProfile.name.toUpperCase() + ' • LV ' : 'KAMU • LV ') + level;$('#restartBtn').hidden=false;
   mode='play';
   const mis=MIS[cfg.mission];
   banner(cfg.mission==='bos'?'LEVEL '+level:mis.t,cfg.mission==='bos'?'Bos datang sebentar lagi. Bersiap!':mis.d,2600,'LEVEL '+level+' DARI 50');sfx('bell');
@@ -1889,9 +2642,10 @@ function showPerks(){
 function perkSummary(){const owned=PERKS.filter(p=>P(p.k));return owned.length?'Perk: '+owned.map(p=>p.t+(P(p.k)>1?' ×'+P(p.k):'')).join(', '):'';}
 function showMenu(){
   mode='menu';
-  ['#endOv','#pauseOv','#perkOv','#lobbyOv'].forEach(s=>$(s).hidden=true);$('#hud').hidden=true;$('#controls').hidden=true;$('#edge').style.opacity=0;
+  ['#endOv','#pauseOv','#perkOv','#lobbyOv','#creatorOv','#authOv'].forEach(s=>$(s).hidden=true);$('#hud').hidden=true;$('#controls').hidden=true;$('#edge').style.opacity=0;
   clearAll();player=null;gateReset(false);$('#foeName').textContent='SMA SEBERANG';
   const c=levelCfg(level);
+  updateProfileUI();
   $('#menuLv').textContent='LEVEL '+level+' DARI 50 · '+(c.boss?'BOS '+c.boss:MIS[c.mission].t);
   $('#startBtn').textContent=level>1?'LANJUT LEVEL '+level:'MAIN LEVEL 1';
   const rb=$('#resetBtn');rb.hidden=level<=1&&!Object.keys(perks).length;rb.textContent='ULANG DARI LEVEL 1';rb.dataset.armed='';

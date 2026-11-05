@@ -1,0 +1,5 @@
+Credentials.txt
+credentials.txt
+*.bak
+patch_*.py
+verify.py
