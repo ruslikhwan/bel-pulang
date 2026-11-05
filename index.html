@@ -75,7 +75,8 @@ button:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
 .b.atk{width:96px;height:96px;right:0;bottom:6px;background:var(--red);color:var(--cream);font-size:15px}
 .b.kick{width:72px;height:72px;right:104px;bottom:0}
 .b.dodge{width:64px;height:64px;right:18px;bottom:116px;background:var(--amber)}
-.b.swap{width:62px;height:62px;right:112px;bottom:92px;background:var(--blue);font-size:10px}
+.b.swap{width:68px;height:68px;right:112px;bottom:90px;background:var(--amber);color:var(--navy);font-size:11px;font-weight:900;line-height:1.15;border-color:var(--navy);box-shadow:0 4px 0 var(--navy)}
+.b.swap small{font-size:9px;display:block;opacity:.85}
 
 .ov{position:fixed;left:0;right:0;top:0;height:var(--vh,100%);z-index:10;display:flex;align-items:center;justify-content:center;padding:calc(16px + env(safe-area-inset-top,0px)) max(16px, env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px, env(safe-area-inset-left,0px));background:rgba(29,35,64,.55);overflow:auto}
 .card{background:var(--cream);color:var(--navy);border-radius:16px;max-width:420px;width:100%;padding:20px 18px;box-shadow:0 8px 0 var(--navy);border:3px solid var(--navy);margin:auto}
@@ -222,7 +223,7 @@ button:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
   <div id="stickZone"></div>
   <div id="stick"><div id="knob"></div></div>
   <div id="btns">
-    <button class="b swap" data-a="swap" id="swapBtn" hidden>TUKAR</button>
+    <button class="b swap" data-a="swap" id="swapBtn" hidden>GANTI<br><small>(E)</small></button>
     <button class="b dodge" data-a="dodge">HINDAR</button>
     <button class="b kick" data-a="kick">TENDANG</button>
     <button class="b atk" data-a="atk" id="atkBtn">SERANG</button>
@@ -243,7 +244,7 @@ button:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
       <b>HINDAR</b><span>Lolos dari serangan. Lawan yang menyala merah mau nyerang</span>
     </div>
     <div class="wl" id="wList"></div>
-    <p class="hint">Kendaraan tidak berhenti dan bikin damage besar. Progres tersimpan otomatis. Di laptop: WASD jalan, J serang, K tendang, Spasi hindar, E tukar senjata.</p>
+    <p class="hint">Kendaraan tidak berhenti dan bikin damage besar. Senjata otomatis diambil saat tangan kosong. Di laptop: WASD jalan, J serang, K tendang, Spasi hindar, E/Q ganti atau buang senjata. Dekat gerbang ada Warung Minuman Bang Keriting untuk pulihkan darah.</p>
     <p class="hint" id="iosHint" hidden><b>Biar layar penuh di iPhone:</b> ketuk tombol Share di Safari, pilih <b>Add to Home Screen</b>, lalu buka game dari ikon Bel Pulang di layar utama.</p>
     <button class="cta" id="startBtn">MAIN LEVEL 1</button>
     <button class="cta" id="onlineBtn" style="background:var(--navy)">MAIN ONLINE · 50 VS 50</button>
@@ -378,7 +379,8 @@ function textPlane(lines,bg,fg,w,h,pw,ph,font){
    School wall z=-11.3 · north sidewalk -11..-7.5 · road -7.5..2.5 · south sidewalk + halte 2.5..7 */
 const ROAD_N=-7.5, ROAD_S=2.5, LANE_E=-5.1, LANE_W=0.1;
 const GATE={x:0.2,z:-13.6}, HALTE={x:-9,z:4.6,r:4.2}, SPANDUK={x:21,z:4.6,r:3.2};
-let flagMesh=null, spandukGroup=null, zoneRing=null;
+const FOUNTAIN={x:-5.8,z:-9.2,r:4.2};
+let flagMesh=null, spandukGroup=null, zoneRing=null, stallNpc=null, healRing=null, fountainEffectT=0;
 const gate={hp:0,max:1200,broken:false,leaves:[],shake:0};
 (function buildWorld(){
   flat(220,140,0x8a9a6c,0,0,0);
@@ -443,7 +445,75 @@ const gate={hp:0,max:1200,broken:false,leaves:[],shake:0};
   const zf=new THREE.Mesh(new THREE.CircleGeometry(1,40),new THREE.MeshBasicMaterial({color:0xffb627,transparent:true,opacity:0.18,depthWrite:false}));
   const ze=new THREE.Mesh(new THREE.RingGeometry(0.95,1,56),new THREE.MeshBasicMaterial({color:0xffb627,transparent:true,opacity:0.8,depthWrite:false}));
   zf.rotation.x=ze.rotation.x=-Math.PI/2;zoneRing.add(zf,ze);zoneRing.position.y=0.06;zoneRing.visible=false;scene.add(zoneRing);
+  buildDrinkStallAndNpc();
 })();
+
+function buildDrinkStallAndNpc(){
+  const x=FOUNTAIN.x, z=FOUNTAIN.z;
+  healRing=new THREE.Group();
+  const hf=new THREE.Mesh(new THREE.CircleGeometry(FOUNTAIN.r,36),new THREE.MeshBasicMaterial({color:0x2ecc71,transparent:true,opacity:0.18,depthWrite:false}));
+  const he=new THREE.Mesh(new THREE.RingGeometry(FOUNTAIN.r-0.12,FOUNTAIN.r,52),new THREE.MeshBasicMaterial({color:0x2ecc71,transparent:true,opacity:0.8,depthWrite:false}));
+  hf.rotation.x=he.rotation.x=-Math.PI/2;
+  healRing.add(hf,he);healRing.position.set(x,0.045,z);scene.add(healRing);
+
+  addBox(2.4,0.9,1.15,0x5c3d2e,x,0.65,z,true);
+  addBox(2.2,0.7,0.05,0xd4a373,x,0.65,z+0.58);
+  addBox(2.6,0.1,1.35,0xf1f2f6,x,1.15,z,true);
+  [-0.8,0.8].forEach(wx=>{const w=new THREE.Mesh(new THREE.CylinderGeometry(0.26,0.26,0.08,12),lam(0x2d3436));w.rotation.x=Math.PI/2;w.position.set(x+wx,0.26,z+0.62);scene.add(w);});
+  [-1.15,1.15].forEach(px=>{[-0.52,0.52].forEach(pz=>{addBox(0.07,1.35,0.07,0x2f3542,x+px,1.82,z+pz,true);});});
+  addBox(2.7,0.14,1.5,0xe74c3c,x,2.5,z);
+  addBox(2.72,0.16,0.08,0xf1c40f,x,2.45,z+0.75);
+  const stallSign=textPlane([{t:'ES SEGAR BANG KERITING',s:48},{t:'PULIHKAN HP / HEAL DISINI',s:26}],'#1e272e','#2ecc71',512,140,2.3,0.6);
+  stallSign.position.set(x,2.2,z+0.68);scene.add(stallSign);
+
+  const jar1=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.15,0.38,12),lam(0xe74c3c,{transparent:true,opacity:0.85}));
+  jar1.position.set(x-0.7,1.39,z+0.1);
+  const jar2=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.15,0.38,12),lam(0xf39c12,{transparent:true,opacity:0.85}));
+  jar2.position.set(x-0.3,1.39,z+0.1);
+  const jar3=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.15,0.38,12),lam(0x2ecc71,{transparent:true,opacity:0.85}));
+  jar3.position.set(x+0.1,1.39,z+0.1);
+  [-0.7,-0.3,0.1].forEach(jx=>{addBox(0.32,0.05,0.32,0xbdc3c7,x+jx,1.6,z+0.1);});
+  scene.add(jar1,jar2,jar3);
+  addBox(0.42,0.45,0.38,0x0984e3,x+0.68,1.42,z+0.05,true);
+  addBox(0.44,0.06,0.40,0xffffff,x+0.68,1.68,z+0.05);
+  const cups=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.07,0.32,10),lam(0xffffff,{transparent:true,opacity:0.75}));
+  cups.position.set(x+1.05,1.36,z+0.12);scene.add(cups);
+
+  const npcGroup=new THREE.Group();npcGroup.position.set(x-0.2,0,z-0.68);
+  const skin=lam(0xc68642), shirt=lam(0x222222), pants=lam(0x2980b9), shoe=lam(0x111111), curlyHairMat=lam(0x18110b);
+  const bx=(w,h,d,m)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);b.castShadow=true;return b;};
+  const legL=bx(0.24,0.72,0.26,pants);legL.position.set(-0.15,0.48,0);npcGroup.add(legL);
+  const legR=bx(0.24,0.72,0.26,pants);legR.position.set(0.15,0.48,0);npcGroup.add(legR);
+  const sL=bx(0.26,0.14,0.34,shoe);sL.position.set(-0.15,0.08,0.04);npcGroup.add(sL);
+  const sR=bx(0.26,0.14,0.34,shoe);sR.position.set(0.15,0.08,0.04);npcGroup.add(sR);
+  const torso=bx(0.62,0.66,0.36,shirt);torso.position.y=1.18;npcGroup.add(torso);
+  const print=bx(0.3,0.3,0.02,lam(0x2ecc71));print.position.set(0,1.22,0.185);npcGroup.add(print);
+  const towel=bx(0.66,0.14,0.40,lam(0xf1f2f6));towel.position.set(0,1.48,0.04);npcGroup.add(towel);
+  const armL=bx(0.2,0.58,0.22,skin);armL.position.set(-0.42,1.18,0.12);armL.rotation.x=-0.4;npcGroup.add(armL);
+  const armR=new THREE.Group();armR.position.set(0.42,1.46,0);
+  const armRMesh=bx(0.2,0.58,0.22,skin);armRMesh.position.set(0,-0.28,0);armR.add(armRMesh);
+  const rag=bx(0.22,0.12,0.22,lam(0xf5cd79));rag.position.set(0,-0.58,0.08);armR.add(rag);
+  armR.rotation.x=-0.7;armR.rotation.z=-0.2;npcGroup.add(armR);
+  const head=bx(0.42,0.42,0.42,skin);head.position.y=1.76;npcGroup.add(head);
+  const eyeM=lam(0x111111);
+  [-0.09,0.09].forEach(ex=>{const e=new THREE.Mesh(new THREE.BoxGeometry(0.06,0.07,0.02),eyeM);e.position.set(ex,1.8,0.215);npcGroup.add(e);});
+  const stache=bx(0.22,0.05,0.02,curlyHairMat);stache.position.set(0,1.68,0.215);npcGroup.add(stache);
+  const curlTop1=bx(0.56,0.22,0.56,curlyHairMat);curlTop1.position.set(0,2.05,-0.02);npcGroup.add(curlTop1);
+  const curlTop2=bx(0.50,0.16,0.50,curlyHairMat);curlTop2.position.set(0,2.18,-0.02);npcGroup.add(curlTop2);
+  const fringe=bx(0.46,0.12,0.14,curlyHairMat);fringe.position.set(0,1.94,0.22);npcGroup.add(fringe);
+  const curlL1=bx(0.18,0.38,0.42,curlyHairMat);curlL1.position.set(-0.28,1.76,-0.02);npcGroup.add(curlL1);
+  const curlL2=bx(0.16,0.35,0.32,curlyHairMat);curlL2.position.set(-0.27,1.48,-0.02);npcGroup.add(curlL2);
+  const curlL3=bx(0.14,0.24,0.22,curlyHairMat);curlL3.position.set(-0.25,1.25,0.02);npcGroup.add(curlL3);
+  const curlR1=bx(0.18,0.38,0.42,curlyHairMat);curlR1.position.set(0.28,1.76,-0.02);npcGroup.add(curlR1);
+  const curlR2=bx(0.16,0.35,0.32,curlyHairMat);curlR2.position.set(0.27,1.48,-0.02);npcGroup.add(curlR2);
+  const curlR3=bx(0.14,0.24,0.22,curlyHairMat);curlR3.position.set(0.25,1.25,0.02);npcGroup.add(curlR3);
+  const curlB1=bx(0.52,0.40,0.18,curlyHairMat);curlB1.position.set(0,1.76,-0.25);npcGroup.add(curlB1);
+  const curlB2=bx(0.46,0.35,0.16,curlyHairMat);curlB2.position.set(0,1.46,-0.24);npcGroup.add(curlB2);
+  const npcTag=textPlane([{t:'🥤 BANG KERITING',s:50},{t:'WARUNG ES (HEAL)',s:28}],'#111b22','#2ecc71',512,140,1.8,0.5);
+  npcTag.position.set(0,2.55,0);npcGroup.add(npcTag);
+  scene.add(npcGroup);
+  stallNpc={group:npcGroup,armR,tag:npcTag};
+}
 
 function teamName(t){return t===0?'SMEA 70':(net?'XTM':'SMA Seberang');}
 function gateReset(closed){
@@ -597,8 +667,9 @@ function makeFighter(team,isPlayer,opt){
   else if(team===1){f.maxHp=Math.round(100*cfg.hpMul);f.dmgMul=cfg.dmgMul;f.spd=4.1*cfg.spdMul;}
   else{f.maxHp=Math.round(100*(1+0.15*P('teman')));f.dmgMul=1+0.15*P('teman');}
   f.hp=f.maxHp;
-  if(!isPlayer)f.hb=makeHB(team);
-  else{const ring=new THREE.Mesh(new THREE.RingGeometry(0.55,0.7,32),new THREE.MeshBasicMaterial({color:0xd7263d,transparent:true,opacity:0.85,depthWrite:false}));ring.rotation.x=-Math.PI/2;ring.position.y=0.05;r.group.add(ring);}
+  if(isPlayer){f.hb=makePlayerHB();const ring=new THREE.Mesh(new THREE.RingGeometry(0.55,0.72,32),new THREE.MeshBasicMaterial({color:0x22c55e,transparent:true,opacity:0.9,depthWrite:false}));ring.rotation.x=-Math.PI/2;ring.position.y=0.05;r.group.add(ring);}
+  else{f.hb=makeHB(team);if(team===1){f.marker=makeEnemyMarker();r.group.add(f.marker);const eRing=new THREE.Mesh(new THREE.RingGeometry(0.48,0.64,24),new THREE.MeshBasicMaterial({color:0xe23b2e,transparent:true,opacity:0.65,depthWrite:false}));eRing.rotation.x=-Math.PI/2;eRing.position.y=0.04;r.group.add(eRing);}}
+
   if(opt.vip){const ring=new THREE.Mesh(new THREE.RingGeometry(0.6,0.75,32),new THREE.MeshBasicMaterial({color:0xffb627,transparent:true,opacity:0.9,depthWrite:false}));ring.rotation.x=-Math.PI/2;ring.position.y=0.05;r.group.add(ring);}
   f.nid=++uid;
   if(net&&!isPlayer)f.pname=pick(BOTN);
@@ -607,7 +678,16 @@ function makeFighter(team,isPlayer,opt){
 }
 const hbGeo=new THREE.PlaneGeometry(1,1), hbFillGeo=new THREE.PlaneGeometry(1,1).translate(0.5,0,0);
 const hbBg=new THREE.MeshBasicMaterial({color:0x1d2340,depthTest:false,transparent:true,opacity:0.75});
-const hbCol=[new THREE.MeshBasicMaterial({color:0xfff6e6,depthTest:false}),new THREE.MeshBasicMaterial({color:0x6fb7ea,depthTest:false})];
+const hbCol=[new THREE.MeshBasicMaterial({color:0xfff6e6,depthTest:false}),new THREE.MeshBasicMaterial({color:0xe23b2e,depthTest:false})];
+const pHbFill=new THREE.MeshBasicMaterial({color:0x22c55e,depthTest:false});
+function makePlayerHB(){
+  const g=new THREE.Group();const bg=new THREE.Mesh(hbGeo,hbBg);bg.scale.set(1.02,0.16,1);bg.renderOrder=30;
+  const fl=new THREE.Mesh(hbFillGeo,pHbFill);fl.scale.set(0.96,0.11,1);fl.position.set(-0.48,0,0.001);fl.renderOrder=31;
+  g.add(bg,fl);g.userData.fill=fl;g.visible=true;scene.add(g);return g;
+}
+const arrowGeo=new THREE.ConeGeometry(0.24,0.44,4);arrowGeo.rotateX(Math.PI);
+const arrowMat=new THREE.MeshBasicMaterial({color:0xff2222,depthTest:false});
+function makeEnemyMarker(){const m=new THREE.Mesh(arrowGeo,arrowMat);m.renderOrder=25;m.position.y=2.85;return m;}
 function makeHB(team){
   const g=new THREE.Group();const bg=new THREE.Mesh(hbGeo,hbBg);bg.scale.set(0.84,0.12,1);bg.renderOrder=10;
   const fl=new THREE.Mesh(hbFillGeo,hbCol[team]);fl.scale.set(0.78,0.07,1);fl.position.set(-0.39,0,0.001);fl.renderOrder=11;
@@ -703,6 +783,7 @@ function sfx(k,vol){
     else if(k==='pick'){tone('sine',660,0,0.08,0.18,t);tone('sine',990,0,0.12,0.18,t+0.07);}
     else if(k==='bell'){[0,0.32].forEach(d=>tone('triangle',880,0,0.6,0.2,t+d));}
     else if(k==='win'){[523,659,784,1046].forEach((f,i)=>tone('triangle',f,0,0.3,0.18,t+i*0.12));}
+    else if(k==='heal'){tone('sine',523,659,0.18,0.14*v,t);tone('sine',659,880,0.22,0.16*v,t+0.08);}
   }catch(e){}
 }
 
@@ -713,7 +794,7 @@ function press(a){if(mode!=='play'||!player||player.state==='down')return;
   if(a==='swap'){trySwap();return;}
   player.buf=a;player.bufT=0.28;}
 addEventListener('keydown',e=>{keys[e.code]=true;if(e.repeat)return;
-  if(e.code==='KeyJ')press('atk');if(e.code==='KeyK')press('kick');if(e.code==='KeyE')press('swap');
+  if(e.code==='KeyJ')press('atk');if(e.code==='KeyK')press('kick');if(e.code==='KeyE'||e.code==='KeyQ')press('swap');
   if(e.code==='Space'||e.code==='KeyL'){press('dodge');e.preventDefault();}
   if(e.code==='Escape'||e.code==='KeyP'){mode==='play'?pause():mode==='paused'&&resume();}});
 addEventListener('keyup',e=>{keys[e.code]=false;});
@@ -857,11 +938,16 @@ function physics(f,dt,minX,maxX){
 
 /* ================= player ================= */
 function trySwap(p){
-  p=p||player;if(p.state!=='idle'&&p.state!=='walk')return;
-  const w=nearGround(p,1.3);if(!w)return;
-  const old=p.weapon;const ox=p.pos.x,oz=p.pos.z;
-  takeGround(p,w);
-  if(old&&old.n>0)dropGround(old.type,old.n,ox+0.6,oz+0.3);
+  p=p||player;if(!alive(p))return;
+  const w=nearGround(p,2.2), old=p.weapon, ox=p.pos.x, oz=p.pos.z;
+
+  if(w){takeGround(p,w);if(old&&old.n>0)dropGround(old.type,old.n,ox+0.6,oz+0.3);}
+  else if(old&&old.n>0){dropGround(old.type,old.n,ox+0.6,oz+0.3);setWeapon(p,null);if(p===player){sfx('swing');popup('BUANG SENJATA',p.pos,2.2,'info');}}
+  return;
+
+
+
+
 }
 function nearGround(f,r){let best=null,bd=r;for(const w of ground){const d=Math.hypot(w.g.position.x-f.pos.x,w.g.position.z-f.pos.z);if(d<bd){bd=d;best=w;}}return best;}
 function playerAttack(kind,p){
@@ -880,7 +966,7 @@ function readInput(){
   if(!input.stick){ix=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0);iz=(keys.KeyS||keys.ArrowDown?1:0)-(keys.KeyW||keys.ArrowUp?1:0);const l=Math.hypot(ix,iz);if(l>1){ix/=l;iz/=l;}}
   return [ix,iz];
 }
-function updatePlayer(dt){const i=readInput();updateHuman(player,i[0],i[1],dt);}
+function updatePlayer(dt){const i=readInput();updateHuman(player,i[0],i[1],dt);if(player&&alive(player)&&(!player.weapon||player.weapon.n<=0)){const w=nearGround(player,1.9);if(w)takeGround(player,w);}}
 function updateHuman(p,ix,iz,dt){
   p.inv-=dt;p.dodgeCd-=dt;p.comboT-=dt;p.bufT-=dt;p.flash-=dt;p.carCd-=dt;
   const mag=Math.hypot(ix,iz);
@@ -907,7 +993,7 @@ function updateHuman(p,ix,iz,dt){
     if(mag>0.12){p.pos.x+=ix*spd*dt;p.pos.z+=iz*spd*dt;turn(p,Math.atan2(ix,iz),16,dt);p.moving=Math.min(1,mag);p.walk+=dt*11*mag;p.state='walk';}
     else{p.moving=0;p.state='idle';}
     tg=walkPose(p);if(!p.moving)tg.y=Math.sin(clock*4)*0.02;
-    if(!p.weapon){const w=nearGround(p,0.95);if(w)takeGround(p,w);}
+    if(!p.weapon||p.weapon.n<=0){const w=nearGround(p,1.9);if(w)takeGround(p,w);}
     if(p.buf&&p.bufT>0){
       const b=p.buf;p.buf=null;
       if(b==='dodge'){if(p.dodgeCd<=0){let dx=ix,dz=iz;if(mag<0.12){dx=Math.sin(p.face);dz=Math.cos(p.face);}else{dx/=mag;dz/=mag;}p.dodgeX=dx;p.dodgeZ=dz;p.state='dodge';p.t=0;p.inv=0.36;p.dodgeCd=0.55;if(p===player)sfx('swing');}}
@@ -917,6 +1003,7 @@ function updateHuman(p,ix,iz,dt){
   if(tg)pose(p,tg,dt);
   physics(p,dt,-30,net?52:42);
   p.r.group.rotation.y=p.face;tint(p);
+  if(p.hb){p.hb.visible=alive(p);if(p.hb.visible){p.hb.position.set(p.pos.x,2.65*p.sc,p.pos.z);p.hb.quaternion.copy(camera.quaternion);p.hb.userData.fill.scale.x=Math.max(0.001,0.96*Math.min(1,p.hp/p.maxHp));}}
 }
 
 /* ================= AI ================= */
@@ -1041,7 +1128,14 @@ function updateAI(f,dt){
   if(tg)pose(f,tg,dt);
   physics(f,dt,-34,58);
   f.r.group.rotation.y=f.face;tint(f);
-  if(f.hb){const show=alive(f)&&(f.hp<f.maxHp||f.boss);f.hb.visible=show;if(show){f.hb.position.set(f.pos.x,2.5*f.sc+0.1,f.pos.z);f.hb.quaternion.copy(camera.quaternion);f.hb.userData.fill.scale.x=Math.max(0.001,0.78*f.hp/f.maxHp);}}
+  if(f.marker){
+    f.marker.visible=alive(f);
+    if(f.marker.visible){
+      f.marker.position.y=2.8*f.sc+Math.sin(clock*5+f.nid)*0.08;
+      f.marker.rotation.y=clock*2.5;
+    }
+  }
+  if(f.hb){const isEnemy=player?(f.team!==player.team):(f.team===1);const show=alive(f)&&(isEnemy||f.hp<f.maxHp||f.boss);f.hb.visible=show;if(show){f.hb.position.set(f.pos.x,2.5*f.sc+0.1,f.pos.z);f.hb.quaternion.copy(camera.quaternion);f.hb.userData.fill.scale.x=Math.max(0.001,0.78*f.hp/f.maxHp);}}
 }
 
 /* ================= vehicles ================= */
@@ -1260,7 +1354,8 @@ function missionHud(){
 function hud(){
   const p=player,hp=Math.max(0,Math.ceil(p.hp)),us=teamLeft(0),them=teamLeft(1);
   const w=p.weapon,wk=w?w.type+w.n:'-';
-  const near=!!(w&&alive(p)&&nearGround(p,1.3));
+  const nearW=nearGround(p,2.2);
+  const near=!!(alive(p)&&(w||nearW));
   const mh=missionHud();
   const key=[hp,p.maxHp,us,them,wk,chain,near,mh.T,mh.V,(mh.A*100)|0,(mh.B*100)|0,mh.danger].join('|');
   if(key!==lastHud){
@@ -1270,6 +1365,11 @@ function hud(){
     else{$wTxt.textContent='Tangan kosong';$wTxt.classList.remove('deadly');$atk.textContent='SERANG';}
     $usN.textContent=us;$themN.textContent=them;$usBar.style.width=Math.min(100,us/START[0]*100)+'%';$themBar.style.width=Math.min(100,them/START[1]*100)+'%';
     $swap.hidden=!near;
+    if(near){
+      if(w&&nearW){$swap.innerHTML='GANTI<br><small>('+WPN[nearW.type].name.split(' ')[0]+')</small>';}
+      else if(nearW){$swap.innerHTML='AMBIL<br><small>(E)</small>';}
+      else{$swap.innerHTML='BUANG<br><small>(E)</small>';}
+    }
     if(chain>=2){$combo.innerHTML=chain+' HIT<small>beruntun</small>';$combo.style.opacity=1;}else $combo.style.opacity=0;
     $misT.textContent=mh.T;$misV.textContent=mh.V;$misA.style.width=Math.max(0,Math.min(100,mh.A*100))+'%';$misB.style.width=Math.max(0,Math.min(100,mh.B*100))+'%';
     $misA.style.background=M.type==='bos'?'var(--red)':'';
@@ -1826,6 +1926,8 @@ function frame(now){
   let dt=Math.min(0.05,(now-last)/1000);last=now;clock+=dt;
   if(flagMesh)flagMesh.rotation.y=Math.sin(clock*2.2)*0.25;
   gateFrame(dt);
+  if(healRing)healRing.children[1].material.opacity=0.55+0.35*Math.sin(clock*3.5);
+  if(stallNpc){stallNpc.tag.quaternion.copy(camera.quaternion);stallNpc.armR.rotation.x=-0.7+Math.sin(clock*3)*0.18;stallNpc.armR.rotation.y=Math.cos(clock*3)*0.2;}
   if(zoneRing.visible)zoneRing.children[1].material.opacity=0.55+0.3*Math.sin(clock*4);
   if(mode==='play'&&portraitMQ.matches&&$('#pauseOv').hidden)pause();
   if(net&&net.role==='client'&&(mode==='play'||mode==='over')){
@@ -1837,6 +1939,26 @@ function frame(now){
       updatePlayer(dt);
       for(let i=fighters.length-1;i>=0;i--){const f=fighters[i];if(!f)continue;if(!f.isPlayer)updateAI(f,dt);else if(f!==player)updateHuman(f,f.rx||0,f.rz||0,dt);}
       updateCars(dt);updateWorld(dt);updateSpawns(dt);updateMission(dt);
+      if(alive(player)&&Math.hypot(player.pos.x-FOUNTAIN.x,player.pos.z-FOUNTAIN.z)<FOUNTAIN.r){
+        if(player.hp<player.maxHp){
+          player.hp=Math.min(player.maxHp,player.hp+42*dt);
+          fountainEffectT-=dt;
+          if(fountainEffectT<=0){
+            fountainEffectT=0.36;
+            sfx('heal',0.7);
+            popup('+HP SEGAR!',{x:player.pos.x+rand(-0.2,0.2),y:1.8,z:player.pos.z+rand(-0.2,0.2)},1.6,'info');
+            burst(player.pos.x+rand(-0.3,0.3),0.6+rand(0,0.8),player.pos.z+rand(-0.3,0.3),4,0x2ecc71,0.5);
+          }
+        }
+      }
+      for(let fi=0;fi<fighters.length;fi++){
+        const sf=fighters[fi];
+        if(sf&&sf.team===0&&alive(sf)&&sf.hp<sf.maxHp&&sf!==player){
+          if(Math.hypot(sf.pos.x-FOUNTAIN.x,sf.pos.z-FOUNTAIN.z)<FOUNTAIN.r){
+            sf.hp=Math.min(sf.maxHp,sf.hp+28*dt);
+          }
+        }
+      }
     }
     shake=Math.max(0,shake-dt*1.6);
     if(pendingEnd){pendingEnd.t-=dt;if(pendingEnd.t<=0){const pe=pendingEnd;pendingEnd=null;endGame(pe.win,pe.msg);}}
