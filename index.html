@@ -393,7 +393,7 @@ button:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
       <div class="opt-group">
         <label class="opt-label">PAKAIAN (OUTFIT)</label>
         <div class="pill-btn-group" id="outfitGroup">
-          <button type="button" class="pill-btn active" data-val="uniform">Seragam SMA 70</button>
+          <button type="button" class="pill-btn active" data-val="uniform">Seragam</button>
           <button type="button" class="pill-btn" data-val="hoodie">Hoodie</button>
         </div>
         <!-- Hoodie Color Sub-palette -->
@@ -408,7 +408,7 @@ button:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
         <label class="opt-label">TOPI & KEPALA</label>
         <div class="select-grid" id="hatGroup">
           <button type="button" class="grid-btn active" data-val="none">Tanpa Topi</button>
-          <button type="button" class="grid-btn" data-val="cap_sma">Topi SMA 70</button>
+          <button type="button" class="grid-btn" data-val="cap_sma">Topi Sekolah</button>
           <button type="button" class="grid-btn" data-val="beanie">Kupluk / Beanie</button>
           <button type="button" class="grid-btn" data-val="peci">Peci Hitam</button>
           <button type="button" class="grid-btn" data-val="bandana">Ikat Kepala</button>
@@ -963,7 +963,7 @@ function gateFrame(dt){
 /* ================= characters ================= */
 const SKINS=[0xc68e5f,0xb98058,0xa86f48,0xd4a073,0x9c6540], HAIRS=[0x15110d,0x1a1410,0x0e0b08,0x2b1d14];
 const LOOK=[
-  ()=>({skin:pick(SKINS),shirt:0xf7f7f5,pants:0x80858e,hair:pick(HAIRS)}),
+  ()=>({skin:pick(SKINS),shirt:0xf7f7f5,pants:0x3d434c,hair:pick(HAIRS)}),
   ()=>({skin:pick(SKINS),shirt:0x9fd0f0,pants:0x22325f,hair:pick(HAIRS)})
 ];
 function makeChar(c){
@@ -977,7 +977,9 @@ function makeChar(c){
   const isHoodie = c.outfit === 'hoodie';
   const hoodieCol = c.hoodieColor || 0x1e1e24;
   const shirtCol = isHoodie ? hoodieCol : (c.shirt || 0xf7f7f5);
-  const pantsCol = isHoodie ? 0x2b2d42 : (c.pants || 0x80858e);
+  // Darker grey SMA uniform pants (remains consistent when wearing hoodie)
+  const defaultPants = 0x3d434c;
+  const pantsCol = c.isCustom ? defaultPants : (c.pants || defaultPants);
   
   const shirt = M(shirtCol), pants = M(pantsCol);
   const top = c.vest ? M(c.vest) : shirt;
