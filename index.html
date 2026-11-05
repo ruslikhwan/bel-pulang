@@ -395,10 +395,52 @@ const gate={hp:0,max:1200,broken:false,leaves:[],shake:0};
   flat(220,4.6,0xc4b59a,0,4.8,0.03);
   const cb=lam(0x2a2a2a), cw=lam(0xf1f1ee);
   for(let x=-60;x<70;x+=1.2){const m=((x/1.2)|0)%2?cb:cw;addBox(1.2,0.16,0.3,m,x,0.08,ROAD_N-0.1);addBox(1.2,0.16,0.3,m,x,0.08,ROAD_S+0.1);}
-  const wallH=2.7;
-  const wl=new THREE.Mesh(new THREE.BoxGeometry(42,wallH,0.6),lam(0xffffff,{map:stoneTex(21,1.4)}));wl.position.set(-24.3,wallH/2,-11.4);wl.receiveShadow=true;scene.add(wl);
-  const sb=new THREE.Mesh(new THREE.BoxGeometry(7,4,0.7),lam(0xffffff,{map:stoneTex(3.5,2)}));sb.position.set(-8,2,-11.35);scene.add(sb);
-  const sn=textPlane([{t:'SMEA 70'},{t:'JAKARTA',s:44}],null,'#d9dde0',1024,256,6.4,1.6);sn.position.set(-8,3.1,-10.98);scene.add(sn);
+  // ================= ORANGE FENCE (SMA 70 BULUNGAN) =================
+  const fenceTex=canvasTex(256,128,(g,w,h)=>{
+    g.clearRect(0,0,w,h);
+    // Vertical orange slats (matching SMAN 70 reference photo)
+    g.fillStyle='#e57324';
+    for(let x=0;x<w;x+=16){g.fillRect(x+2,4,7,h-8);}
+    // Top and bottom horizontal dark rails
+    g.fillStyle='#1e2024';
+    g.fillRect(0,0,w,6);g.fillRect(0,h-6,w,6);
+  });
+  fenceTex.wrapS=THREE.RepeatWrapping;
+
+  const buildFenceSection=(startX,endX)=>{
+    const len=endX-startX, cx=(startX+endX)/2;
+    // Dark bottom foundation plinth
+    addBox(len,0.42,0.45,0x1e2024,cx,0.21,-11.4);
+    // Slat fence plane
+    const tex=fenceTex.clone();
+    tex.repeat.set(len*0.75,1);
+    const fm=new THREE.Mesh(new THREE.PlaneGeometry(len,1.96),new THREE.MeshLambertMaterial({map:tex,transparent:true,alphaTest:0.5,side:THREE.DoubleSide}));
+    fm.position.set(cx,1.45,-11.4);
+    scene.add(fm);
+    // Top orange rail
+    addBox(len,0.14,0.35,0xe57324,cx,2.45,-11.4);
+    // Black pillars with orange caps every ~4.5m
+    for(let px=startX;px<=endX+0.1;px+=4.5){
+      addBox(0.36,2.55,0.46,0x1e2024,px,1.28,-11.4);
+      addBox(0.44,0.08,0.52,0xe57324,px,2.58,-11.4);
+    }
+  };
+
+  // Build Orange Fence sections across the front of the school
+  buildFenceSection(-45,-3.8); // Left of gate
+  buildFenceSection(3.8,48);   // Right of gate
+
+  // School Monument Sign (SMAN / SMEA 70 - black stone slab with orange frame, matching photo)
+  addBox(6.4,3.0,0.6,0x22252a,-8,1.8,-11.8);
+  addBox(6.6,0.16,0.65,0xe57324,-8,3.38,-11.8);
+  addBox(6.6,0.16,0.65,0xe57324,-8,0.25,-11.8);
+  addBox(0.16,3.25,0.65,0xe57324,-11.25,1.82,-11.8);
+  addBox(0.16,3.25,0.65,0xe57324,-4.75,1.82,-11.8);
+  const sn=textPlane([{t:'SMEA 70'},{t:'JAKARTA',s:38}],null,'#ffffff',1024,256,5.6,1.4);
+  sn.position.set(-8,2.2,-11.46);
+  scene.add(sn);
+
+  // Gate structure (entrance archway)
   const yel=lam(0xe9c63a), yel2=lam(0xf3d75a);
   addBox(0.45,4.4,0.7,yel,-3.2,2.2,-11.1,true);addBox(0.3,4.1,0.5,yel2,-2.65,2.05,-10.95,true);
   addBox(7,0.45,0.7,yel,0.2,4.4,-11.1,true);addBox(6.4,0.3,0.5,yel2,0.2,4.05,-10.95);
@@ -411,15 +453,162 @@ const gate={hp:0,max:1200,broken:false,leaves:[],shake:0};
   const gm=new THREE.MeshLambertMaterial({map:bars,transparent:true,alphaTest:0.5,side:THREE.DoubleSide});
   [-1,1].forEach(s=>{const l=new THREE.Mesh(new THREE.PlaneGeometry(2.6,2.6),gm);l.rotation.y=s*1.35;l.position.set(s*2.35,1.3,-12.8);l.userData.s=s;scene.add(l);gate.leaves.push(l);});
   flat(5.6,12,0x8f8f8a,0.2,-17,0.03);
-  addBox(19,0.8,0.5,lam(0xffffff,{map:stoneTex(9,0.4)}),15,0.4,-11.4);
-  const fence=canvasTex(256,64,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='#e07a2a';for(let x=0;x<w;x+=14)g.fillRect(x,0,6,h);g.fillStyle='#1d1d1f';g.fillRect(0,0,w,6);g.fillRect(0,h-6,w,6);});
-  fence.wrapS=THREE.RepeatWrapping;fence.repeat.set(5,1);
-  const fm=new THREE.Mesh(new THREE.PlaneGeometry(19,1.8),new THREE.MeshLambertMaterial({map:fence,transparent:true,alphaTest:0.5,side:THREE.DoubleSide}));fm.position.set(15,1.7,-11.4);scene.add(fm);
-  addBox(19.2,0.25,0.6,0xe07a2a,15,2.7,-11.4);
-  const ban=textPlane([{t:'BULUNGAN CUP',s:62},{t:'TURNAMEN ANTAR SEKOLAH 2026',s:32}],'#1f4fa8','#ffffff',768,192,6,1.5);ban.position.set(12,1.5,-11.1);scene.add(ban);
-  const wr=new THREE.Mesh(new THREE.BoxGeometry(22,wallH,0.6),lam(0xffffff,{map:stoneTex(11,1.4)}));wr.position.set(35.5,wallH/2,-11.4);scene.add(wr);
-  [[-4.3,-10.5],[4.1,-10.4],[6.3,-10.5]].forEach(([x,z])=>{const p=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.3,0.7,10),lam(0xb4392b));p.position.set(x,0.35,z);p.castShadow=true;scene.add(p);const l=new THREE.Mesh(new THREE.IcosahedronGeometry(0.55,0),lam(0x3f7d3a));l.position.set(x,1.05,z);scene.add(l);});
-  for(let x=-44;x<=46;x+=6.5){if(Math.abs(x)<3)continue;const h=rand(5.5,8);const tr=addBox(0.5,h,0.5,0x6b4a33,x+rand(-1,1),h/2,-14.5+rand(-1.5,1));const c=new THREE.Mesh(new THREE.IcosahedronGeometry(rand(2.4,3.3),0),lam(pick([0x3f7d3a,0x4a8a3c,0x356f34])));c.position.set(tr.position.x,h+0.8,tr.position.z);c.rotation.y=rand(0,3);c.castShadow=true;scene.add(c);}
+
+  // Bulungan Cup tournament banner on the orange fence
+  const ban=textPlane([{t:'BULUNGAN CUP',s:62},{t:'TURNAMEN ANTAR SEKOLAH 2026',s:32}],'#1f4fa8','#ffffff',768,192,6,1.5);ban.position.set(24,1.55,-11.2);scene.add(ban);
+
+  // ================= TOPIARY BUSHES: "SMEA 70" =================
+  // Green lawn berm along the sidewalk in front of the orange fence
+  flat(44,2.2,0x3e7e32,25.5,-10.4,0.032);
+
+  const hedgeM=lam(0x2d7734), hedgeTopM=lam(0x3ea047);
+  const hb=(w,h,d,x,y,z)=>{
+    const m=addBox(w,h,d,hedgeM,x,y,z,true);
+    addBox(w*0.96,0.06,d*0.96,hedgeTopM,x,y+h/2+0.02,z);
+    return m;
+  };
+
+  const cz=-10.45, baseY=0.08, hH=1.15, tH=0.28, dH=0.45;
+  // S
+  const sx=8.05;
+  hb(1.10,tH,dH,sx,baseY+hH-tH/2,cz);
+  hb(tH,0.38,dH,sx-0.41,baseY+hH-tH-0.19,cz);
+  hb(1.00,tH,dH,sx,baseY+hH/2,cz);
+  hb(tH,0.38,dH,sx+0.41,baseY+tH+0.19,cz);
+  hb(1.10,tH,dH,sx,baseY+tH/2,cz);
+  // M
+  const mx=9.60;
+  hb(tH,hH,dH,mx-0.51,baseY+hH/2,cz);
+  hb(tH,hH,dH,mx+0.51,baseY+hH/2,cz);
+  hb(0.24,0.50,dH,mx-0.22,baseY+hH*0.68,cz);
+  hb(0.24,0.50,dH,mx+0.22,baseY+hH*0.68,cz);
+  hb(0.26,0.30,dH,mx,baseY+hH*0.48,cz);
+  // E
+  const ex=11.10;
+  hb(tH,hH,dH,ex-0.36,baseY+hH/2,cz);
+  hb(0.85,tH,dH,ex+0.08,baseY+hH-tH/2,cz);
+  hb(0.68,tH,dH,ex,baseY+hH/2,cz);
+  hb(0.85,tH,dH,ex+0.08,baseY+tH/2,cz);
+  // A
+  const ax=12.50;
+  hb(tH,hH,dH,ax-0.42,baseY+hH/2,cz);
+  hb(tH,hH,dH,ax+0.42,baseY+hH/2,cz);
+  hb(1.12,tH,dH,ax,baseY+hH-tH/2,cz);
+  hb(0.72,tH,dH,ax,baseY+hH*0.48,cz);
+  // 7
+  const x7=14.55;
+  hb(1.05,tH,dH,x7,baseY+hH-tH/2,cz);
+  hb(tH,0.55,dH,x7+0.38,baseY+hH-tH-0.27,cz);
+  hb(tH,0.60,dH,x7+0.22,baseY+tH+0.25,cz);
+  // 0
+  const x0=15.95;
+  hb(tH,hH-tH*1.6,dH,x0-0.41,baseY+hH/2,cz);
+  hb(tH,hH-tH*1.6,dH,x0+0.41,baseY+hH/2,cz);
+  hb(1.10,tH,dH,x0,baseY+hH-tH/2,cz);
+  hb(1.10,tH,dH,x0,baseY+tH/2,cz);
+
+  // Additional sculpted topiary shrubs along the berm (matching street photo)
+  [5.2,6.4,17.6,18.8,20.0,21.2].forEach(bx=>{
+    addBox(0.9,0.55,0.55,hedgeM,bx,0.32,cz,true);
+    addBox(0.82,0.06,0.48,hedgeTopM,bx,0.61,cz);
+  });
+
+  // Planter pots near the gate
+  [[-4.3,-10.5],[4.1,-10.4],[6.3,-10.5]].forEach(([x,z])=>{
+    const p=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.3,0.7,10),lam(0xb4392b));p.position.set(x,0.35,z);p.castShadow=true;scene.add(p);
+    const l=new THREE.Mesh(new THREE.IcosahedronGeometry(0.55,0),lam(0x3f7d3a));l.position.set(x,1.05,z);scene.add(l);
+  });
+
+  // ================= BASKETBALL COURT (BEHIND THE FENCE) =================
+  const bballTex=canvasTex(1024,512,(g,w,h)=>{
+    // Terracotta red border / apron
+    g.fillStyle='#b33927';g.fillRect(0,0,w,h);
+    // Green playing court
+    const mx=48, my=36, cw=w-2*mx, ch=h-2*my;
+    g.fillStyle='#1e7a44';g.fillRect(mx,my,cw,ch);
+    // Center jump circle terracotta fill
+    g.fillStyle='#b33927';g.beginPath();g.arc(w/2,h/2,65,0,Math.PI*2);g.fill();
+    // Key areas terracotta fill
+    const kw=165, kh=150;
+    g.fillRect(mx,h/2-kh/2,kw,kh);
+    g.fillRect(w-mx-kw,h/2-kh/2,kw,kh);
+
+    // Crisp white court markings
+    g.strokeStyle='#ffffff';g.lineWidth=5;
+    // Boundary line
+    g.strokeRect(mx,my,cw,ch);
+    // Half court line
+    g.beginPath();g.moveTo(w/2,my);g.lineTo(w/2,my+ch);g.stroke();
+    // Center circle
+    g.beginPath();g.arc(w/2,h/2,65,0,Math.PI*2);g.stroke();
+    // Center restraining circle
+    g.beginPath();g.arc(w/2,h/2,25,0,Math.PI*2);g.stroke();
+    // Left Key
+    g.strokeRect(mx,h/2-kh/2,kw,kh);
+    g.beginPath();g.arc(mx+kw,h/2,kh/2,-Math.PI/2,Math.PI/2);g.stroke();
+    // Left 3-point arc
+    g.beginPath();g.arc(mx+45,h/2,195,-Math.PI/2.4,Math.PI/2.4);g.stroke();
+    // Right Key
+    g.strokeRect(w-mx-kw,h/2-kh/2,kw,kh);
+    g.beginPath();g.arc(w-mx-kw,h/2,kh/2,Math.PI/2,-Math.PI/2);g.stroke();
+    // Right 3-point arc
+    g.beginPath();g.arc(w-mx-45,h/2,195,Math.PI-Math.PI/2.4,Math.PI+Math.PI/2.4);g.stroke();
+  });
+
+  const courtMesh=new THREE.Mesh(new THREE.PlaneGeometry(25,11),lam(0xffffff,{map:bballTex}));
+  courtMesh.rotation.x=-Math.PI/2;
+  courtMesh.position.set(18.0,0.035,-17.7);
+  scene.add(courtMesh);
+
+  // Basketball Hoops (Regulation Backboard, Orange Rim, Net)
+  const rimGeo=new THREE.TorusGeometry(0.25,0.035,8,16), rimM=lam(0xe65100);
+  const netGeo=new THREE.CylinderGeometry(0.24,0.14,0.42,10,1,true), netM=lam(0xfdfdfd,{side:THREE.DoubleSide,transparent:true,opacity:0.85});
+
+  // West Hoop (x=6.4, facing east)
+  addBox(0.8,0.35,0.8,0x5a5f66,5.0,0.18,-17.7,true);
+  addBox(0.14,3.8,0.14,0x22262b,5.0,1.9,-17.7,true);
+  addBox(1.4,0.12,0.12,0x22262b,5.65,3.75,-17.7,true);
+  addBox(1.2,0.08,0.08,0x22262b,5.6,3.4,-17.7);
+  addBox(0.06,1.15,1.7,0xfcfcfc,6.35,3.15,-17.7);
+  addBox(0.07,1.2,1.75,0x1b1c1e,6.33,3.15,-17.7);
+  addBox(0.075,0.45,0.55,0xd62828,6.38,2.95,-17.7);
+  addBox(0.08,0.37,0.47,0xfcfcfc,6.385,2.95,-17.7);
+  addBox(0.35,0.05,0.08,0xe65100,6.55,2.75,-17.7);
+  const rim1=new THREE.Mesh(rimGeo,rimM);rim1.rotation.x=Math.PI/2;rim1.position.set(6.75,2.75,-17.7);scene.add(rim1);
+  const net1=new THREE.Mesh(netGeo,netM);net1.position.set(6.75,2.52,-17.7);scene.add(net1);
+
+  // East Hoop (x=29.6, facing west)
+  addBox(0.8,0.35,0.8,0x5a5f66,31.0,0.18,-17.7,true);
+  addBox(0.14,3.8,0.14,0x22262b,31.0,1.9,-17.7,true);
+  addBox(1.4,0.12,0.12,0x22262b,30.35,3.75,-17.7,true);
+  addBox(1.2,0.08,0.08,0x22262b,30.4,3.4,-17.7);
+  addBox(0.06,1.15,1.7,0xfcfcfc,29.65,3.15,-17.7);
+  addBox(0.07,1.2,1.75,0x1b1c1e,29.67,3.15,-17.7);
+  addBox(0.075,0.45,0.55,0xd62828,29.62,2.95,-17.7);
+  addBox(0.08,0.37,0.47,0xfcfcfc,29.615,2.95,-17.7);
+  addBox(0.35,0.05,0.08,0xe65100,29.45,2.75,-17.7);
+  const rim2=new THREE.Mesh(rimGeo,rimM);rim2.rotation.x=Math.PI/2;rim2.position.set(29.25,2.75,-17.7);scene.add(rim2);
+  const net2=new THREE.Mesh(netGeo,netM);net2.position.set(29.25,2.52,-17.7);scene.add(net2);
+
+  // Basketballs on the court
+  const ballGeo=new THREE.SphereGeometry(0.16,12,8), ballM=lam(0xd9531e);
+  const b1=new THREE.Mesh(ballGeo,ballM);b1.position.set(19.5,0.19,-16.2);scene.add(b1);
+  const b2=new THREE.Mesh(ballGeo,ballM);b2.position.set(10.5,0.19,-18.5);scene.add(b2);
+
+  // Court floodlight towers
+  addBox(0.12,7.5,0.12,0x474b50,5.8,3.75,-12.6);addBox(0.6,0.25,0.4,0x636e72,6.0,7.5,-12.8);
+  addBox(0.12,7.5,0.12,0x474b50,30.2,3.75,-12.6);addBox(0.6,0.25,0.4,0x636e72,30.0,7.5,-12.8);
+
+  // Trees framing the school perimeter and behind the court
+  for(let x=-44;x<=48;x+=6.5){
+    if(Math.abs(x)<3)continue;
+    const h=rand(5.5,8);
+    // If behind the court, place trees at the back perimeter (z=-24.5) so the court is open
+    const treeZ=(x>=4&&x<=32)?rand(-24.5,-26.0):rand(-15.5,-17.5);
+    const tr=addBox(0.5,h,0.5,0x6b4a33,x+rand(-0.8,0.8),h/2,treeZ);
+    const cMesh=new THREE.Mesh(new THREE.IcosahedronGeometry(rand(2.4,3.3),0),lam(pick([0x3f7d3a,0x4a8a3c,0x356f34])));
+    cMesh.position.set(tr.position.x,h+0.8,tr.position.z);cMesh.rotation.y=rand(0,3);cMesh.castShadow=true;scene.add(cMesh);
+  }
   addBox(40,10,8,0xf0ede6,0,5,-27);
   for(let i=0;i<9;i++)for(let f=0;f<2;f++)addBox(2,1.4,0.1,0x2b3d5c,-16+i*4,3+f*4,-22.95);
   const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.08,9,8),lam(0xdddddd));pole.position.set(-0.5,4.5,-19);scene.add(pole);
