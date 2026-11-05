@@ -10,6 +10,11 @@ Main di: https://belpulang.netlify.app atau https://belpulang.win
 - Gedung sekolah 2 lantai dengan jendela nako, koridor, dan atap genteng. Pohon dengan batang, cabang, dan daun berlapis. Langit biru berawan dan siluet gedung kota di kejauhan.
 - Cahaya sore yang hangat, bayangan lebih halus, dan gradasi warna sinematik.
 - **Settings → Grafik**: Otomatis / Rendah / Sedang / Tinggi. Otomatis memilih Tinggi untuk iPhone layar retina (iPhone 14 dll.) dan HP kencang, Rendah untuk HP lemah (tanpa bayangan, tekstur kecil). Berlaku setelah game dimuat ulang.
+- **Karakter baru** (mengikuti desain referensi): badan membulat, wajah dengan mata, alis, hidung, bibir, dan kumis tipis. Ekspresi berubah otomatis: biasa, marah (saat menyerang), kesakitan (kena pukul/tumbang), dan ketakutan (capek atau warga panik). Lutut menekuk saat jalan dan lari.
+  - SMEA 70: kemeja putih keunguan dengan badge di saku, celana abu-abu kebiruan, sepatu kanvas hitam-putih, rambut ikal atau pendek.
+  - XTM: kemeja biru ala taruna dengan dasi navy, pangkat emas di bahu, papan nama, sabuk dan gesper, celana navy, sepatu pantofel, rambut cepak.
+  - Warga ikut baru: orang kantoran berjas dan berdasi, ibu berhijab dan rok panjang, anak kecil, supir.
+  - Tiap orang sekarang cuma 7 potongan (dulu sekitar 20) dan bentuknya dipakai bersama, jadi 100 orang online jauh lebih ringan.
 - Benda-benda statis digabung supaya beban gambar (draw call) turun sekitar sepertiga.
 
 ## Warga & poin (v1.5)
