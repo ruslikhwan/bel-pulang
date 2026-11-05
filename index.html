@@ -726,21 +726,29 @@ function makeFighter(team,isPlayer,opt){
   fighters.push(f);return f;
 }
 const hbGeo=new THREE.PlaneGeometry(1,1), hbFillGeo=new THREE.PlaneGeometry(1,1).translate(0.5,0,0);
-const hbBg=new THREE.MeshBasicMaterial({color:0x0a0e17,depthTest:false,transparent:true,opacity:0.92});
-const hbCol=[new THREE.MeshBasicMaterial({color:0x3498db,depthTest:false}),new THREE.MeshBasicMaterial({color:0xe74c3c,depthTest:false})];
-const pHbFill=new THREE.MeshBasicMaterial({color:0x2ecc71,depthTest:false});
+const hbBg=new THREE.MeshBasicMaterial({color:0x05070a,depthTest:false,depthWrite:false,transparent:true,opacity:0.95});
+const hbTrack=new THREE.MeshBasicMaterial({color:0x1b2333,depthTest:false,depthWrite:false,transparent:true,opacity:0.9});
+const hbCol=[
+  new THREE.MeshBasicMaterial({color:0x3498db,depthTest:false,depthWrite:false,transparent:true,opacity:1.0}),
+  new THREE.MeshBasicMaterial({color:0xff2e2e,depthTest:false,depthWrite:false,transparent:true,opacity:1.0})
+];
+const pHbFill=new THREE.MeshBasicMaterial({color:0x22c55e,depthTest:false,depthWrite:false,transparent:true,opacity:1.0});
 function makePlayerHB(){
-  const g=new THREE.Group();const bg=new THREE.Mesh(hbGeo,hbBg);bg.scale.set(1.16,0.22,1);bg.renderOrder=30;
-  const fl=new THREE.Mesh(hbFillGeo,pHbFill);fl.scale.set(1.10,0.16,1);fl.position.set(-0.55,0,0.001);fl.renderOrder=31;
-  g.add(bg,fl);g.userData.fill=fl;g.visible=true;scene.add(g);return g;
+  const g=new THREE.Group();
+  const bg=new THREE.Mesh(hbGeo,hbBg);bg.scale.set(1.22,0.26,1);bg.renderOrder=100;
+  const tr=new THREE.Mesh(hbFillGeo,hbTrack);tr.scale.set(1.12,0.18,1);tr.position.set(-0.56,0,0.02);tr.renderOrder=101;
+  const fl=new THREE.Mesh(hbFillGeo,pHbFill);fl.scale.set(1.12,0.18,1);fl.position.set(-0.56,0,0.04);fl.renderOrder=102;
+  g.add(bg,tr,fl);g.userData.fill=fl;g.visible=true;scene.add(g);return g;
 }
 const arrowGeo=new THREE.ConeGeometry(0.24,0.44,4);arrowGeo.rotateX(Math.PI);
 const arrowMat=new THREE.MeshBasicMaterial({color:0xff2222,depthTest:false});
 function makeEnemyMarker(){const m=new THREE.Mesh(arrowGeo,arrowMat);m.renderOrder=25;m.position.y=2.85;return m;}
 function makeHB(team){
-  const g=new THREE.Group();const bg=new THREE.Mesh(hbGeo,hbBg);bg.scale.set(0.98,0.18,1);bg.renderOrder=10;
-  const fl=new THREE.Mesh(hbFillGeo,hbCol[team]);fl.scale.set(0.92,0.13,1);fl.position.set(-0.46,0,0.001);fl.renderOrder=11;
-  g.add(bg,fl);g.userData.fill=fl;g.visible=false;scene.add(g);return g;
+  const g=new THREE.Group();
+  const bg=new THREE.Mesh(hbGeo,hbBg);bg.scale.set(1.04,0.22,1);bg.renderOrder=100;
+  const tr=new THREE.Mesh(hbFillGeo,hbTrack);tr.scale.set(0.94,0.14,1);tr.position.set(-0.47,0,0.02);tr.renderOrder=101;
+  const fl=new THREE.Mesh(hbFillGeo,hbCol[team]);fl.scale.set(0.94,0.14,1);fl.position.set(-0.47,0,0.04);fl.renderOrder=102;
+  g.add(bg,tr,fl);g.userData.fill=fl;g.visible=false;scene.add(g);return g;
 }
 function removeFighter(f){
   clearRing(f);
@@ -1052,7 +1060,7 @@ function updateHuman(p,ix,iz,dt){
   if(tg)pose(p,tg,dt);
   physics(p,dt,-30,net?52:42);
   p.r.group.rotation.y=p.face;tint(p);
-  if(p.hb){p.hb.visible=alive(p);if(p.hb.visible){p.hb.position.set(p.pos.x,2.75*p.sc,p.pos.z);p.hb.quaternion.copy(camera.quaternion);p.hb.userData.fill.scale.x=Math.max(0.001,1.10*Math.min(1,p.hp/p.maxHp));}}
+  if(p.hb){p.hb.visible=alive(p);if(p.hb.visible){p.hb.position.set(p.pos.x,2.75*p.sc,p.pos.z);p.hb.quaternion.copy(camera.quaternion);p.hb.userData.fill.scale.x=Math.max(0.001,1.12*Math.min(1,p.hp/p.maxHp));}}
 }
 
 /* ================= AI ================= */
@@ -1184,7 +1192,7 @@ function updateAI(f,dt){
       f.marker.rotation.y=clock*2.5;
     }
   }
-  if(f.hb){const isEnemy=player?(f.team!==player.team):(f.team===1);const show=alive(f)&&(isEnemy||f.hp<f.maxHp||f.boss||(player&&dist(f,player)<14));f.hb.visible=show;if(show){f.hb.position.set(f.pos.x,2.55*f.sc+0.1,f.pos.z);f.hb.quaternion.copy(camera.quaternion);f.hb.userData.fill.scale.x=Math.max(0.001,0.92*f.hp/f.maxHp);}}
+  if(f.hb){const isEnemy=player?(f.team!==player.team):(f.team===1);const show=alive(f)&&(isEnemy||f.hp<f.maxHp||f.boss||(player&&dist(f,player)<14));f.hb.visible=show;if(show){f.hb.position.set(f.pos.x,2.55*f.sc+0.1,f.pos.z);f.hb.quaternion.copy(camera.quaternion);f.hb.userData.fill.scale.x=Math.max(0.001,0.94*f.hp/f.maxHp);}}
 }
 
 /* ================= vehicles ================= */
