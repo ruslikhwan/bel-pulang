@@ -236,6 +236,8 @@ button:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
 #creatorOv{ z-index: 95 !important; backdrop-filter: blur(4px); }
 #btnCreateProf, #btnLoadProf, #btnGuestPlay{ position:relative; z-index:5; cursor:pointer; touch-action:manipulation; }
 
+#specBar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:6;display:flex;align-items:center;gap:10px;background:rgba(29,35,64,.88);color:var(--cream);border-radius:12px;padding:7px 8px 7px 14px;font-weight:800;font-size:13px;max-width:92vw}
+#specBar button{font-family:var(--display);font-size:12px;border:2px solid var(--cream);background:var(--red);color:var(--cream);border-radius:8px;padding:6px 10px}
 body.kb .ov{align-items:flex-start}
 body.kb .ov .card{margin-top:0}
 /* ===== 1.1.1: splash, main menu, sub menus ===== */
@@ -323,6 +325,7 @@ details.howto summary{font-family:var(--display);font-size:12px;cursor:pointer;l
 </div>
 <div id="combo"></div>
 <div id="feed" aria-live="polite"></div>
+<div id="specBar" hidden><span id="specTxt"></span><button type="button" id="specBtn">GANTI KAMERA ▸</button></div>
 <div id="banner"><small id="bnK"></small><b id="bnT"></b><span id="bnS"></span></div>
 
 <div id="controls" hidden>
@@ -344,7 +347,7 @@ details.howto summary{font-family:var(--display);font-size:12px;cursor:pointer;l
     <button type="button" class="mm-btn" id="mmMulti">MULTIPLAYER<small>SMEA 70 vs XTM · 50 vs 50 online</small></button>
     <button type="button" class="mm-btn" id="mmSettings">SETTINGS<small>Atur avatar</small></button>
     <p class="hint" id="iosHint" hidden><b>Biar layar penuh di iPhone:</b> ketuk tombol Share di Safari, pilih <b>Add to Home Screen</b>, lalu buka game dari ikon Bel Pulang di layar utama.</p>
-    <p class="mm-foot">v1.1.1 · Sporadis Games</p>
+    <p class="mm-foot">v1.2 · Sporadis Games</p>
   </div>
   <div hidden><button class="cta" id="startBtn">MAIN LEVEL 1</button><button class="cta" id="onlineBtn">ONLINE</button><button class="cta alt" id="resetBtn" hidden>ULANG</button></div>
 </div>
@@ -582,7 +585,7 @@ details.howto summary{font-family:var(--display);font-size:12px;cursor:pointer;l
         <div class="team t0"><h3><span>SMEA 70</span><span id="lbN0" class="num">0</span></h3><ul id="lbT0"></ul><span class="bots" id="lbB0"></span><button id="lbPick0">PILIH SMEA 70</button></div>
         <div class="team t1"><h3><span>XTM</span><span id="lbN1" class="num">0</span></h3><ul id="lbT1"></ul><span class="bots" id="lbB1"></span><button id="lbPick1">PILIH XTM</button></div>
       </div>
-      <p class="hint"><b>SMEA 70</b> (50 orang) keluar dari gerbang dan bertahan. <b>XTM</b> (50 orang) turun dari Metromini di sebelah kanan. Darah semua sama, tidak ada bangkit lagi, ronde 4 menit. XTM menang kalau gerbang rubuh dan ada yang masuk sekolah. SMEA 70 menang kalau Metromini XTM hancur atau waktu habis. Pasukan yang habis duluan kalah. Tiap 1 menit Wito razia: SMEA 70 masuk gerbang, XTM lari ke halte Metromini dalam 5 detik, yang masih di luar BUSTED.</p>
+      <p class="hint"><b>SMEA 70</b> (50 orang) keluar dari gerbang dan bertahan. <b>XTM</b> (50 orang) turun dari Metromini di sebelah kanan. Darah semua 150, tidak ada bangkit lagi kalau tumbang, ronde 6 menit. Bot turun bergelombang: 15 di awal, bantuan tiap 20 detik sampai 50 orang. XTM menang kalau gerbang rubuh dan ada yang masuk sekolah. SMEA 70 menang kalau Metromini XTM hancur atau waktu habis. Pasukan yang habis duluan kalah. Tiap 90 detik Wito razia: dalam 6 detik SMEA 70 masuk gerbang dan XTM lari ke halte Metromini. Yang masih di luar ditahan 20 detik, lalu keluar lagi dari markas.</p>
       <label class="lbl2" for="lbWpn">SENJATA AWALMU</label>
       <select class="inp" id="lbWpn"></select>
       <button class="cta" id="lbStart">MULAI TAWURAN</button>
@@ -693,7 +696,7 @@ const ROAD_N=-7.5, ROAD_S=2.5, LANE_E=-5.1, LANE_W=0.1;
 const GATE={x:0.2,z:-13.6}, HALTE={x:-9,z:4.6,r:4.2}, SPANDUK={x:21,z:4.6,r:3.2};
 const FOUNTAIN={x:-5.8,z:-9.2,r:4.2};
 let flagMesh=null, spandukGroup=null, zoneRing=null, stallNpc=null, healRing=null, fountainEffectT=0;
-const gate={hp:0,max:1200,broken:false,leaves:[],shake:0};
+const gate={hp:0,max:3000,lastHit:-99,broken:false,leaves:[],shake:0};
 (function buildWorld(){
   flat(220,140,0x8a9a6c,0,0,0);
   flat(220,10,0x46474c,0,-2.5,0.025);
@@ -1079,7 +1082,7 @@ function gateBreak(){
 }
 function hitGate(dmg,f){
   if(gate.hp<=0)return;
-  gate.hp=Math.max(0,gate.hp-dmg);gate.shake=0.18;
+  gate.hp=Math.max(0,gate.hp-dmg);gate.lastHit=clock;gate.shake=0.18;
   popup(pick(['DANG!','DENG!','BRANG!']),{x:f.pos.x,z:-10.9},2.4,'');
   burst(f.pos.x,1.2,-10.95,4,0xfff3c4,0.9);
   if(gate.hp<=0)gateBreak();
@@ -1092,8 +1095,8 @@ function gateFrame(dt){
 /* ================= multiplayer 1.1: names, blood, molotov fire, XTM Metromini, police raid ================= */
 const XH={x:26,z:4.3,r:5.8};                       // XTM halte: parked Metromini + safe zone during raids
 const XBUS_BOX={x0:21.6,x1:30.4,z0:3.1,z1:5.5};
-const xbus={hp:0,max:1200,broken:false,g:null,shake:0,sign:null};
-const RAID_EVERY=60, RAID_WARN=5, RAID_HOLD=6;
+const xbus={hp:0,max:3000,broken:false,g:null,shake:0,sign:null};
+const RAID_EVERY=90, RAID_WARN=6, RAID_HOLD=6, JAIL_T=20, NET_HP=150, WAVE_FIRST=15, WAVE_EVERY=20, FIELD_CAP=30;
 const BUSTED={name:'busted',busted:true,words:['BUSTED!']};
 const MOLO_FIRE={name:'molotov',words:['PANAS!']};
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -1124,6 +1127,7 @@ function onlineLook(team,ap){
   const l=Object.assign({},ap);if(l.outfit!=='hoodie')l.shirt=base.shirt;l.pants=base.pants;if(!l.skin)l.skin=base.skin;if(!l.hair)l.hair=base.hair;return l;
 }
 function updateHB(f){
+  if(f.state==='jail'){if(f.hb)f.hb.visible=false;return;}
   if(f.demo){if(f.marker)f.marker.visible=false;if(f.hb)f.hb.visible=false;return;}
   if(f.marker){f.marker.visible=alive(f);if(f.marker.visible){f.marker.position.y=2.8*f.sc+Math.sin(clock*5+f.nid)*0.08+(f.tag?0.55:0);f.marker.rotation.y=clock*2.5;}}
   if(f.tag)f.tag.visible=alive(f);
@@ -1258,8 +1262,21 @@ function raidPhaseChanged(ph,prev){
   }
 }
 function bust(f){
-  popup('BUSTED!',f.pos,2.7,'car');burst(f.pos.x,1.2,f.pos.z,8,0x2a6bff,1);burst(f.pos.x,1.2,f.pos.z,6,0xff2a2a,1);
-  KO(f,null,BUSTED);
+  popup('DITAHAN!',f.pos,2.7,'car');burst(f.pos.x,1.2,f.pos.z,8,0x2a6bff,1);burst(f.pos.x,1.2,f.pos.z,6,0xff2a2a,1);
+  if(net&&net.role==='host'&&(f.isPlayer||f.human)){const k=['',-1,f.pname||'?',f.team,'',2,'',f.pid||''];net.kf.push(k);addFeed(k);}
+  release(f);clearRing(f);f.state='jail';f.t=0;f.safe=true;f.kv.set(0,0,0);f.r.group.visible=false;if(f.hb)f.hb.visible=false;
+  f.pos.set(f.team===0?-60:90,0,-30);
+  if(f===player)banner('DITAHAN WITO',JAIL_T+' detik, lalu keluar lagi dari markas',2400);
+}
+function jailTick(f,dt){
+  f.t+=dt;
+  if(f.t>=JAIL_T){
+    f.state='idle';f.t=0;f.safe=false;f.inv=1.5;f.r.group.visible=true;f.think=0;f.inYard=false;
+    if(f.team===0)f.pos.set(0.2+rand(-1.6,1.6),0,-10.2);else f.pos.set(rand(XBUS_BOX.x0+0.5,XBUS_BOX.x1-0.5),0,XBUS_BOX.z0-0.8);
+    f.face=f.team===0?0:Math.PI;burst(f.pos.x,0.3,f.pos.z,4,0xc4b59a,0.5);
+    if(f===player)banner('BEBAS!','Kamu keluar lagi dari markas',1600);
+  }
+  updateHB(f);
 }
 function raidTick(dt){
   const R=M.raid;if(!R)return;
@@ -1270,7 +1287,7 @@ function raidTick(dt){
     R.t-=dt;if(R.t<=0){R.ph=2;R.t=RAID_HOLD;raidPhaseChanged(2,1);}
   }else if(R.ph===2){
     R.t-=dt;
-    for(const f of [...fighters])if(alive(f)&&!raidSafe(f))bust(f);
+    for(const f of [...fighters])if(alive(f)&&!f.safe&&f.state!=='jail'&&!raidSafe(f))bust(f);
     if(R.t<=0){R.ph=0;R.t=0;for(const f of fighters)f.think=0;raidPhaseChanged(0,2);}
   }
   if(R.ph){R.siren=(R.siren||0)-dt;if(R.siren<=0){R.siren=0.85;sfx('siren');}}
@@ -1442,8 +1459,8 @@ function wMesh(type){
   return g;
 }
 function pickWeaponType(){
-  const ks=WKEYS.filter(k=>!WPN[k].unlock||WPN[k].unlock<=(net?99:level));let tot=0;ks.forEach(k=>tot+=WPN[k].weight);
-  let r=Math.random()*tot;for(const k of ks){r-=WPN[k].weight;if(r<=0)return k;}return 'batu';
+  const ks=WKEYS.filter(k=>!WPN[k].unlock||WPN[k].unlock<=(net?99:level));const wt=k=>WPN[k].weight*(net&&(WPN[k].deadly||WPN[k].fire)?0.4:1);let tot=0;ks.forEach(k=>tot+=wt(k));
+  let r=Math.random()*tot;for(const k of ks){r-=wt(k);if(r<=0)return k;}return 'batu';
 }
 
 /* ================= levels, missions, perks ================= */
@@ -1618,11 +1635,12 @@ function makeFighter(team,isPlayer,opt){
     weapon:null,held:null,cd:rand(0.6,1.4),flash:0,walk:0,moving:0,inv:0,carCd:0,think:0,target:null,goalW:null,goalP:null,danger:null,
     alert:Math.random(),strafe:Math.random()<0.5?-1:1,tok:false,toks:0,dodgeCd:0,combo:0,comboT:0,buf:null,bufT:0,atk:null,anim:'',hitDone:false,side:'R',dodgeX:0,dodgeZ:1,windDef:null,
     zb:Math.random()<(net&&team===1?0.4:0.5),vb:Math.random()<0.5,boss:!!opt.boss,vip:!!opt.vip,slamN:0,ring:null,wp:0,flee:false};
-  if(isPlayer){f.maxHp=net?100:120+20*P('nyawa');f.dmgMul=1+0.15*P('tinju');}
+  if(isPlayer){f.maxHp=net?NET_HP:120+20*P('nyawa');f.dmgMul=1+0.15*P('tinju');}
   else if(opt.boss){f.maxHp=Math.round(500*(1+0.08*(level/10-1))*cfg.hpMul);f.dmgMul=cfg.dmgMul*1.2;f.spd=3.6*cfg.spdMul;f.kbMul=0.25;f.reach=1.4;}
   else if(opt.vip){f.maxHp=Math.round(160*(1+0.02*level));f.spd=2.4;}
   else if(team===1){f.maxHp=Math.round(100*cfg.hpMul);f.dmgMul=cfg.dmgMul;f.spd=4.1*cfg.spdMul;}
   else{f.maxHp=Math.round(100*(1+0.15*P('teman')));f.dmgMul=1+0.15*P('teman');}
+  if(net&&!opt.boss&&!opt.vip)f.maxHp=NET_HP;
   f.hp=f.maxHp;
   const foe=net?team!==myTeam():team===1;
   if(local){f.hb=makePlayerHB();const ring=new THREE.Mesh(new THREE.RingGeometry(0.55,0.72,32),new THREE.MeshBasicMaterial({color:0x22c55e,transparent:true,opacity:0.9,depthWrite:false}));ring.rotation.x=-Math.PI/2;ring.position.y=0.05;r.group.add(ring);}
@@ -1800,12 +1818,12 @@ const dist=(a,b)=>Math.hypot(a.pos.x-b.pos.x,a.pos.z-b.pos.z);
 const alive=f=>f.state!=='down';
 function nearestFoe(f,maxD){let best=null,bd=maxD;for(const o of fighters){if(o.team===f.team||!alive(o)||o.safe)continue;const d=dist(f,o);if(d<bd){bd=d;best=o;}}return best;}
 function teamAlive(t){let n=0;for(const f of fighters)if(f.team===t&&alive(f)&&!f.safe)n++;return n;}
-function teamLeft(t){return res[t]+teamAlive(t);}
+function teamLeft(t){if(net){let n=0;for(const f of fighters)if(f.team===t&&alive(f))n++;return res[t]+n;}return res[t]+teamAlive(t);}
 
 function meleeHit(f,w){
   const fx=Math.sin(f.face),fz=Math.cos(f.face),ca=Math.cos(w.arc);let hits=0;const rng=w.range*(f.reach||1);
   for(const o of fighters){
-    if(o.team===f.team||!alive(o))continue;
+    if(o.team===f.team||!alive(o)||o.safe)continue;
     const dx=o.pos.x-f.pos.x,dz=o.pos.z-f.pos.z,d=Math.hypot(dx,dz)||0.001;
     if(d>rng+(o.sc-1)*0.8)continue;if((dx*fx+dz*fz)/d<ca&&d>0.8)continue;
     if(damage(o,w.dmg,dx/d,dz/d,w.kb,f,w))hits++;
@@ -1957,6 +1975,7 @@ function readInput(){
 }
 function updatePlayer(dt){const i=readInput();updateHuman(player,i[0],i[1],dt);if(player&&alive(player)&&(!player.weapon||player.weapon.n<=0)){const w=nearGround(player,1.9);if(w)takeGround(player,w);}}
 function updateHuman(p,ix,iz,dt){
+  if(p.state==='jail'){jailTick(p,dt);return;}
   p.inv-=dt;p.dodgeCd-=dt;p.comboT-=dt;p.bufT-=dt;p.flash-=dt;p.carCd-=dt;
   const mag=Math.hypot(ix,iz);
   let tg=commonState(p,dt);
@@ -2018,7 +2037,7 @@ function aiThink(f){
   else if(M.type==='halte'&&f.zb)f.goalP={x:HALTE.x+rand(-3,3),z:HALTE.z+rand(-1,0.8)};
   else if(M.type==='kawal'&&f.team===0&&f.zb&&M.vip&&alive(M.vip))f.goalP={x:M.vip.pos.x+rand(-2,2),z:M.vip.pos.z+rand(-2,2)};
   else if(net&&f.zb){if(f.team===1)f.goalP=gate.hp>0?{x:rand(-1.9,2.4),z:-10.3}:{x:rand(-0.8,1.2),z:-15};else f.goalP={x:rand(-3.5,4),z:rand(-10,-8)};}
-  else if(net&&f.team===0&&xbus.hp>0&&(!f.target||dist(f,f.target)>10))f.goalP={x:rand(XBUS_BOX.x0+0.5,XBUS_BOX.x1-0.5),z:XBUS_BOX.z0-0.6};
+  else if(net&&f.team===0&&xbus.hp>0&&clock-gate.lastHit>5&&(!f.target||dist(f,f.target)>10))f.goalP={x:rand(XBUS_BOX.x0+0.5,XBUS_BOX.x1-0.5),z:XBUS_BOX.z0-0.6};
   f.goalW=null;
   if(!f.weapon&&ground.length&&!f.flee){
     const w=nearGround(f,9);
@@ -2046,6 +2065,7 @@ function updateVip(f,dt){
 }
 function updateAI(f,dt){
   if(f.vip){updateVip(f,dt);return;}
+  if(f.state==='jail'){jailTick(f,dt);return;}
   f.cd-=dt;f.flash-=dt;f.inv-=dt;f.carCd-=dt;f.think-=dt;
   let tg=commonState(f,dt),mvx=0,mvz=0;
   if(!tg){
@@ -2061,13 +2081,13 @@ function updateAI(f,dt){
         f.state='strike';f.t=0;
         if(w.slam){
           clearRing(f);sfx('slam');shake=Math.max(shake,dist(f,focusF())<16?0.55:0.1);burst(f.pos.x,0.2,f.pos.z,22,0xc9a26b,1.6);
-          for(const o of fighters){if(o.team===f.team||!alive(o))continue;const ox=o.pos.x-f.pos.x,oz=o.pos.z-f.pos.z,od=Math.hypot(ox,oz)||0.01;if(od<SLAM.r)damage(o,SLAM.dmg,ox/od,oz/od,SLAM.kb,f,SLAM);}
+          for(const o of fighters){if(o.team===f.team||!alive(o)||o.safe)continue;const ox=o.pos.x-f.pos.x,oz=o.pos.z-f.pos.z,od=Math.hypot(ox,oz)||0.01;if(od<SLAM.r)damage(o,SLAM.dmg,ox/od,oz/od,SLAM.kb,f,SLAM);}
         }else if(w.ranged){if(T&&f.weapon){throwAt(f,f.weapon.type,T.pos.x+T.kv.x*0.1,T.pos.z+T.kv.z*0.1);useUp(f);}}
         else{f.pos.x+=Math.sin(f.face)*0.3;f.pos.z+=Math.cos(f.face)*0.3;const h=meleeHit(f,w);if(h){const near=dist(f,focusF())<16;sfx(w.deadly?'slash':'hit',near?0.7:0.25);}if(f.weapon&&w!==WPN.fist)useUp(f);}
       }
     }else if(f.state==='strike'){
       f.t+=dt;tg=f.windDef&&f.windDef.slam?{aL:-0.6,aR:-0.6,lean:0.45,y:-0.15}:{aR:-1.3,aL:-0.4,lean:0.22,tw:-0.3};
-      if(f.t>0.32){const w=f.windDef;f.state='idle';release(f);f.cd=w&&w.deadly?rand(1.6,2.6):(f.boss?rand(0.8,1.4):rand(0.9,2.0));}
+      if(f.t>0.32){const w=f.windDef;f.state='idle';release(f);f.cd=(w&&w.deadly?rand(1.6,2.6):(f.boss?rand(0.8,1.4):rand(0.9,2.0)))*(net?1.25:1);}
     }else{
       if(f.danger!==null){
         mvz=Math.sign(f.danger-f.pos.z);mvx=T?Math.sign(dx)*0.2:0;
@@ -2082,7 +2102,7 @@ function updateAI(f,dt){
       }else if(net&&f.team===1&&f.zb&&gate.hp>0&&f.pos.z<-9.4&&Math.abs(f.pos.x-0.2)<2.9&&(!T||d>1.7)){
         turn(f,Math.PI,8,dt);
         if(f.cd<=0){f.state='windup';f.t=0;f.gateHit=true;f.windDef=f.weapon&&WPN[f.weapon.type].melee?WPN[f.weapon.type]:WPN.fist;}
-      }else if(net&&f.team===0&&!f.zb&&xbus.hp>0&&(()=>{const bp=busHitPoint(f);return Math.hypot(bp.x-f.pos.x,bp.z-f.pos.z)<1.3;})()&&(!T||d>2.2)){
+      }else if(net&&f.team===0&&!f.zb&&xbus.hp>0&&clock-gate.lastHit>5&&(()=>{const bp=busHitPoint(f);return Math.hypot(bp.x-f.pos.x,bp.z-f.pos.z)<1.3;})()&&(!T||d>2.2)){
         const bp=busHitPoint(f);turn(f,Math.atan2(bp.x-f.pos.x,bp.z-f.pos.z),8,dt);
         if(f.cd<=0){f.state='windup';f.t=0;f.busHit=true;f.windDef=f.weapon&&WPN[f.weapon.type].melee?WPN[f.weapon.type]:WPN.fist;}
       }else if(T){
@@ -2373,7 +2393,7 @@ function updateWorld(dt){
   for(let i=projs.length-1;i>=0;i--){
     const q=projs[i];q.life-=dt;q.vy-=G*dt;q.m.position.x+=q.vx*dt;q.m.position.y+=q.vy*dt;q.m.position.z+=q.vz*dt;q.m.rotation.x+=dt*14;q.m.rotation.z+=dt*9;
     let hit=null;
-    for(const o of fighters){if(o.team===q.team||!alive(o))continue;const dx=o.pos.x-q.m.position.x,dz=o.pos.z-q.m.position.z;if(dx*dx+dz*dz<0.42*o.sc*o.sc&&q.m.position.y<2.2*o.sc&&q.m.position.y>0.2){hit=o;break;}}
+    for(const o of fighters){if(o.team===q.team||!alive(o)||o.safe)continue;const dx=o.pos.x-q.m.position.x,dz=o.pos.z-q.m.position.z;if(dx*dx+dz*dz<0.42*o.sc*o.sc&&q.m.position.y<2.2*o.sc&&q.m.position.y>0.2){hit=o;break;}}
     const def=WPN[q.type];
     if(hit){const v=Math.hypot(q.vx,q.vz)||1;damage(hit,def.dmg,q.vx/v,q.vz/v,def.kb,q.owner,def);
       if(def.fire){spawnFire(q.m.position.x,q.m.position.z,q.team,q.owner);scene.remove(q.m);projs.splice(i,1);continue;}
@@ -2391,7 +2411,8 @@ function updateWorld(dt){
 function capFor(t){if(net)return 18;return t===0?Math.min(12,5+Math.floor(elapsed/12)):Math.min(cfg.cap,6+Math.floor(elapsed/10));}
 function updateSpawns(dt){
   elapsed+=dt;
-  if(M.phase!=='escape'&&!(net&&net.role!=='host')){
+  if(net){if(net.role==='host')netWaves(dt);}
+  else if(M.phase!=='escape'){
     for(let t=0;t<2;t++){
       spawnT[t]-=dt;
       if(spawnT[t]<=0&&res[t]>0&&teamAlive(t)<capFor(t)){
@@ -2418,12 +2439,38 @@ function updateSpawns(dt){
     }
   }
 }
+function netWaves(dt){
+  if(!M.waveT)M.waveT=[WAVE_EVERY,WAVE_EVERY];
+  const on=[0,1].map(t=>fighters.filter(f=>f.team===t&&alive(f)).length);
+  for(let t=0;t<2;t++){
+    if(res[t]<=0)continue;
+    const behind=on[t]<on[1-t]-5;
+    M.waveT[t]-=dt*(behind?1.35:1);
+    if(M.waveT[t]>0)continue;
+    M.waveT[t]=WAVE_EVERY;
+    const n=Math.min(res[t],Math.floor(rand(8,11)),Math.max(0,FIELD_CAP-on[t]));
+    if(n<=0)continue;
+    for(let i=0;i<n;i++){
+      const f=makeFighter(t,false);res[t]--;
+      if(t===0){f.pos.set(0.2+rand(-1.8,1.8),0,-10.2-rand(0,0.4));f.face=0;}
+      else{f.pos.set(rand(XBUS_BOX.x0+0.4,XBUS_BOX.x1-0.4),0,XBUS_BOX.z0-rand(0.7,1.4));f.face=Math.PI;}
+      f.think=rand(0,0.8);armRandom(f,cfg.armed);burst(f.pos.x,0.3,f.pos.z,3,0xc4b59a,0.5);
+    }
+    const k=['',-1,teamName(t),t,String(n),3,'',''];net.kf.push(k);addFeed(k);
+  }
+}
 function respawnPlayer(){
   const p=player;p.maxHp=120+20*P('nyawa');p.hp=p.maxHp;p.state='idle';p.t=0;p.inv=1.2;p.kv.set(0,0,0);p.pos.set(GATE.x,0,-12.5);p.face=0;p.toks=0;p.r.rig.rotation.set(0,0,0);p.r.rig.position.y=0;setWeapon(p,null);spectate=false;
   if(P('mulai'))armRandom(p,1);
   if(M.phase!=='escape')banner('BANGKIT LAGI','Kamu keluar lagi dari gerbang. Cadangan tersisa '+res[0],1800);
 }
-function focusF(){if(player&&alive(player))return player;if(spectate&&player){for(const f of fighters)if(f.team===player.team&&alive(f)&&!f.safe)return f;}return player||{pos:{x:0,z:0}};}
+function specList(){if(!player)return [];return fighters.filter(f=>f!==player&&f.team===player.team&&alive(f)&&f.state!=='jail'&&!f.safe).sort((a,b)=>(b.isPlayer-a.isPlayer)||(a.nid-b.nid));}
+let specIdx=0;
+function focusF(){
+  if(player&&alive(player)&&player.state!=='jail')return player;
+  if(player&&(spectate||player.state==='jail')){const L=specList();if(L.length)return L[((specIdx%L.length)+L.length)%L.length];}
+  return player||{pos:{x:0,z:0}};
+}
 
 /* ================= missions ================= */
 function setupMission(){
@@ -2512,6 +2559,12 @@ function missionHud(){
 }
 function hud(){
   const p=player,hp=Math.max(0,Math.ceil(p.hp)),us=teamLeft(0),them=teamLeft(1);
+  if(net){const jail=p.state==='jail',dead=!alive(p),sb=$('#specBar');
+    if(jail||dead){const L=specList(),f=focusF();$('#controls').hidden=true;sb.hidden=false;
+      const who=f&&f!==p&&f.pname?f.pname:(L.length?'teman':'-');
+      const t=jail?('Ditahan Wito · '+Math.max(0,Math.ceil(JAIL_T-p.t))+' detik · '):'Kamu tumbang · ';
+      const txt=t+'menonton '+who+' · '+L.length+' teman tersisa';if($('#specTxt').textContent!==txt)$('#specTxt').textContent=txt;}
+    else if(!sb.hidden){sb.hidden=true;if(mode==='play')$('#controls').hidden=false;}}
   const w=p.weapon,wk=w?w.type+w.n:'-';
   const nearW=nearGround(p,2.2);
   const near=!!(alive(p)&&(w||nearW));
@@ -2658,6 +2711,7 @@ $('#againBtn').addEventListener('click',()=>{if(net)netBackToLobby();else startL
 $('#resumeBtn').addEventListener('click',resume);$('#restartBtn').addEventListener('click',startLevel);
 $('#menuBtn').addEventListener('click',()=>{netLeave();showMenu();});$('#endMenuBtn').addEventListener('click',()=>{netLeave();showMenu();});
 $('#pauseBtn').addEventListener('click',pause);
+$('#specBtn').addEventListener('click',()=>{specIdx++;});
 $('#soundBtn').addEventListener('click',()=>{initAudio();setMuted(!muted);if(!muted)sfx('pick');});setMuted(muted);
 $('#resetBtn').addEventListener('click',e=>{const b=e.currentTarget;if(!b.dataset.armed){b.dataset.armed='1';b.textContent='YAKIN? KETUK LAGI UNTUK HAPUS PROGRES';return;}level=1;perks={};writeSave();showMenu();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
@@ -2677,7 +2731,7 @@ const SB_URL='https://xooctssjgpqigqclfzoy.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhvb2N0c3NqZ3BxaWdxY2xmem95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyMzg2OTQsImV4cCI6MjEwNTgxNDY5NH0.1iur6Dif_B_e391FvEdaPV6d9Bx6a4ttET1i489cGPk';
 const SB_LIB='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
 const TEAM_SIZE=50, START_BOTS=6, SNAP_DT=0.12, TAU=Math.PI*2;
-const SC={idle:0,walk:1,attack:2,hurt:3,knock:4,down:5,windup:6,strike:7,dodge:8}, SN=Object.keys(SC);
+const SC={idle:0,walk:1,attack:2,hurt:3,knock:4,down:5,windup:6,strike:7,dodge:8,jail:9}, SN=Object.keys(SC);
 const AN=['','punch','upper','kick','swing','throw'];
 const qz=v=>Math.round(v*10);
 const myPid=Math.random().toString(36).slice(2,10);
@@ -2818,7 +2872,7 @@ function startBanner(){
   sfx('bell');
 }
 
-const ROUND_T=240;
+const ROUND_T=360;
 const BOTN=['Ucup','Asep','Dimas','Bayu','Ojan','Bambang','Iqbal','Rafi','Gilang','Fajar','Yoga','Tegar','Rizky','Aldi','Doni','Eko','Jajang','Komar','Ilham','Agus','Hendra','Wawan','Udin','Sandi','Bima','Raka','Ferdi','Jefri','Ojak','Badrun','Engkus','Galih','Tono','Yayan','Ardi','Kevin','Nanda','Rendi','Saipul','Topan'];
 function getWpn(){let w='';try{w=localStorage.getItem('belpulang-wpn')||'';}catch(e){}return WPN[w]?w:'';}
 function wName(w,car){
@@ -2833,7 +2887,8 @@ function addFeed(k){
   const box=$('#feed');if(!box)return;
   const row=document.createElement('div');
   const nm=(name,team,pid)=>{const sp=document.createElement('span');sp.className='k'+team+(pid&&pid===myPid?' me':'');sp.textContent=name;return sp;};
-  if(k[5]===2){row.append(nm(k[2],k[3],k[7]),' ',Object.assign(document.createElement('span'),{className:'w',textContent:'BUSTED · ditangkap Wito'}));}
+  if(k[5]===2){row.append(nm(k[2],k[3],k[7]),' ',Object.assign(document.createElement('span'),{className:'w',textContent:'DITAHAN Wito · '+JAIL_T+' detik'}));}
+  else if(k[5]===3){row.append(Object.assign(document.createElement('span'),{className:'w',textContent:'Bantuan '}),nm(k[2],k[3],''),' +'+k[4]+' orang');}
   else if(k[5]){row.append(nm(k[2],k[3],k[7]),' ketabrak ',Object.assign(document.createElement('span'),{className:'w',textContent:k[4]}));}
   else if(k[0]){row.append(nm(k[0],k[1],k[6]),' KO ',nm(k[2],k[3],k[7]));if(k[4])row.append(' ',Object.assign(document.createElement('span'),{className:'w',textContent:'pakai '+k[4]}));}
   else row.append(nm(k[2],k[3],k[7]),' tumbang');
@@ -2875,7 +2930,7 @@ function hostStartMatch(){
       if(p.pid===myPid)player=f;else net.byPid[p.pid]=f;
       roster.push([p.pid,f.nid,t,p.name,sanAp(p.ap)]);
     });
-    const nb=TEAM_SIZE-hum.length;
+    const nb=Math.max(0,Math.min(TEAM_SIZE,WAVE_FIRST)-hum.length);
     for(let i=0;i<nb;i++){
       const f=makeFighter(t,false);
       if(t===0){f.pos.set(-12+(i%13)*1.85+rand(-0.3,0.3),0,-10.4+Math.floor(i/13)*0.8+rand(-0.15,0.15));}
@@ -2963,6 +3018,8 @@ function netApply(s){
     f.isPlayer=human;
     f.tx=a[2]/10;f.tz=a[3]/10;f.ty=a[12]/10;f.tface=a[4]/100;
     const st=SN[a[5]]||'idle',anim=AN[a[7]%10]||'',tt=a[6]/100;
+    if(st==='jail'&&f.state!=='jail'){f.r.group.visible=false;if(f===player)banner('DITAHAN WITO',JAIL_T+' detik, lalu keluar lagi dari markas',2400);}
+    if(st!=='jail'&&f.state==='jail'){f.r.group.visible=true;f.pos.set(a[2]/10,0,a[3]/10);if(f===player)banner('BEBAS!','Kamu keluar lagi dari markas',1600);}
     if(st!==f.state||anim!==f.anim||Math.abs(f.t-tt)>0.2)f.t=tt;
     f.state=st;f.anim=anim;f.side=a[7]>=10?'L':'R';
     const wc=a[8],wt=wc?WKEYS[Math.floor(wc/100)-1]:null;
@@ -2975,7 +3032,7 @@ function netApply(s){
       if(st==='down'&&!net.deadShown){net.deadShown=true;spectate=true;banner('KAMU TUMBANG','Kamera ikut teman satu sekolah',2400);}
     }
     if(st==='down'&&f.hp>0){if(f!==player)burst(f.pos.x,0.4,f.pos.z,6,0xc9b9a0,0.8);if(hp<=0&&!f.bled){f.bled=true;bloodPool(f.pos.x,f.pos.z);}}
-    f.hp=hp;f.maxHp=100;f.moving=a[10]/10;
+    f.hp=hp;f.maxHp=NET_HP;f.moving=a[10]/10;
   }
   for(const [nid,f] of net.map)if(!seen.has(nid)){if(f!==player){removeFighter(f);net.map.delete(nid);}}
   // vehicles
@@ -3036,6 +3093,7 @@ function clientFrame(dt){
     else if(st==='attack'&&f.atk){f.t=Math.min(f.t,f.atk.dur);pose(f,attackPose(f),dt,true);}
     else if(st==='windup'){const w=f.windDef||WPN.fist,kk=Math.min(1,f.t/(w.wind||0.5));tg=w.slam?{aL:-2.9*kk,aR:-2.9*kk,lean:-0.2*kk,y:0.1*kk}:{aR:-2.8*kk,aL:-0.5,lean:-0.12*kk,tw:0.25*kk};}
     else if(st==='strike')tg={aR:-1.3,aL:-0.4,lean:0.22,tw:-0.3};
+    else if(st==='jail'){updateHB(f);continue;}
     else if(st==='dodge')tg={lean:0.55,lL:-1,lR:0.6,aL:-1.2,aR:-1.2,y:-0.2};
     else{f.walk+=dt*10*f.moving;tg=walkPose(f);}
     if(tg)pose(f,tg,dt);
@@ -3093,7 +3151,7 @@ $('#lbBack').addEventListener('click',()=>{openLobby();});
 addEventListener('pagehide',()=>{try{netLeave();}catch(e){}});
 
 /* ================= 1.1.1: splash, main menu, single player / multiplayer / settings ================= */
-const GAME_VERSION='1.1.1';
+const GAME_VERSION='1.2';
 const GUEST_AP_KEY='belpulang-guest-ap';
 function readGuestAp(){try{const a=JSON.parse(localStorage.getItem(GUEST_AP_KEY)||'null');return a&&typeof a==='object'?a:null;}catch(e){return null;}}
 function saveGuestAp(a){try{localStorage.setItem(GUEST_AP_KEY,JSON.stringify(a));}catch(e){}}

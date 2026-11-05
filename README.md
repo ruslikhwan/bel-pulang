@@ -4,7 +4,7 @@ Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi
 
 Main di: https://belpulang.netlify.app atau https://belpulang.win
 
-## Menu (v1.1.1)
+## Menu (v1.2)
 
 - Dibuka dengan layar Sporadis Games, lalu menu utama dengan latar anak-anak tawuran di depan SMEA 70.
 - **Single Player**: New Game, Last Game (lanjut level terakhir), Load Game (pilih profil tersimpan lalu masukkan PIN).
@@ -20,11 +20,12 @@ Main di: https://belpulang.netlify.app atau https://belpulang.win
 
 **Online (SMEA 70 vs XTM)**
 - Satu orang membuat room dan membagikan kode 4 huruf, yang lain gabung pakai kode itu.
-- 50 orang per sekolah langsung turun semua sejak awal, kursi kosong diisi bot. Darah semua sama, tidak ada bangkit lagi. Nama pemain tampil di atas kepala.
+- 50 orang per sekolah, kursi kosong diisi bot. Bot turun bergelombang: 15 di awal, bantuan 8–10 orang tiap 20 detik (lebih cepat untuk tim yang tertinggal). Darah semua 150. Pemain yang tumbang tidak bangkit lagi dan menonton sampai ronde selesai (bisa ganti kamera ke teman). Nama pemain tampil di atas kepala.
 - SMEA 70 keluar dari gerbang. XTM turun dari Metromini yang parkir di halte sebelah kanan (markas XTM).
 - Bot SMEA 70 menjaga gerbang dan memukul mundur, sebagian maju menghancurkan Metromini. Bot XTM merubuhkan gerbang dan menghabisi lawan.
-- XTM menang kalau gerbang SMEA 70 rubuh dan ada yang masuk sekolah. SMEA 70 menang kalau Metromini XTM hancur, atau waktu 4 menit habis dan gerbang masih berdiri. Sekolah yang pasukannya habis duluan kalah.
-- Razia Wito tiap 1 menit: dalam 5 detik SMEA 70 harus masuk ke dalam gerbang dan XTM ke halte Metromini. Yang masih di luar saat razia: BUSTED (tumbang).
+- XTM menang kalau gerbang SMEA 70 rubuh dan ada yang masuk sekolah. SMEA 70 menang kalau Metromini XTM hancur, atau waktu 6 menit habis dan gerbang masih berdiri. Sekolah yang pasukannya habis duluan kalah.
+- Gerbang dan Metromini masing-masing 3.000 darah.
+- Razia Wito tiap 90 detik: dalam 6 detik SMEA 70 harus masuk ke dalam gerbang dan XTM ke halte Metromini. Yang masih di luar ditahan 20 detik, lalu keluar lagi dari markas.
 - Molotov: dilempar, membakar area selama beberapa detik.
 - Kill feed, papan skor KO, dan pilihan senjata awal di lobby.
 - Pembuat room menjadi host yang menjalankan pertandingan, jadi host harus tetap membuka game sampai ronde selesai.
