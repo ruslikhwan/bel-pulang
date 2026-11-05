@@ -1,0 +1,4 @@
+# Situs statis: tidak ada proses build, file di folder utama langsung dipublikasikan.
+[build]
+  publish = "."
+  command = ""
