@@ -4,6 +4,11 @@ Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi
 
 Main di: https://belpulang.netlify.app atau https://belpulang.win
 
+## v2.1 — Kamera belakang (over-the-shoulder)
+- Mode kamera baru **BELAKANG** (gaya Bully) selain **ATAS**; default diatur di Pengaturan → KAMERA, bisa diganti juga dari menu Pause.
+- Di mode belakang joystick bergerak relatif ke arah kamera; kamera ikut arah lari, geser layar kosong untuk memutar (Q/R di keyboard).
+- Bar HP di atas kepala mengecil sesuai jarak supaya tidak menutupi layar.
+
 ## v2.0: Model rambut
 
 - Studio Karakter punya pilihan **18 model rambut**: Pendek, Buzz Cut, French Crop, Spiky, Pompadour, Undercut, Quiff, Taper Belah, Taper Fade, Low Fade Klimis, Cepak / Flat Top, Mohawk, Man Bun, Comma Hair, Two Block, Mullet, Keriting, Gondrong. Ditambah **6 warna rambut**: hitam, cokelat tua, cokelat, pirang, merah, abu-abu.
