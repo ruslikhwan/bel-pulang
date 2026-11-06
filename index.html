@@ -2330,7 +2330,7 @@ function loadSave(){
       level = Math.min(50, Math.max(1, (activeProfile.level || 1)|0));
       perks = activeProfile.perks || {};
       if(!activeProfile.appearance) activeProfile.appearance = Object.assign({}, tempAppearance);
-      syncProfileToCloud(activeProfile);
+      pullProfileFromCloud(activeProfile);
     } else {
       activeProfile = null;
       const s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
@@ -4954,7 +4954,38 @@ async function bpRpc(fn,args){
   if(error)throw error;
   return data||{};
 }
-// v2.2: PIN tidak pernah dikirim ke tabel / dibaca balik; server cek hash bcrypt via RPC
+// v2.2.2: Sinkronisasi cloud dua arah (Pull & Push) agar progres lintas perangkat selalu sinkron
+async function pullProfileFromCloud(prof){
+  if(!prof || !prof.pin) return;
+  try{
+    await loadSB();
+    const data = await bpRpc('bp_login', { p_id: prof.id, p_pin: String(prof.pin) });
+    if(data && data.status === 'ok'){
+      const cloudLevel = Math.min(50, Math.max(1, (data.level || 1) | 0));
+      const curLevel = Math.min(50, Math.max(1, (prof.level || 1) | 0));
+      if(cloudLevel > curLevel){
+        prof.level = cloudLevel;
+        prof.perks = data.perks || {};
+        if(data.appearance && Object.keys(data.appearance).length > 0){
+          prof.appearance = data.appearance;
+        }
+        level = cloudLevel;
+        perks = prof.perks;
+        const accs = getAccounts();
+        accs[prof.id] = prof;
+        saveAccounts(accs);
+        localStorage.setItem(SAVE_KEY, JSON.stringify({level, perks}));
+        updateProfileUI();
+        popup('Progres Level ' + cloudLevel + ' disinkronkan dari cloud!', {x:0, y:2, z:0}, 3, 'info');
+      } else if(curLevel > cloudLevel){
+        syncProfileToCloud(prof);
+      }
+    }
+  }catch(e){
+    console.warn('Background cloud pull failed:', e);
+  }
+}
+
 let cloudBusy=false,cloudAgain=null;
 async function syncProfileToCloud(prof){
   if(!prof||!prof.pin) return;
@@ -5385,12 +5416,14 @@ if($('#authSubmitBtn')) $('#authSubmitBtn').addEventListener('click', async () =
       }
       errEl.hidden = true;
     }catch(err){ errEl.hidden = true; /* offline: buat lokal, sinkron nanti */ }
+    const startL = (level && level > 1) ? Math.min(50, level|0) : 1;
+    const startP = (perks && Object.keys(perks).length > 0) ? Object.assign({}, perks) : {};
     const newProf = {
       id: id,
       name: name,
       pin: pin,
-      level: 1,
-      perks: {},
+      level: startL,
+      perks: startP,
       appearance: Object.assign({}, tempAppearance),
       createdAt: Date.now()
     };
@@ -5398,7 +5431,7 @@ if($('#authSubmitBtn')) $('#authSubmitBtn').addEventListener('click', async () =
     saveAccounts(accs);
     setActiveProfileId(id);
     activeProfile = newProf;
-    level = 1; perks = {};
+    level = startL; perks = startP;
     writeSave();
     // profil sudah didaftarkan di atas; writeSave() menyinkronkan perubahan berikutnya
     
@@ -5406,63 +5439,71 @@ if($('#authSubmitBtn')) $('#authSubmitBtn').addEventListener('click', async () =
     openCharacterCreator();
   } else {
     // Login / Load mode
-    // Check local accounts first
     let prof = accs[id];
-    if(!prof){
-      // Check Supabase Cloud database
-      errEl.textContent = 'Mencari profil dari cloud / database…';
-      errEl.hidden = false;
-      try{
-        await loadSB();
-        const data = await bpRpc('bp_login', {p_id:id, p_pin:pin});
-        if(data.status === 'wrong'){
-          errEl.textContent = 'PIN salah! Coba ingat kembali 4 digit PIN kamu.';
-          errEl.hidden = false;
-          return;
-        }
-        if(data.status === 'locked'){
-          errEl.textContent = 'Terlalu banyak PIN salah. Profil dikunci 10 menit, coba lagi nanti.';
-          errEl.hidden = false;
-          return;
-        }
-        if(data.status === 'ok'){
-          errEl.hidden = true;
-          prof = {
-            id: data.id,
-            name: data.name,
-            pin: pin,
-            level: data.level || 1,
-            perks: data.perks || {},
-            appearance: data.appearance || {},
-            createdAt: data.created_at ? new Date(data.created_at).getTime() : Date.now(),
-            cloud: 'ok'
-          };
-          accs[id] = prof;
-          saveAccounts(accs);
-        }
-      }catch(err){
-        console.warn('Cloud profile lookup failed:', err);
+    errEl.textContent = 'Menyinkronkan profil dari cloud...';
+    errEl.hidden = false;
+    let cloudData = null;
+    try{
+      await loadSB();
+      cloudData = await bpRpc('bp_login', {p_id:id, p_pin:pin});
+      if(cloudData.status === 'wrong'){
+        errEl.textContent = 'PIN salah! Coba ingat kembali 4 digit PIN kamu.';
+        errEl.hidden = false;
+        return;
       }
+      if(cloudData.status === 'locked'){
+        errEl.textContent = 'Terlalu banyak PIN salah. Profil dikunci 10 menit, coba lagi nanti.';
+        errEl.hidden = false;
+        return;
+      }
+      if(cloudData.status === 'ok') errEl.hidden = true;
+    }catch(err){
+      console.warn('Cloud profile lookup failed:', err);
     }
 
-    if(!prof){
-      errEl.textContent = 'Profil "' + name + '" belum terdaftar di perangkat ini. Buat profil baru atau gunakan Kode Sinkron.';
+    if(!prof && (!cloudData || cloudData.status !== 'ok')){
+      errEl.textContent = 'Profil "' + name + '" belum terdaftar. Pastikan nama sesuai atau buat profil baru.';
       errEl.hidden = false;
       return;
     }
-    if(prof.pin !== pin){
+    if(prof && prof.pin !== pin && (!cloudData || cloudData.status !== 'ok')){
       errEl.textContent = 'PIN salah! Coba ingat kembali 4 digit PIN kamu.';
       errEl.hidden = false;
       return;
     }
+
+    const localLevel = prof ? Math.min(50, Math.max(1, (prof.level || 1)|0)) : 1;
+    const cloudLevel = (cloudData && cloudData.status === 'ok') ? Math.min(50, Math.max(1, (cloudData.level || 1)|0)) : 1;
+    const bestLevel = Math.max(localLevel, cloudLevel);
+    const bestPerks = (cloudLevel >= localLevel && cloudData) ? (cloudData.perks || {}) : (prof ? (prof.perks || {}) : {});
+    const bestAppearance = (cloudData && cloudData.appearance && Object.keys(cloudData.appearance).length > 0)
+      ? cloudData.appearance
+      : (prof && prof.appearance ? prof.appearance : Object.assign({}, tempAppearance));
+
+    prof = {
+      id: (cloudData && cloudData.id) || id,
+      name: (cloudData && cloudData.name) || (prof ? prof.name : name),
+      pin: pin,
+      level: bestLevel,
+      perks: bestPerks,
+      appearance: bestAppearance,
+      createdAt: (cloudData && cloudData.created_at) ? new Date(cloudData.created_at).getTime() : (prof ? prof.createdAt : Date.now()),
+      cloud: 'ok'
+    };
+
+    accs[id] = prof;
+    saveAccounts(accs);
     setActiveProfileId(id);
     activeProfile = prof;
-    level = Math.min(50, Math.max(1, (activeProfile.level || 1)|0));
-    perks = activeProfile.perks || {};
+    level = bestLevel;
+    perks = bestPerks;
     writeSave();
+    if(localLevel > cloudLevel){
+      syncProfileToCloud(prof);
+    }
     $('#authOv').hidden = true;
     updateProfileUI();
-    popup('Selamat datang kembali, ' + activeProfile.name + '!', {x:0, y:2, z:0}, 2.5, 'info');
+    popup('Selamat datang kembali, ' + activeProfile.name + '! (Level ' + level + ')', {x:0, y:2, z:0}, 2.5, 'info');
     if(typeof afterLogin==='function')afterLogin();
   }
 });

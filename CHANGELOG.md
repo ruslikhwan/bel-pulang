@@ -4,6 +4,16 @@ Semua pembaruan penting, fitur baru, dan perbaikan bug didokumentasikan di sini.
 
 ---
 
+## [v2.2.2] - 2026-11-07
+
+### Sinkronisasi Progres Cloud Dua Arah (Auto Pull & Anti-Downgrade)
+- **Background Cloud Pull**: Saat game dibuka di perangkat mana pun (mis. PC), sistem otomatis mengecek cloud di latar belakang. Jika level di cloud lebih tinggi dari level lokal (mis. habis main di iPad sampai Level 47), level lokal langsung dinaikkan ke level terbaru.
+- **Login Selalu Cek Cloud**: Memperbaiki fungsi login PIN yang sebelumnya melewati query cloud jika akun sudah tersimpan di browser lokal. Sekarang login selalu membandingkan dan mengambil progres tertinggi (Math.max(local, cloud)).
+- **Anti-Downgrade Progres**: Fungsi bp_save di server dan klien kini melindungi progres agar perangkat lama tidak bisa menurunkan level yang sudah dicapai pemain di perangkat lain.
+- **Pertahankan Progres Tamu ke Akun**: Jika pemain bermain sebagai tamu lalu membuat profil baru, progres level dan perk yang sudah dicapai tidak lagi di-reset ke level 1 melainkan langsung diintegrasikan ke profil akun.
+
+---
+
 ## [v2.0] - 2026-11-06
 
 ### Model & Warna Rambut Baru

@@ -77,13 +77,14 @@ end $$;
 
 create or replace function public.bp_save(p_id text, p_pin text, p_level int, p_perks jsonb, p_appearance jsonb)
 returns jsonb language plpgsql security definer set search_path = public, extensions as $$
-declare s text;
+declare s text; cur_level int;
 begin
   s := public.bp_check_pin(p_id, p_pin);
   if s <> 'ok' then return jsonb_build_object('status', s); end if;
+  select level into cur_level from public.game_profiles where id = lower(p_id);
   update public.game_profiles
-     set level = greatest(1, least(50, coalesce(p_level, level))),
-         perks = coalesce(p_perks, perks),
+     set level = greatest(cur_level, greatest(1, least(50, coalesce(p_level, cur_level)))),
+         perks = case when coalesce(p_level, 0) >= cur_level then coalesce(p_perks, perks) else perks end,
          appearance = coalesce(p_appearance, appearance),
          updated_at = now()
    where id = lower(p_id);
