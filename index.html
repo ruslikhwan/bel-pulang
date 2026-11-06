@@ -465,6 +465,14 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
 #vcBox button.on{color:#9fe0b2!important}#vcBox button.all{color:var(--rust2)!important}#vcBox button.talk{filter:drop-shadow(0 0 4px #9fe0b2)}
 #vcTalk{background:rgba(14,13,16,.8)!important;border-radius:0!important;font-family:var(--body);color:#9fe0b2}
 #specBar,#specTxt{font-family:var(--body)!important}
+/* v2.0: studio karakter ikut tema gelap */
+.creator-opts .opt-group{background:rgba(255,255,255,.05)!important;border:1px solid rgba(233,229,218,.18)!important;border-radius:0!important;box-shadow:none!important}
+.opt-label,.opt-sublabel{color:#d8d2c4!important;font-family:var(--display)!important;font-weight:600!important;letter-spacing:.12em!important;opacity:1!important}
+.grid-btn,.pill-btn{background:#1b191d!important;color:var(--paper)!important;border:1px solid rgba(233,229,218,.25)!important;border-radius:0!important;box-shadow:none!important;font-family:var(--display)!important;font-weight:600!important;letter-spacing:.06em}
+.grid-btn.active,.pill-btn.active{background:var(--rust)!important;color:#fff!important;border-color:var(--rust2)!important}
+.creator-stage{background:radial-gradient(circle at 50% 40%,#3a363f,#151317)!important;border:1px solid rgba(233,229,218,.18)!important;border-radius:0!important}
+.stage-hint{color:var(--paper2)!important}.btn-rot{background:#1b191d!important;color:var(--paper)!important;border:1px solid rgba(233,229,218,.3)!important;border-radius:0!important;box-shadow:none!important}
+.prof-tag{background:transparent!important;border:1px dashed var(--rust)!important;color:var(--rust2)!important;border-radius:0!important;font-family:var(--mono)!important}
 /* v1.9: kartu perk lebih kontras, tulisan pukulan kecil */
 .perks .perk{background:var(--noise),linear-gradient(180deg,#46414b,#332f37)!important;box-shadow:inset 4px 0 0 var(--rust),inset 0 0 0 1px rgba(233,229,218,.28)!important;clip-path:none!important;padding:12px 14px 12px 16px}
 .perks .perk:hover,.perks .perk:focus-visible{background:var(--noise),linear-gradient(180deg,#5a535f,#433d48)!important;box-shadow:inset 4px 0 0 var(--rust2),inset 0 0 0 2px var(--rust2)!important;color:#fff!important}
@@ -532,7 +540,7 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
     <button type="button" class="mm-btn" id="mmMulti">MULTIPLAYER<small>SMEA 70 vs XTM · 50 vs 50 online</small></button>
     <button type="button" class="mm-btn" id="mmSettings">SETTINGS<small>Avatar &amp; mikrofon</small></button>
     <p class="hint" id="iosHint" hidden><b>Biar layar penuh di iPhone:</b> ketuk tombol Share di Safari, pilih <b>Add to Home Screen</b>, lalu buka game dari ikon Bel Pulang di layar utama.</p>
-    <p class="mm-foot">v1.9.1 · Sporadis Games</p>
+    <p class="mm-foot">v2.0 · Sporadis Games</p>
   </div>
   <div hidden><button class="cta" id="startBtn">MAIN LEVEL 1</button><button class="cta" id="onlineBtn">ONLINE</button><button class="cta alt" id="resetBtn" hidden>ULANG</button></div>
 </div>
@@ -741,6 +749,14 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
       <div class="opt-group">
         <label class="opt-label">WARNA KULIT</label>
         <div class="skin-palette" id="skinPalette"></div>
+      </div>
+
+      <!-- Model & warna rambut -->
+      <div class="opt-group">
+        <label class="opt-label">MODEL RAMBUT</label>
+        <div class="select-grid hair-grid" id="hairGroup"></div>
+        <label class="opt-sublabel" style="margin-top:10px;display:block">WARNA RAMBUT</label>
+        <div class="hoodie-palette" id="hairPalette"></div>
       </div>
 
       <!-- 2. Bentuk Tubuh -->
@@ -1673,7 +1689,8 @@ function makeNameTag(name,team,local){
 function sanAp(ap){
   if(!ap||typeof ap!=='object')return null;const o={};
   ['skin','hoodieColor','hair'].forEach(k=>{if(typeof ap[k]==='number'&&isFinite(ap[k]))o[k]=ap[k]&0xffffff;});
-  ['build','outfit','hat','glasses'].forEach(k=>{if(typeof ap[k]==='string')o[k]=ap[k].slice(0,20);});
+  ['build','outfit','hat','glasses','hairStyle'].forEach(k=>{if(typeof ap[k]==='string')o[k]=ap[k].slice(0,20);});
+  if(o.hairStyle&&!HAIR_STYLES.some(h=>h[0]===o.hairStyle))delete o.hairStyle;
   return o;
 }
 function onlineLook(team,ap){
@@ -1855,9 +1872,14 @@ function mp11Reset(on){
 
 /* ================= characters ================= */
 const SKINS=[0xc68e5f,0xb98058,0xa86f48,0xd4a073,0x9c6540], HAIRS=[0x15110d,0x1a1410,0x0e0b08,0x2b1d14];
+const HAIR_STYLES=[['short','Pendek'],['buzz','Buzz Cut'],['crop','French Crop'],['spiky','Spiky'],['pompadour','Pompadour'],['undercut','Undercut'],['quiff','Quiff'],['taper','Taper Belah'],['fade','Taper Fade'],['slick','Low Fade Klimis'],['cepak','Cepak / Flat Top'],['mohawk','Mohawk'],['bun','Man Bun'],['comma','Comma Hair'],['twoblock','Two Block'],['mullet','Mullet'],['curly','Keriting'],['long','Gondrong']];
+const HAIR_DYES=[[0x15110d,'Hitam'],[0x3a2416,'Cokelat Tua'],[0x6b4423,'Cokelat'],[0xc9a55a,'Pirang'],[0x8e2a1c,'Merah'],[0x9a9a9a,'Abu-abu']];
+const HS_SMEA=['curly','short','crop','spiky','quiff','taper','fade','twoblock','comma','mullet','undercut','pompadour','cepak','slick','mohawk','bun'];
+const HS_XTM=['buzz','buzz','cepak','cepak','fade','crop','slick','taper','undercut','spiky'];
+function botHair(){const r=Math.random();return r<0.85?pick(HAIRS):pick([0x3a2416,0x6b4423,0xc9a55a,0x8e2a1c]);}
 const LOOK=[
-  ()=>({skin:pick(SKINS),shirt:0xeeeaf6,pants:0x5d6a7e,hair:pick(HAIRS),uni:'smea',hairStyle:Math.random()<0.5?'curly':'short',mus:Math.random()<0.4}),
-  ()=>({skin:pick(SKINS),shirt:0x86b8ec,pants:0x1f2a55,hair:pick(HAIRS),uni:'xtm',hairStyle:Math.random()<0.7?'buzz':'short',mus:Math.random()<0.3})
+  ()=>({skin:pick(SKINS),shirt:0xeeeaf6,pants:0x5d6a7e,hair:botHair(),uni:'smea',hairStyle:pick(HS_SMEA),mus:Math.random()<0.4}),
+  ()=>({skin:pick(SKINS),shirt:0x86b8ec,pants:0x1f2a55,hair:pick(HAIRS),uni:'xtm',hairStyle:pick(HS_XTM),mus:Math.random()<0.3})
 ];
 /* ================= karakter v1.6: badan bulat, wajah berekspresi, lutut ================= */
 // Semua potongan satu bagian tubuh digabung jadi 1 mesh dengan warna per-vertex -> 7 draw call per orang.
@@ -1951,15 +1973,76 @@ function buildCharGeo(c){
   const covered=c.hijab||c.hat==='peci'||c.hat==='beanie'||c.hat==='cap_sma';
   const hairM=xf(0,HY,0.01,0,0,0,0.9,1.1,0.97);
   if(!covered){
-    if(hairStyle==='buzz'){
-      {const hc=new THREE.Color(hairCol).lerp(new THREE.Color(skinCol),0.22).getHex();part(T,shellGeo(HR*1.015,(x,y,z)=>(y>0.62-0.25*Math.max(0,-z))||(z<-0.25&&y>-0.5)||(Math.abs(x)>0.86&&y>0.05&&z<0.1)),hc,hairM);}
+    // ---- model rambut (v2.0) ----
+    const HX=0.9*HR,HYs=1.1*HR,HZ=0.97*HR;
+    const H=(x,y,z)=>[x*HX,HY+y*HYs,0.01+z*HZ];
+    const r=rng(((c.skin||1)*13+(c.hair||7)*3+hairStyle.length*101)>>>0);
+    const fadeCol=k=>new THREE.Color(hairCol).lerp(new THREE.Color(skinCol),k).getHex();
+    const sm=(a,b,t)=>a+(b-a)*Math.max(0,Math.min(1,t));
+    // sisi & belakang tipis (fade): makin tinggi k makin kelihatan kulit
+    const fade=(top,k)=>part(T,shellGeo(HR*1.012,(x,y,z)=>y<top&&((z<-0.05&&y>-0.55)||(Math.abs(x)>0.74&&y>-0.05&&z<0.3)),28,18),fadeCol(k),hairM);
+    // massa rambut atas: tepi depan fr, tepi samping sd
+    const cap=(rad,fr,sd,col,shade)=>part(T,shellGeo(HR*rad,(x,y,z)=>y>sm(sd,fr,(z-0.1)/0.5)||(z<-0.2&&y>sd-0.1),28,18),col||hairCol,hairM,shade);
+    const blob=(u,sx,sy,sz,rx,col,k)=>{const [px,py,pz]=H(...u);part(T,new THREE.SphereGeometry(1,10,7),col||hairCol,xf(px,py,pz,rx||0,0,0,sx,sy,sz),()=>k||1);};
+    const cone=(u,len,rad,dir,col)=>{const [px,py,pz]=H(...u);const g=new THREE.ConeGeometry(rad,len,5);g.translate(0,len/2,0);const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),new THREE.Vector3(...dir).normalize());const m=new THREE.Matrix4().compose(new THREE.Vector3(px,py,pz),q,new THREE.Vector3(1,1,1));part(T,g,col||hairCol,m,()=>0.85+r()*0.3);};
+    const partLine=(x0)=>{const [px,py,pz]=H(x0,0.86,0.15);part(T,new THREE.BoxGeometry(0.008,0.006,0.16),fadeCol(0.7),xf(px,py+0.012,pz,0.25,0,x0*0.6));};
+    const S=hairStyle;
+    if(S==='buzz'){
+      part(T,shellGeo(HR*1.015,(x,y,z)=>(y>0.62-0.25*Math.max(0,-z))||(z<-0.25&&y>-0.5)||(Math.abs(x)>0.86&&y>0.05&&z<0.1),28,18),fadeCol(0.22),hairM);
+    }else if(S==='crop'){
+      fade(0.36,0.42);cap(1.07,0.42,0.3);
+      blob([0,0.5,0.82],0.11,0.022,0.035,0.1,hairCol,0.9);
+      for(let i=0;i<10;i++)blob([(r()-0.5)*1.2,0.7+r()*0.25,(r()-0.4)*1.2],0.035,0.02,0.035,r(),hairCol,0.8+r()*0.3);
+    }else if(S==='spiky'){
+      fade(0.3,0.38);cap(1.05,0.48,0.3);
+      for(let i=0;i<16;i++){const th=r()*6.28,ph=r()*0.95,x=Math.sin(ph)*Math.cos(th),z=Math.sin(ph)*Math.sin(th)*0.9+0.08,y=Math.cos(ph);cone([x,y,z],0.06+r()*0.04,0.022,[x*0.6,1,z*0.6+0.25]);}
+    }else if(S==='pompadour'){
+      fade(0.3,0.35);cap(1.06,0.52,0.3);
+      blob([0,0.92,0.48],0.11,0.06,0.085,-0.5,hairCol,1.05);blob([0,1.0,0.08],0.105,0.05,0.1,-0.3,hairCol,0.95);
+    }else if(S==='undercut'){
+      fade(0.55,0.58);cap(1.08,0.55,0.55);
+      blob([0.05,0.98,0.15],0.11,0.045,0.14,-0.3,hairCol,1.0);blob([0.1,0.88,0.6],0.08,0.04,0.06,-0.6,hairCol,1.05);
+    }else if(S==='quiff'){
+      fade(0.3,0.42);cap(1.06,0.5,0.3);
+      for(let i=0;i<7;i++)blob([(r()-0.5)*0.6,1.0+r()*0.18,0.42+r()*0.25],0.04+r()*0.02,0.05+r()*0.03,0.035,-0.4-r()*0.4,hairCol,0.85+r()*0.3);
+      blob([0,0.95,0.05],0.1,0.045,0.1,0,hairCol,0.95);
+    }else if(S==='taper'){
+      cap(1.07,0.45,0.0,hairCol);fade(0.05,0.3);partLine(0.42);
+      blob([-0.15,0.9,0.4],0.1,0.04,0.07,-0.3,hairCol,1.05);
+    }else if(S==='fade'){
+      fade(0.28,0.55);cap(1.06,0.46,0.27);
+      for(let i=0;i<8;i++)blob([(r()-0.5)*1.0,0.8+r()*0.2,(r()-0.3)*1.0],0.04,0.02,0.04,r(),hairCol,0.8+r()*0.3);
+    }else if(S==='slick'){
+      fade(0.22,0.32);cap(1.05,0.5,0.22,hairCol,(x,y)=>y>HY+0.11?1.35:1);partLine(0.4);
+    }else if(S==='cepak'){
+      fade(0.48,0.4);cap(1.03,0.6,0.46);
+      const [px,py,pz]=H(0,0.86,0.02);part(T,new THREE.BoxGeometry(0.27,0.05,0.28),hairCol,xf(px,py+0.012,pz),()=>0.95);
+    }else if(S==='mohawk'){
+      part(T,shellGeo(HR*1.01,(x,y,z)=>(y>-0.05&&Math.abs(x)>0.18)||(z<-0.2&&y>-0.5),28,18),fadeCol(0.62),hairM);
+      for(let i=0;i<9;i++){const t=i/8,ang=-0.35+t*2.35,y=Math.cos(ang),z=Math.sin(ang)*-1+0.0;const zz=0.75-t*1.65;cone([0,Math.max(0.2,1-Math.abs(zz)*0.45),zz],0.09+Math.sin(t*3.14)*0.05,0.04,[0,1,zz*0.6]);}
+      part(T,shellGeo(HR*1.04,(x,y,z)=>Math.abs(x)<0.2&&y>0.2,24,16),hairCol,hairM);
+    }else if(S==='bun'){
+      fade(0.12,0.4);cap(1.04,0.52,0.12,hairCol,(x,y)=>y>HY+0.1?1.25:1);
+      blob([0,0.72,-0.82],0.065,0.06,0.065,0,hairCol,0.95);const [bx,by,bz]=H(0,0.62,-0.85);part(T,new THREE.TorusGeometry(0.035,0.01,5,12),0x111111,xf(bx,by,bz,0.6,0,0));
+    }else if(S==='comma'){
+      cap(1.09,0.36,-0.08);
+      [[-0.45,0.5],[-0.2,0.46],[0.05,0.44],[0.3,0.47],[0.55,0.52]].forEach(([x,y],i)=>blob([x,y,0.86],0.034,0.042,0.03,0.2,hairCol,0.9+(i%2)*0.1));
+      blob([0.32,0.4,0.9],0.022,0.03,0.02,0.6,hairCol,0.85);
+    }else if(S==='twoblock'){
+      fade(0.15,0.55);
+      part(T,shellGeo(HR*1.14,(x,y,z)=>y>sm(0.16,0.42,(z-0.1)/0.5)||(z<-0.2&&y>0.05),28,18),hairCol,hairM);
+      for(let i=0;i<6;i++)blob([-0.5+i*0.2,0.52,0.88],0.03,0.045,0.028,0.2,hairCol,0.9+(i%2)*0.1);
+    }else if(S==='mullet'){
+      fade(0.2,0.3);cap(1.07,0.45,0.15);
+      part(T,shellGeo(HR*1.1,(x,y,z)=>z<-0.15&&y<0.3,24,16),hairCol,xf(0,HY-0.09,0,0,0,0,0.92,1.45,1.02));
+      for(let i=0;i<6;i++)blob([(r()-0.5)*1.1,0.62+r()*0.25,0.55+r()*0.2],0.035,0.045,0.03,-0.3,hairCol,0.85+r()*0.3);
     }else{
       part(T,shellGeo(HR*1.07,(x,y,z)=>(z>0.4?y>0.45:y>0.08)||(z<-0.15&&y>-0.6)||(Math.abs(x)>0.88&&y>-0.15&&z<0.12)),hairCol,hairM);
-      if(hairStyle==='long'){part(T,shellGeo(HR*1.12,(x,y,z)=>(z>0.4?y>0.42:true)&&!(z>0.25&&y<0.45&&Math.abs(x)<0.7)&&y>-1),hairCol,xf(0,HY-0.06,0,0,0,0,0.95,1.35,1.02));}
-      else if(hairStyle==='curly'){const r=rng((c.skin||1)*7+(c.hair||3));
+      if(S==='long'){part(T,shellGeo(HR*1.12,(x,y,z)=>(z>0.4?y>0.42:true)&&!(z>0.25&&y<0.45&&Math.abs(x)<0.7)&&y>-1),hairCol,xf(0,HY-0.06,0,0,0,0,0.95,1.35,1.02));}
+      else if(S==='curly'){
         for(let i=0;i<26;i++){const th=r()*6.28,ph=r()*1.25;let x=Math.sin(ph)*Math.cos(th),y=Math.cos(ph),z=Math.sin(ph)*Math.sin(th);if(z>0.55&&y<0.6)y+=0.35;
           const d=HR*1.12;part(T,new THREE.SphereGeometry(0.036+r()*0.024,6,4),hairCol,xf(x*d*0.9,HY+y*d*1.08+0.01,z*d*0.97+0.01,r()*3,r()*3,0),()=>0.8+r()*0.35);}
-      }else{const r=rng((c.skin||1)*3+(c.hair||5));for(let i=0;i<9;i++){const a=-0.9+i*0.24+r()*0.1;part(T,new THREE.SphereGeometry(0.06+r()*0.02,7,5),hairCol,xf(Math.sin(a)*0.1,HY+0.12+r()*0.03,Math.cos(a)*0.07+0.01,0,0,0,1,0.55,1),()=>0.85+r()*0.3);}}
+      }else{for(let i=0;i<9;i++){const a=-0.9+i*0.24+r()*0.1;part(T,new THREE.SphereGeometry(0.06+r()*0.02,7,5),hairCol,xf(Math.sin(a)*0.1,HY+0.12+r()*0.03,Math.cos(a)*0.07+0.01,0,0,0,1,0.55,1),()=>0.85+r()*0.3);}}
     }
   }
   // detail seragam
@@ -2206,7 +2289,9 @@ let tempAppearance = {
   outfit: 'uniform',
   hoodieColor: 0x1e1e24,
   hat: 'none',
-  glasses: 'none'
+  glasses: 'none',
+  hairStyle: 'short',
+  hair: 0x15110d
 };
 
 function getAccounts(){
@@ -4506,10 +4591,10 @@ function srand(seed){let x=(seed*2654435761)>>>0||1;return ()=>{x^=x<<13;x>>>=0;
 function pedLook(kind,id){
   const r=srand(id+7),pk=a=>a[Math.floor(r()*a.length)];
   const skin=pk(SKINS),hair=pk(HAIRS);
-  if(kind==='kantor')return {skin,hair,uni:'none',hairStyle:'short',mus:r()<0.5,shirt:pk([0xffffff,0xdfe8f5,0xf3e9d8]),vest:pk([0x2b3140,0x3a3a3f,0x1f2a44,0x4a3f35]),tie:pk([0xa31515,0x1d3a7a,0x5a1d5a]),pants:pk([0x1d1d22,0x2b3140,0x3a3a3f]),glasses:r()<0.4?'classic':undefined};
+  if(kind==='kantor')return {skin,hair,uni:'none',hairStyle:pk(['taper','slick','short','pompadour','fade']),mus:r()<0.5,shirt:pk([0xffffff,0xdfe8f5,0xf3e9d8]),vest:pk([0x2b3140,0x3a3a3f,0x1f2a44,0x4a3f35]),tie:pk([0xa31515,0x1d3a7a,0x5a1d5a]),pants:pk([0x1d1d22,0x2b3140,0x3a3a3f]),glasses:r()<0.4?'classic':undefined};
   if(kind==='ibu'){const pants=pk([0x3e2723,0x263238,0x4a148c,0x1b5e20]);return {skin,hair,uni:'none',shirt:pk([0xc2185b,0x7b1fa2,0x2e7d32,0xef6c00,0x00838f,0x8d6e63]),pants,skirt:pants,hijab:pk([0xf8bbd0,0x90caf9,0xfafafa,0x212121,0xa1887f,0xce93d8]),build:'slim'};}
-  if(kind==='anak')return {skin,hair,uni:'none',hairStyle:'short',shirt:pk([0xffeb3b,0xff7043,0x4fc3f7,0xf06292,0x81c784]),pants:pk([0x1565c0,0x6d4c41,0x37474f])};
-  return {skin,hair,uni:'none',hairStyle:'short',mus:r()<0.7,shirt:pk([0x1e88e5,0xe53935,0x43a047,0xfdd835,0x6d4c41,0x546e7a]),pants:pk([0x5d4037,0x263238,0x8d6e63])};
+  if(kind==='anak')return {skin,hair,uni:'none',hairStyle:pk(['crop','short','spiky','fade','comma']),shirt:pk([0xffeb3b,0xff7043,0x4fc3f7,0xf06292,0x81c784]),pants:pk([0x1565c0,0x6d4c41,0x37474f])};
+  return {skin,hair,uni:'none',hairStyle:pk(['buzz','short','cepak','taper']),mus:r()<0.7,shirt:pk([0x1e88e5,0xe53935,0x43a047,0xfdd835,0x6d4c41,0x546e7a]),pants:pk([0x5d4037,0x263238,0x8d6e63])};
 }
 function makePed(kind,id,x,z){
   const look=pedLook(kind,id),r=makeChar(look);scene.add(r.group);
@@ -4977,6 +5062,7 @@ function syncCreatorUIWithTemp(){
   $('#glassesGroup').querySelectorAll('.grid-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.val === tempAppearance.glasses);
   });
+  syncHairUI();
   // Prof tag
   if($('#crProfTag')){
     $('#crProfTag').textContent = activeProfile ? activeProfile.name : 'Model Kustom';
@@ -5037,6 +5123,19 @@ if($('#hatGroup')) $('#hatGroup').addEventListener('click', e => {
   updateCreatorModel();
 });
 
+// pilihan model & warna rambut
+(function(){
+  const hg=$('#hairGroup'),hp=$('#hairPalette');if(!hg||!hp)return;
+  HAIR_STYLES.forEach(([id,name])=>{const b=document.createElement('button');b.type='button';b.className='grid-btn';b.dataset.val=id;b.textContent=name;hg.appendChild(b);});
+  HAIR_DYES.forEach(([hex,name])=>{const sw=document.createElement('div');sw.className='color-swatch';sw.title=name;sw.dataset.hex=hex;sw.style.background='#'+hex.toString(16).padStart(6,'0');hp.appendChild(sw);});
+  hg.addEventListener('click',e=>{const b=e.target.closest('.grid-btn');if(!b)return;tempAppearance.hairStyle=b.dataset.val;syncHairUI();updateCreatorModel();});
+  hp.addEventListener('click',e=>{const sw=e.target.closest('.color-swatch');if(!sw)return;tempAppearance.hair=parseInt(sw.dataset.hex);syncHairUI();updateCreatorModel();});
+})();
+function syncHairUI(){
+  const hs=tempAppearance.hairStyle||'short',hc=tempAppearance.hair||0x15110d;
+  $('#hairGroup')&&$('#hairGroup').querySelectorAll('.grid-btn').forEach(b=>b.classList.toggle('active',b.dataset.val===hs));
+  $('#hairPalette')&&$('#hairPalette').querySelectorAll('.color-swatch').forEach(sw=>sw.classList.toggle('active',parseInt(sw.dataset.hex)===hc));
+}
 if($('#glassesGroup')) $('#glassesGroup').addEventListener('click', e => {
   const btn = e.target.closest('.grid-btn');
   if(!btn) return;

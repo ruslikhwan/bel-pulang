@@ -4,6 +4,13 @@ Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi
 
 Main di: https://belpulang.netlify.app atau https://belpulang.win
 
+## v2.0: Model rambut
+
+- Studio Karakter punya pilihan **18 model rambut**: Pendek, Buzz Cut, French Crop, Spiky, Pompadour, Undercut, Quiff, Taper Belah, Taper Fade, Low Fade Klimis, Cepak / Flat Top, Mohawk, Man Bun, Comma Hair, Two Block, Mullet, Keriting, Gondrong. Ditambah **6 warna rambut**: hitam, cokelat tua, cokelat, pirang, merah, abu-abu.
+- Rambut pilihanmu ikut tampil di single player dan online (dilihat pemain lain).
+- Bot dapat rambut acak: SMEA 70 bermacam gaya (kadang dicat), XTM kebanyakan buzz cut, cepak, dan fade ala taruna. Warga (orang kantoran, anak, supir) juga punya rambut berbeda-beda.
+- Panel Studio Karakter ikut tema gelap.
+
 ## v1.9
 
 - Kartu pilihan perk lebih kontras (abu-abu terang bergaris merah, menyala saat disentuh).
