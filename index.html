@@ -688,7 +688,7 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
         <li>Muat ulang game, lalu tekan <b>IZINKAN MIKROFON</b> dan pilih <b>Izinkan</b>.</li>
       </ol>
     </details>
-    <p class="hint" style="margin-top:8px">Game dibuka dari Instagram, TikTok, atau Facebook? Mikrofon sering tidak bisa di sana. Buka <b>belpulang.netlify.app</b> langsung di Safari atau Chrome.</p>
+    <p class="hint" style="margin-top:8px">Game dibuka dari Instagram, TikTok, atau Facebook? Mikrofon sering tidak bisa di sana. Buka <b>belpulang.win</b> langsung di Safari atau Chrome.</p>
   </div>
 </div>
 
@@ -4440,7 +4440,7 @@ async function micStatus(){
     denied:['❌ IZIN MIKROFON DITOLAK','Browser memblokir mikrofon. Ikuti cara izinkan di bawah, lalu muat ulang game.','bad'],
     prompt:['⏳ BELUM DIIZINKAN','Tekan IZINKAN MIKROFON, lalu pilih Izinkan di pop-up browser.',''],
     unknown:['❔ STATUS BELUM DIKETAHUI','Tekan IZINKAN MIKROFON untuk mengecek.',''],
-    nosupport:['❌ BROWSER TIDAK MENDUKUNG','Buka belpulang.netlify.app langsung di Safari (iPhone) atau Chrome (Android).','bad']};
+    nosupport:['❌ BROWSER TIDAK MENDUKUNG','Buka belpulang.win langsung di Safari (iPhone) atau Chrome (Android).','bad']};
   const m=map[st]||map.unknown;T.textContent=m[0];D.textContent=m[1];if(m[2])box.classList.add(m[2]);
   $('#micAsk').hidden=st==='granted'||st==='nosupport';
   $('#setMicSub').textContent=st==='granted'?'Mikrofon diizinkan ✓':st==='denied'?'Izin mikrofon ditolak, ketuk untuk cara izinkan':'Izin mikrofon, tes suara, dan voice chat';
