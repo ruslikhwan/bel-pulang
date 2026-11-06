@@ -2513,8 +2513,18 @@ let master=null, muted=false, silentEl=null;
 try{muted=localStorage.getItem('belpulang-mute')==='1';}catch(e){}
 const SILENT='data:audio/wav;base64,UklGRtQEAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YbAEAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIA=';
 function initAudio(){
-  // iPhone: play a silent <audio> so sound works even with the ring/silent switch on
-  try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch(e){}
+  // iPhone: configure audioSession so sound works without locking out microphone capture.
+  // Hardcoding 'playback' locks AVAudioSessionCategoryPlayback and makes getUserMedia throw:
+  // 'AudioSession category is not compatible with audio capture'.
+  try{
+    if(navigator.audioSession){
+      if(vc.on || (typeof mt !== 'undefined' && mt && mt.ms)){
+        navigator.audioSession.type = 'play-and-record';
+      } else if(navigator.audioSession.type !== 'play-and-record'){
+        navigator.audioSession.type = 'auto';
+      }
+    }
+  }catch(e){}
   try{if(!silentEl){silentEl=new Audio(SILENT);silentEl.setAttribute('playsinline','');}silentEl.play().catch(()=>{});}catch(e){}
   if(actx){if(actx.state!=='running')actx.resume().catch(()=>{});return;}
   try{
@@ -3906,6 +3916,9 @@ function micErr(e){
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
     return 'Browser memblokir akses mikrofon. Buka langsung di Safari biasa (bukan webview / tab privat).';
   }
+  if(msg.includes('AudioSession')||msg.includes('compatible with audio capture')){
+    return 'Safari AudioSession sedang menyesuaikan mode rekam. Ketuk TES MIC sekali lagi.';
+  }
   if(n==='NotAllowedError'||n==='SecurityError'||msg.includes('Permission denied')||msg.includes('not allowed')){
     return isIOS
       ? 'Izin mikrofon ditolak. Di Safari, ketuk ikon aA di kolom alamat → Pengaturan Situs Web → Mikrofon → pilih Izinkan.'
@@ -3995,7 +4008,12 @@ async function vcMicOn(){
   }catch(e){vc.on=false;vcToast(micErr(e));}
   vcTrack();vcUi();
 }
-function vcMicOff(){if(vc.mic){try{vc.mic.stop();}catch(e){}}vc.mic=null;vc.meAn=null;vc.on=false;vcRouteAll();}
+function vcMicOff(){
+  if(vc.mic){try{vc.mic.stop();}catch(e){}}vc.mic=null;vc.meAn=null;vc.on=false;vcRouteAll();
+  if(typeof mt==='undefined'||!mt||!mt.ms){
+    try{if(navigator.audioSession)navigator.audioSession.type='auto';}catch(e){}
+  }
+}
 function vcToast(t){const el=$('#vcTalk');if(!el)return;el.textContent=t;el.dataset.toast=String(Date.now()+3500);}
 function vcLevel(an){if(!an)return 0;const b=new Uint8Array(an.fftSize);an.getByteTimeDomainData(b);let s=0;for(let i=0;i<b.length;i++){const v=(b[i]-128)/128;s+=v*v;}return Math.sqrt(s/b.length);}
 function vcMeter(){
@@ -4456,15 +4474,32 @@ async function micDevices(){
     sel.value=vc.dev&&[...sel.options].some(o=>o.value===vc.dev)?vc.dev:'';}catch(e){}
 }
 async function micGet(){
-  initAudio();if(actx&&actx.state==='suspended'){try{await actx.resume();}catch(e){}}
-  let ms=null;
-  try{
-    ms=await navigator.mediaDevices.getUserMedia(micCons());
-  }catch(e1){
+  const setCaptureSession = () => {
+    try {
+      if (navigator.audioSession) {
+        navigator.audioSession.type = 'play-and-record';
+      }
+    } catch(e) {}
+  };
+  setCaptureSession();
+  initAudio();
+  setCaptureSession();
+  if (actx && actx.state === 'suspended') { try { await actx.resume(); } catch(e) {} }
+  let ms = null;
+  try {
+    ms = await navigator.mediaDevices.getUserMedia(micCons());
+  } catch(e1) {
     console.warn('micCons failed on Safari, retrying with simple audio constraint:', e1);
-    ms=await navigator.mediaDevices.getUserMedia({audio:true});
+    setCaptureSession();
+    try {
+      ms = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch(e2) {
+      if (silentEl) { try { silentEl.pause(); } catch(e) {} }
+      try { if (navigator.audioSession) navigator.audioSession.type = 'auto'; } catch(e) {}
+      ms = await navigator.mediaDevices.getUserMedia({ audio: true });
+    }
   }
-  try{localStorage.setItem('belpulang-mic-ok','1');}catch(e){}
+  try { localStorage.setItem('belpulang-mic-ok', '1'); } catch(e) {}
   return ms;
 }
 async function micAsk(){
@@ -4477,6 +4512,9 @@ function micTestStop(){
   if(mt.rec&&mt.rec.state==='recording'){try{mt.rec.stop();}catch(e){}}
   if(mt.ms){mt.ms.getTracks().forEach(t=>t.stop());mt.ms=null;}mt.an=null;
   const l=$('#micLvl');if(l)l.style.width='0';const b=$('#micTest');if(b){b.classList.remove('on');b.textContent='TES MIC';}
+  if(!vc.on){
+    try{if(navigator.audioSession)navigator.audioSession.type='auto';}catch(e){}
+  }
 }
 async function micTest(){
   if(mt.ms){micTestStop();return;}

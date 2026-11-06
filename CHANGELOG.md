@@ -29,6 +29,8 @@ Semua pembaruan penting, fitur baru, dan perbaikan bug didokumentasikan di sini.
 
 ### Perbaikan Bug
 - **Akses Mikrofon Safari (iPad & iPhone)**:
+  - **Kompatibilitas Safari AudioSession (play-and-record)**: Memperbaiki error WebKit AudioSession category is not compatible with audio capture dengan mengonfigurasi 
+avigator.audioSession.type = 'play-and-record' saat mengakses mikrofon dan 'auto' saat selesai, menggantikan mode hardcoded 'playback' yang mengunci sistem audio iOS hanya untuk output.
   - Memperbaiki urutan deklarasi `isIOS` di skrip utama yang sebelumnya berada di bawah fungsi `micCons()` (Temporal Dead Zone), yang sempat memicu `ReferenceError` pada Safari.
   - Memperbarui `vcMicOn()` agar menggunakan `micGet()` yang memiliki fallback audio murni saat WebKit menolak constraint lanjutan.
   - Menambahkan auto-upgrade HTTP ke HTTPS karena Safari memblokir total akses mikrofon pada koneksi HTTP biasa.
