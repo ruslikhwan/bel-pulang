@@ -11,6 +11,18 @@ Main di: https://belpulang.netlify.app atau https://belpulang.win
 - Bot dapat rambut acak: SMEA 70 bermacam gaya (kadang dicat), XTM kebanyakan buzz cut, cepak, dan fade ala taruna. Warga (orang kantoran, anak, supir) juga punya rambut berbeda-beda.
 - Panel Studio Karakter ikut tema gelap.
 
+## v1.9.2
+
+- **Sinkronisasi Profil Lintas Perangkat (Method 2 - Supabase Cloud Database)**:
+  - Profil, level single player, perk, dan avatar kustom 3D kini otomatis tersimpan di cloud Supabase (`public.game_profiles`).
+  - Cukup masukkan Nama dan 4 Digit PIN di laptop, iPad, atau HP untuk memuat karakter dan levelmu dari mana saja.
+  - Skema database Supabase siap pakai ada di file [`supabase_schema.sql`](supabase_schema.sql).
+  - Dilengkapi fitur alternatif **Kode Pindah Perangkat** (`📲 KODE` dan `IMPOR`) untuk transfer profil instan.
+- **Perbaikan Izin Mikrofon di Safari (iPad & iPhone)**:
+  - Parameter konstrain audio diperbarui agar kompatibel 100% dengan WebKit iOS (menghilangkan error *OverconstrainedError*).
+  - Pengecekan status izin Safari kini mendeteksi label perangkat aktif (`✅ MIKROFON DIIZINKAN`).
+- Catatan rilis lengkap semua versi dapat dibaca di [`CHANGELOG.md`](CHANGELOG.md).
+
 ## v1.9
 
 - Kartu pilihan perk lebih kontras (abu-abu terang bergaris merah, menyala saat disentuh).

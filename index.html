@@ -2323,6 +2323,7 @@ function loadSave(){
       level = Math.min(50, Math.max(1, (activeProfile.level || 1)|0));
       perks = activeProfile.perks || {};
       if(!activeProfile.appearance) activeProfile.appearance = Object.assign({}, tempAppearance);
+      syncProfileToCloud(activeProfile);
     } else {
       activeProfile = null;
       const s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
@@ -5285,12 +5286,17 @@ if($('#authSubmitBtn')) $('#authSubmitBtn').addEventListener('click', async () =
       errEl.hidden = false;
       try{
         await loadSB();
-        const { data, error } = await sb().from('game_profiles').select('*').eq('id', id).eq('pin', pin).single();
+        const { data, error } = await sb().from('game_profiles').select('*').eq('id', id).single();
         if(data && !error){
+          if(String(data.pin) !== String(pin)){
+            errEl.textContent = 'PIN salah! Coba ingat kembali 4 digit PIN kamu.';
+            errEl.hidden = false;
+            return;
+          }
           prof = {
             id: data.id,
             name: data.name,
-            pin: data.pin,
+            pin: String(data.pin),
             level: data.level || 1,
             perks: data.perks || {},
             appearance: data.appearance || {},
