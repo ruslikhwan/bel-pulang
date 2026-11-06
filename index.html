@@ -465,6 +465,14 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
 #vcBox button.on{color:#9fe0b2!important}#vcBox button.all{color:var(--rust2)!important}#vcBox button.talk{filter:drop-shadow(0 0 4px #9fe0b2)}
 #vcTalk{background:rgba(14,13,16,.8)!important;border-radius:0!important;font-family:var(--body);color:#9fe0b2}
 #specBar,#specTxt{font-family:var(--body)!important}
+/* v1.9: kartu perk lebih kontras, tulisan pukulan kecil */
+.perks .perk{background:var(--noise),linear-gradient(180deg,#46414b,#332f37)!important;box-shadow:inset 4px 0 0 var(--rust),inset 0 0 0 1px rgba(233,229,218,.28)!important;clip-path:none!important;padding:12px 14px 12px 16px}
+.perks .perk:hover,.perks .perk:focus-visible{background:var(--noise),linear-gradient(180deg,#5a535f,#433d48)!important;box-shadow:inset 4px 0 0 var(--rust2),inset 0 0 0 2px var(--rust2)!important;color:#fff!important}
+.perks .perk b{color:#fff!important;font-size:19px}
+.perks .perk span{color:#e4dfd3!important;opacity:1!important}
+.perks .perk em{color:#ff8a78!important;font-style:normal}
+.pop{font-size:11px!important;letter-spacing:.03em;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000!important}
+.pop.me{font-size:11px!important}.pop.info{font-size:9.5px!important}.pop.car{font-size:13px!important}.pop.bad{font-size:11px!important}
 </style>
 
 <div id="game"></div>
@@ -524,7 +532,7 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
     <button type="button" class="mm-btn" id="mmMulti">MULTIPLAYER<small>SMEA 70 vs XTM · 50 vs 50 online</small></button>
     <button type="button" class="mm-btn" id="mmSettings">SETTINGS<small>Avatar &amp; mikrofon</small></button>
     <p class="hint" id="iosHint" hidden><b>Biar layar penuh di iPhone:</b> ketuk tombol Share di Safari, pilih <b>Add to Home Screen</b>, lalu buka game dari ikon Bel Pulang di layar utama.</p>
-    <p class="mm-foot">v1.8 · Sporadis Games</p>
+    <p class="mm-foot">v1.9 · Sporadis Games</p>
   </div>
   <div hidden><button class="cta" id="startBtn">MAIN LEVEL 1</button><button class="cta" id="onlineBtn">ONLINE</button><button class="cta alt" id="resetBtn" hidden>ULANG</button></div>
 </div>
@@ -1145,11 +1153,13 @@ const gate={hp:0,max:3000,lastHit:-99,broken:false,leaves:[],shake:0};
   const fenceTex=canvasTex(256,128,(g,w,h)=>{
     g.clearRect(0,0,w,h);
     // Vertical orange slats (matching SMAN 70 reference photo)
-    g.fillStyle='#e57324';
-    for(let x=0;x<w;x+=16){g.fillRect(x+2,4,7,h-8);}
-    // Top and bottom horizontal dark rails
-    g.fillStyle='#1e2024';
-    g.fillRect(0,0,w,6);g.fillRect(0,h-6,w,6);
+    for(let x=0;x<w;x+=16){
+      const gr=g.createLinearGradient(x+1,0,x+13,0);gr.addColorStop(0,'#b9541a');gr.addColorStop(0.35,'#ef8a3a');gr.addColorStop(1,'#c4601f');
+      g.fillStyle=gr;g.beginPath();g.moveTo(x+1,h-4);g.lineTo(x+1,10);g.lineTo(x+7,4);g.lineTo(x+13,10);g.lineTo(x+13,h-4);g.closePath();g.fill();
+      g.fillStyle='rgba(90,40,10,0.25)';for(let k=0;k<4;k++)g.fillRect(x+3+k*2.5,12+((x*7+k*13)%30),1,40+((x+k*11)%40));
+    }
+    g.fillStyle='#f2efe6';g.fillRect(0,h-7,w,3);
+    g.fillStyle='#2a2b2e';g.fillRect(0,h-4,w,4);
   });
   fenceTex.wrapS=THREE.RepeatWrapping;
 
@@ -1176,26 +1186,40 @@ const gate={hp:0,max:3000,lastHit:-99,broken:false,leaves:[],shake:0};
   buildFenceSection(-45,-3.8); // Left of gate
   buildFenceSection(3.8,48);   // Right of gate
 
-  // School Monument Sign (SMAN / SMEA 70 - black stone slab with orange frame, matching photo)
-  addBox(6.4,3.0,0.6,0x22252a,-8,1.8,-11.8);
-  addBox(6.6,0.16,0.65,0xe57324,-8,3.38,-11.8);
-  addBox(6.6,0.16,0.65,0xe57324,-8,0.25,-11.8);
-  addBox(0.16,3.25,0.65,0xe57324,-11.25,1.82,-11.8);
-  addBox(0.16,3.25,0.65,0xe57324,-4.75,1.82,-11.8);
-  const sn=textPlane([{t:'SMEA 70'},{t:'JAKARTA',s:38}],null,'#ffffff',1024,256,5.6,1.4);
-  sn.position.set(-8,2.2,-11.46);
-  scene.add(sn);
-
-  // Gate structure (entrance archway)
-  const yel=lam(0xe9c63a), yel2=lam(0xf3d75a);
-  addBox(0.45,4.4,0.7,yel,-3.2,2.2,-11.1,true);addBox(0.3,4.1,0.5,yel2,-2.65,2.05,-10.95,true);
-  addBox(7,0.45,0.7,yel,0.2,4.4,-11.1,true);addBox(6.4,0.3,0.5,yel2,0.2,4.05,-10.95);
-  const soff=new THREE.Mesh(new THREE.PlaneGeometry(6.2,1.6),lam(0xf2f2ee));soff.rotation.x=Math.PI/2;soff.position.set(0.2,3.88,-11.8);scene.add(soff);
-  const stripe=canvasTex(64,256,(g,w,h)=>{g.fillStyle='#e8752a';g.fillRect(0,0,w,h);g.fillStyle='#b9541a';for(let y=0;y<h;y+=32)g.fillRect(0,y,w,3);});
-  addBox(1.1,4.4,0.8,lam(0xffffff,{map:stripe}),3.45,2.2,-11.1,true);
-  addBox(1.3,5.4,1,0x5a3a2e,4.8,2.7,-11.4,true);
-  addBox(0.6,2.8,0.6,0x4f5356,-3.7,1.4,-11.3);
-  const bars=canvasTex(128,128,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='#1b1b1d';for(let x=0;x<w;x+=16)g.fillRect(x,0,6,h);g.fillRect(0,0,w,8);g.fillRect(0,h-8,w,8);g.fillRect(0,h/2-3,w,6);});
+  // Papan nama sekolah: papan hitam berbingkai oranye di atas dua tiang (seperti foto asli)
+  {
+    const OR=lam(0xe57324),BK=lam(0x26282c,{map:TX.concrete});
+    [-10.6,-5.4].forEach(px=>addBox(0.22,3.6,0.22,lam(0x8c9196),px,1.8,-11.75));
+    addBox(6.2,2.2,0.18,BK,-8,3.15,-11.75,true);
+    addBox(6.4,0.14,0.24,OR,-8,4.3,-11.75);addBox(6.4,0.14,0.24,OR,-8,2.0,-11.75);addBox(0.14,2.42,0.24,OR,-11.15,3.15,-11.75);addBox(0.14,2.42,0.24,OR,-4.85,3.15,-11.75);
+    const sn=textPlane([{t:'PEMERINTAH PROVINSI DKI JAKARTA · DINAS PENDIDIKAN',s:26},{t:'SMEA 70',s:118},{t:'JL. BULUNGAN · KEBAYORAN BARU · JAKARTA SELATAN',s:26}],'#26282c','#e8e4d8',1024,330,5.9,1.9);
+    sn.position.set(-8,3.15,-11.645);scene.add(sn);
+  }
+  // Gerbang: dua pilar putih + atap bertingkat kayu cokelat (gaya joglo), papan nama di bawah atap
+  {
+    const plT=texConcrete(236);const WH=lam(0xfbf8f0,{map:plT}),WH2=lam(0xe6e1d4,{map:plT});
+    const shT=canvasTex(256,256,(g,w,h)=>{g.fillStyle='#4a2e1e';g.fillRect(0,0,w,h);const r=rng(19);
+      for(let y=0;y<h;y+=16)for(let x=-((y/16)%2)*12;x<w;x+=24){const t=r();g.fillStyle=`rgb(${(80+t*40)|0},${(48+t*24)|0},${(30+t*16)|0})`;g.fillRect(x+1,y+1,22,14);g.fillStyle='rgba(0,0,0,.35)';g.fillRect(x,y+13,24,3);}});
+    shT.wrapS=shT.wrapT=THREE.RepeatWrapping;
+    const ROOF=lam(0xffffff,{map:shT}),EAVE=lam(0x3b2417);
+    [-2.95,3.35].forEach(px=>{
+      addBox(0.78,0.25,0.78,WH2,px,0.12,-11.1,true);
+      addBox(0.66,3.0,0.66,WH,px,1.75,-11.1,true);
+      addBox(0.74,0.12,0.74,WH2,px,1.0,-11.1);addBox(0.8,0.22,0.8,WH2,px,3.25,-11.1,true);
+      addBox(0.5,2.3,0.04,WH2,px,1.95,-10.76);
+    });
+    addBox(6.9,0.42,0.6,WH,0.2,3.55,-11.1,true);
+    const plq=textPlane([{t:'SEKOLAH MENENGAH EKONOMI ATAS',s:30},{t:'SMEA 70 JAKARTA',s:44}],'#f1eee6','#2a2b2e',1024,150,5.6,0.82);plq.position.set(0.2,3.05,-10.78);scene.add(plq);
+    addBox(5.8,0.86,0.06,WH,0.2,3.05,-10.81);
+    const tier=(w,d,h,y,shrink)=>{const g=new THREE.CylinderGeometry(Math.SQRT1_2*shrink,Math.SQRT1_2,h,4,1);g.rotateY(Math.PI/4);const m=new THREE.Mesh(g,ROOF);m.scale.set(w,1,d);m.position.set(0.2,y,-11.1);m.castShadow=true;m.receiveShadow=true;scene.add(m);addBox(w*1.0,0.08,d*1.0,EAVE,0.2,y-h/2-0.02,-11.1);};
+    tier(8.2,3.0,0.62,4.1,0.78);tier(6.4,2.4,0.55,4.72,0.76);tier(4.6,1.8,0.5,5.28,0.7);tier(2.8,1.1,0.42,5.74,0.4);
+    addBox(0.12,0.4,0.12,EAVE,0.2,6.05,-11.1);
+  }
+  // daun pintu gerbang besi hitam (tetap objek yang sama untuk mekanik gerbang)
+  const bars=canvasTex(256,256,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='#141416';
+    g.fillRect(0,0,w,10);g.fillRect(0,h-10,w,10);g.fillRect(0,h*0.55,w,7);g.fillRect(0,0,8,h);g.fillRect(w-8,0,8,h);
+    for(let x=14;x<w-8;x+=18){g.fillRect(x,0,6,h);g.beginPath();g.moveTo(x-2,10);g.lineTo(x+3,-2);g.lineTo(x+8,10);g.fill();}
+    g.strokeStyle='#141416';g.lineWidth=4;for(let x=24;x<w-8;x+=36){g.beginPath();g.arc(x+6,h*0.55+18,9,0,7);g.stroke();}});
   const gm=new THREE.MeshLambertMaterial({map:bars,transparent:true,alphaTest:0.5,side:THREE.DoubleSide});
   [-1,1].forEach(s=>{const l=new THREE.Mesh(new THREE.PlaneGeometry(2.6,2.6),gm);l.rotation.y=s*1.35;l.position.set(s*2.35,1.3,-12.8);l.userData.s=s;scene.add(l);gate.leaves.push(l);});
   flat(5.6,12,groundMat(TX.concrete,1.5,3,0.02),0.2,-17,0.03);
@@ -1207,10 +1231,16 @@ const gate={hp:0,max:3000,lastHit:-99,broken:false,leaves:[],shake:0};
   // Green lawn berm along the sidewalk in front of the orange fence
   flat(44,2.2,groundMat(TX.grass,9,0.5),25.5,-10.4,0.032);
 
-  const hedgeM=lam(0x2d7734), hedgeTopM=lam(0x3ea047);
+  // semak huruf: tekstur daun + benjolan di permukaan supaya tidak kotak
+  const leafT2=texLeaves();
+  const hedgeM=lam(0x9ccf86,{map:leafT2}), hedgeTopM=lam(0xb9e09a,{map:leafT2});
+  const bumpG=new THREE.IcosahedronGeometry(1,1);const hr=rng(41);
   const hb=(w,h,d,x,y,z)=>{
-    const m=addBox(w,h,d,hedgeM,x,y,z,true);
-    addBox(w*0.96,0.06,d*0.96,hedgeTopM,x,y+h/2+0.02,z);
+    const m=addBox(w*0.86,h*0.86,d*0.86,hedgeM,x,y,z,true);
+    const nx=Math.max(1,Math.round(w/0.22)),ny=Math.max(1,Math.round(h/0.22));
+    for(let i=0;i<nx;i++)for(let k=0;k<ny;k++){if((i>0&&i<nx-1)&&(k>0&&k<ny-1)&&hr()<0.6)continue;
+      const b=new THREE.Mesh(bumpG,hr()<0.5?hedgeM:hedgeTopM);const rr=0.11+hr()*0.05;b.scale.set(rr,rr,Math.min(d*0.55,rr*1.6));
+      b.position.set(x-w/2+(i+0.5)*w/nx+(hr()-0.5)*0.05,y-h/2+(k+0.5)*h/ny+(hr()-0.5)*0.05,z+(hr()-0.5)*0.08);b.rotation.set(hr()*3,hr()*3,0);b.castShadow=true;scene.add(b);}
     return m;
   };
 
@@ -1255,15 +1285,38 @@ const gate={hp:0,max:3000,lastHit:-99,broken:false,leaves:[],shake:0};
 
   // Additional sculpted topiary shrubs along the berm (matching street photo)
   [5.2,6.4,17.6,18.8,20.0,21.2].forEach(bx=>{
-    addBox(0.9,0.55,0.55,hedgeM,bx,0.32,cz,true);
-    addBox(0.82,0.06,0.48,hedgeTopM,bx,0.61,cz);
+    for(let k=0;k<5;k++){const b=new THREE.Mesh(bumpG,k%2?hedgeM:hedgeTopM);const rr=0.26+hr()*0.1;b.scale.set(rr,rr*0.85,rr);b.position.set(bx+(k-2)*0.2,0.3+hr()*0.12,cz+(hr()-0.5)*0.15);b.castShadow=true;scene.add(b);}
   });
 
   // Planter pots near the gate
-  [[-4.3,-10.5],[4.1,-10.4],[6.3,-10.5]].forEach(([x,z])=>{
-    const p=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.3,0.7,10),lam(0xb4392b));p.position.set(x,0.35,z);p.castShadow=true;scene.add(p);
-    const l=new THREE.Mesh(new THREE.IcosahedronGeometry(0.55,0),lam(0x3f7d3a));l.position.set(x,1.05,z);scene.add(l);
-  });
+  // pot gentong batu + tanaman tropis (daun berlapis, bukan bola)
+  {
+    const potT=canvasTex(256,128,(g,w,h)=>{const r=rng(55);g.fillStyle='#8e8a82';g.fillRect(0,0,w,h);for(let i=0;i<900;i++){const t=r();g.fillStyle=`rgba(${t<.5?40:230},${t<.5?38:226},${t<.5?34:216},${0.05+r()*0.12})`;g.fillRect(r()*w,r()*h,1+r()*3,1+r()*3);}
+      g.fillStyle='rgba(60,70,40,.25)';for(let i=0;i<12;i++){g.beginPath();g.arc(r()*w,h*(0.7+r()*0.3),6+r()*14,0,7);g.fill();}g.fillStyle='rgba(0,0,0,.18)';g.fillRect(0,10,w,4);g.fillRect(0,h-14,w,3);});
+    potT.wrapS=THREE.RepeatWrapping;
+    const potProf=[[0,0],[0.26,0],[0.3,0.06],[0.4,0.25],[0.44,0.45],[0.41,0.62],[0.36,0.7],[0.42,0.74],[0.42,0.8],[0.34,0.8],[0.33,0.74],[0,0.74]].map(q=>new THREE.Vector2(q[0],q[1]));
+    const potG=new THREE.LatheGeometry(potProf,18);const potM=lam(0xffffff,{map:potT});
+    const soilM=lam(0x3b2a1e);
+    const leafCard=canvasTex(256,256,(g,w,h)=>{g.clearRect(0,0,w,h);const r=rng(63);
+      for(let i=0;i<46;i++){const a=-Math.PI/2+(r()-0.5)*2.4,L=60+r()*80,x0=w/2+(r()-0.5)*20,y0=h-6;const x1=x0+Math.cos(a)*L,y1=y0+Math.sin(a)*L;
+        const t=r();g.fillStyle=`rgb(${(40+t*50)|0},${(95+t*70)|0},${(35+t*30)|0})`;g.beginPath();g.moveTo(x0,y0);g.quadraticCurveTo((x0+x1)/2+Math.sin(a)*16,(y0+y1)/2-Math.cos(a)*16,x1,y1);g.quadraticCurveTo((x0+x1)/2-Math.sin(a)*16,(y0+y1)/2+Math.cos(a)*16,x0,y0);g.fill();
+        g.strokeStyle='rgba(20,50,15,.6)';g.lineWidth=1;g.beginPath();g.moveTo(x0,y0);g.lineTo(x1,y1);g.stroke();}});
+    const leafM=new THREE.MeshLambertMaterial({map:leafCard,transparent:true,alphaTest:0.45,side:THREE.DoubleSide});
+    const cardG=new THREE.PlaneGeometry(1.3,1.3);cardG.translate(0,0.65,0);
+    const potPlant=(x,z,sc)=>{const p=new THREE.Mesh(potG,potM);p.position.set(x,0,z);p.scale.setScalar(sc);p.castShadow=true;p.receiveShadow=true;scene.add(p);
+      const so=new THREE.Mesh(new THREE.CircleGeometry(0.33,14),soilM);so.rotation.x=-Math.PI/2;so.position.set(x,0.72*sc,z);scene.add(so);
+      for(let k=0;k<4;k++){const c=new THREE.Mesh(cardG,leafM);c.position.set(x,0.68*sc,z);c.rotation.y=k*Math.PI/4;c.scale.setScalar(sc*(0.9+k*0.05));scene.add(c);}};
+    [[-4.3,-10.5,1.1],[4.3,-10.4,1.0],[6.3,-10.5,0.9],[-12.3,-10.4,1.0]].forEach(([x,z,sc])=>potPlant(x,z,sc));
+    // pohon palem di belakang pagar (seperti foto)
+    const frond=canvasTex(256,128,(g,w,h)=>{g.clearRect(0,0,w,h);g.strokeStyle='#5a7a2a';g.lineWidth=4;g.beginPath();g.moveTo(0,h/2);g.quadraticCurveTo(w/2,h/2-10,w,h/2+14);g.stroke();
+      for(let x=8;x<w-4;x+=7){const t=x/w,len=(1-t)*44+8,y=h/2-10*Math.sin(t*3.14)+t*14;g.strokeStyle=`rgb(${60+(x%3)*14},${110+(x%5)*10},40)`;g.lineWidth=3;
+        g.beginPath();g.moveTo(x,y);g.lineTo(x+10,y-len);g.stroke();g.beginPath();g.moveTo(x,y);g.lineTo(x+10,y+len);g.stroke();}});
+    const frM=new THREE.MeshLambertMaterial({map:frond,transparent:true,alphaTest:0.4,side:THREE.DoubleSide});
+    const frG=new THREE.PlaneGeometry(2.6,1.3);frG.translate(1.3,0,0);
+    const palm=(x,z,h)=>{const t=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.2,h,8),lam(0x8a7a62,{map:TX.concrete}));t.position.set(x,h/2,z);t.castShadow=true;scene.add(t);
+      for(let k=0;k<9;k++){const f=new THREE.Mesh(frG,frM);f.position.set(x,h,z);f.rotation.set(0,k*0.7,-0.35-((k%3)*0.15));f.castShadow=true;scene.add(f);}};
+    palm(-6.5,-14.5,6.2);palm(6.8,-14.2,7.0);palm(-15,-14.8,5.6);
+  }
 
   // ================= BASKETBALL COURT (BEHIND THE FENCE) =================
   const bballTex=canvasTex(1024,512,(g,w,h)=>{
@@ -1427,8 +1480,55 @@ const gate={hp:0,max:3000,lastHit:-99,broken:false,leaves:[],shake:0};
     cyl(0.1,5.2,MET,hx-5.3,2.6,bz-0.1);addBox(0.5,0.25,0.5,CON,hx-5.3,0.12,bz-0.1);cyl(0.06,1.4,MET,hx-4.65,5.0,bz-0.1,0,Math.PI/2);
   }
   addBox(80,0.8,0.8,0x4d7f3f,-6,0.4,8.1);
+  // gerobak jajanan di seberang sekolah: bakso malang, cilok, gorengan
+  {
+    const lbl=(text,bg,fg,w,h,sz)=>canvasTex(512,Math.round(512*h/w),(g,W,H)=>{g.fillStyle=bg;g.fillRect(0,0,W,H);g.fillStyle=fg;g.font='700 '+sz+'px Oswald, Impact, sans-serif';g.textAlign='center';g.textBaseline='middle';
+      const ls=text.split('\n');ls.forEach((t,i)=>g.fillText(t,W/2,H*(i+0.5)/ls.length+2));});
+    const STL=lam(0xc9ccd0,{map:TX.concrete}),STD=lam(0x8f949a),BLU=lam(0x2a5fbf),WD=lam(0x8a5a32,{map:TX.concrete}),TIRE=lam(0x161616),RIM=lam(0x9aa0a6);
+    const GLS=new THREE.MeshPhongMaterial({color:0xcfe6f2,transparent:true,opacity:0.28,shininess:90,specular:0xffffff,depthWrite:false});
+    const box=(w,h,d,m,x,y,z,cs)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=!!cs;o.receiveShadow=true;scene.add(o);return o;};
+    const wheel=(x,y,z,r)=>{const t=new THREE.Mesh(new THREE.TorusGeometry(r,0.035,6,22),TIRE);t.position.set(x,y,z);scene.add(t);const rim=new THREE.Mesh(new THREE.TorusGeometry(r-0.04,0.015,5,22),RIM);rim.position.set(x,y,z);scene.add(rim);
+      for(let k=0;k<10;k++){const sp=new THREE.Mesh(new THREE.CylinderGeometry(0.005,0.005,r*2-0.08,4),RIM);sp.rotation.z=k*Math.PI/10;sp.position.set(x,y,z);scene.add(sp);}};
+    const caster=(x,z)=>{const c=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.05,12),TIRE);c.rotation.x=Math.PI/2;c.position.set(x,0.09,z);scene.add(c);};
+    const decal=(tex,w,h,x,y,z,ry)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),lam(0xffffff,{map:tex}));m.position.set(x,y,z);m.rotation.y=ry||0;scene.add(m);};
+    const lpg=(x,z)=>{const g=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.13,0.3,12),lam(0x9bc23a));g.position.set(x,0.25,z);g.castShadow=true;scene.add(g);const t=new THREE.Mesh(new THREE.SphereGeometry(0.13,12,8,0,6.3,0,1.6),lam(0x9bc23a));t.position.set(x,0.4,z);scene.add(t);box(0.05,0.08,0.05,STD,x,0.56,z);};
+    const pot=(x,y,z,r)=>{const p=new THREE.Mesh(new THREE.CylinderGeometry(r,r*0.95,r*1.2,16),lam(0xd8dcdf));p.position.set(x,y+r*0.6,z);p.castShadow=true;scene.add(p);const l=new THREE.Mesh(new THREE.CylinderGeometry(r*1.02,r*1.02,0.03,16),lam(0xbfc4c8));l.position.set(x,y+r*1.22,z);scene.add(l);box(0.08,0.05,0.04,STD,x,y+r*1.28,z);};
+    const bottle=(x,y,z,c)=>{const b=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.04,0.2,8),lam(c));b.position.set(x,y+0.1,z);scene.add(b);box(0.02,0.04,0.02,lam(0xeeeeee),x,y+0.22,z);};
+    const balls=(x0,y,z0,nx,nz,col,r)=>{const g=new THREE.SphereGeometry(r,8,6),m=lam(col);for(let i=0;i<nx;i++)for(let k=0;k<nz;k++){const b=new THREE.Mesh(g,m);b.position.set(x0+i*r*2.1,y+r,z0+k*r*2.1);scene.add(b);}};
+    const roof=(x,z,w,d,y)=>{[-1,1].forEach(sd=>{const r=box(w,0.04,d/2+0.12,BLU,x,y+0.12,z+sd*d/4,true);r.rotation.x=sd*0.28;});box(w,0.05,0.05,lam(0x6b4422),x,y+0.2,z);};
+    const Z=6.15;
+    // BAKSO MALANG
+    {const x=4;box(1.9,0.75,0.8,STL,x,0.72,Z,true);[[-0.95,-0.4],[0.95,-0.4],[-0.95,0.4],[0.95,0.4]].forEach(([dx,dz])=>box(0.05,0.8,0.05,BLU,x+dx,0.72,Z+dz));box(1.95,0.05,0.85,BLU,x,1.1,Z);box(1.95,0.05,0.85,BLU,x,0.34,Z);
+      const bt=lbl('BAKSO\nMALANG','#e9e7e1','#c62828',2,1,150);decal(bt,0.95,0.48,x-0.2,0.74,Z-0.405,Math.PI);decal(bt,0.95,0.48,x-0.2,0.74,Z+0.405);
+      box(0.9,0.5,0.7,GLS,x+0.45,1.38,Z);[[0,-0.35],[0,0.35]].forEach(([,dz])=>{box(0.9,0.03,0.03,BLU,x+0.45,1.62,Z+dz);box(0.9,0.03,0.03,BLU,x+0.45,1.14,Z+dz);});box(0.03,0.5,0.7,BLU,x+0.9,1.38,Z);box(0.03,0.5,0.7,BLU,x,1.38,Z);
+      balls(x+0.12,1.15,Z-0.2,6,4,0xd9cfb8,0.045);balls(x+0.12,1.33,Z-0.2,6,3,0xe0a83a,0.04);
+      pot(x-0.55,1.12,Z,0.2);bottle(x-0.2,1.12,Z+0.2,0xd1361f);bottle(x-0.12,1.12,Z+0.25,0x7a3a14);
+      [[-0.95,-0.4],[0.95,-0.4],[-0.95,0.4],[0.95,0.4]].forEach(([dx,dz])=>box(0.04,0.95,0.04,lam(0x6b4422),x+dx,1.6,Z+dz));roof(x,Z,2.2,1.1,2.1);
+      const st=lbl('BAKSO MALANG','#f4f2ec','#c62828',4,1,120);decal(st,1.3,0.32,x+0.1,1.88,Z-0.43,Math.PI);decal(st,1.3,0.32,x+0.1,1.88,Z+0.43);
+      wheel(x+0.55,0.42,Z-0.47,0.4);wheel(x+0.55,0.42,Z+0.47,0.4);caster(x-0.75,Z-0.3);caster(x-0.75,Z+0.3);lpg(x-1.15,Z-0.2);box(0.4,0.04,0.5,WD,x-1.12,1.08,Z);}
+    // CILOK
+    {const x=10.5;const red=lam(0xc8302a);box(1.5,0.7,0.75,red,x,0.68,Z,true);box(1.55,0.05,0.8,STL,x,1.05,Z);
+      const ct=lbl('CILOK','#c8302a','#f8d12e',3,1,170);decal(ct,1.1,0.4,x,0.7,Z-0.38,Math.PI);decal(ct,1.1,0.4,x,0.7,Z+0.38);
+      box(0.6,0.4,0.55,GLS,x+0.4,1.28,Z);box(0.6,0.03,0.55,STL,x+0.4,1.49,Z);balls(x+0.17,1.08,Z-0.18,5,4,0xe6dcc6,0.045);
+      pot(x-0.4,1.08,Z,0.19);bottle(x,1.08,Z+0.22,0xd1361f);bottle(x+0.08,1.08,Z+0.25,0xe0761a);
+      box(0.03,1.5,0.03,STD,x-0.05,1.8,Z);
+      const umT=canvasTex(256,32,(g,w,h)=>{const c=['#d7302a','#f2c418','#2a5fbf','#2e9a4a'];for(let i=0;i<8;i++){g.fillStyle=c[i%4];g.fillRect(i*w/8,0,w/8,h);}});
+      const um=new THREE.Mesh(new THREE.ConeGeometry(1.15,0.45,8,1,true),lam(0xffffff,{map:umT,side:THREE.DoubleSide}));um.position.set(x-0.05,2.62,Z);um.castShadow=true;scene.add(um);
+      const tip=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,6),lam(0xd7302a));tip.position.set(x-0.05,2.86,Z);scene.add(tip);
+      wheel(x+0.45,0.32,Z-0.42,0.3);wheel(x+0.45,0.32,Z+0.42,0.3);caster(x-0.6,Z-0.25);caster(x-0.6,Z+0.25);}
+    // GORENGAN
+    {const x=16.5;box(1.8,0.75,0.8,STL,x,0.72,Z,true);box(1.85,0.05,0.85,STD,x,1.1,Z);
+      const gt=lbl('GORENGAN\nMANTAP!','#c9ccd0','#c0392b',2,1,140);decal(gt,0.9,0.46,x+0.2,0.74,Z-0.405,Math.PI);decal(gt,0.9,0.46,x+0.2,0.74,Z+0.405);
+      box(1.5,0.6,0.7,GLS,x+0.05,1.43,Z);[[-0.75],[0.8]].forEach(([dx])=>box(0.03,0.6,0.7,STD,x+dx,1.43,Z));box(1.5,0.03,0.7,STD,x+0.05,1.73,Z);
+      const gg=new THREE.BoxGeometry(0.16,0.05,0.07),gmz=[lam(0xd9a23a),lam(0xc78a2c),lam(0xe6b850)];for(let i=0;i<14;i++){const b=new THREE.Mesh(gg,gmz[i%3]);b.position.set(x-0.55+(i%7)*0.18,1.16+Math.floor(i/7)*0.06,Z-0.12+Math.floor(i/7)*0.18);b.rotation.y=(i%2)*0.3;scene.add(b);}
+      [[-0.9,-0.4],[0.9,-0.4],[-0.9,0.4],[0.9,0.4]].forEach(([dx,dz])=>box(0.04,0.95,0.04,STD,x+dx,1.6,Z+dz));roof(x,Z,2.1,1.1,2.1);
+      wheel(x+0.55,0.42,Z-0.47,0.4);wheel(x+0.55,0.42,Z+0.47,0.4);caster(x-0.75,Z-0.3);caster(x-0.75,Z+0.3);
+      const sx=x-1.45;[[-0.18,-0.18],[0.18,-0.18],[-0.18,0.18],[0.18,0.18]].forEach(([dx,dz])=>box(0.03,0.75,0.03,lam(0x1a1a1a),sx+dx,0.38,Z+dz));box(0.42,0.03,0.42,lam(0x1a1a1a),sx,0.62,Z);
+      const wok=new THREE.Mesh(new THREE.SphereGeometry(0.3,16,8,0,6.3,Math.PI*0.62,Math.PI*0.38),lam(0x2a2a2a,{side:THREE.DoubleSide}));wok.position.set(sx,0.95,Z);scene.add(wok);
+      const oil=new THREE.Mesh(new THREE.CircleGeometry(0.2,14),lam(0xc99a2e));oil.rotation.x=-Math.PI/2;oil.position.set(sx,0.73,Z);scene.add(oil);lpg(sx,Z+0.5);
+      [[-0.14,-0.12],[0.14,-0.12],[-0.14,0.12],[0.14,0.12]].forEach(([dx,dz])=>box(0.04,0.45,0.04,WD,sx-0.6+dx,0.22,Z+0.1+dz));box(0.36,0.05,0.32,WD,sx-0.6,0.46,Z+0.1);}
+  }
   const cart=(x,col,label)=>{addBox(1.8,0.9,0.9,col,x,0.75,6.3,true);addBox(1.9,0.08,1,0xdddddd,x,1.9,6.3);addBox(0.06,0.9,0.06,0x555555,x-0.85,1.45,6.3);addBox(0.06,0.9,0.06,0x555555,x+0.85,1.45,6.3);const t=textPlane([{t:label,s:56}],'#fff6e6','#1d2340',256,64,1.6,0.4);t.position.set(x,1,6.76);scene.add(t);[-0.6,0.6].forEach(o=>{const w=new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.22,0.08,10),lam(0x222222));w.rotation.x=Math.PI/2;w.position.set(x+o,0.22,6.8);scene.add(w);});};
-  cart(6,0x2f8f6a,'BAKSO');cart(14,0xd8a032,'CILOK');
   for(let x=-30;x<=40;x+=17){addBox(0.12,6,0.12,0x5f666e,x,3,7.3);addBox(1.4,0.1,0.25,0x5f666e,x-0.6,6,7.2);}
   // mission props (shown per mission)
   spandukGroup=new THREE.Group();spandukGroup.position.set(SPANDUK.x,0,SPANDUK.z+1.1);scene.add(spandukGroup);

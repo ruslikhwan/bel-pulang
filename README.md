@@ -4,6 +4,14 @@ Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi
 
 Main di: https://belpulang.netlify.app atau https://belpulang.win
 
+## v1.9
+
+- Kartu pilihan perk lebih kontras (abu-abu terang bergaris merah, menyala saat disentuh).
+- Tulisan pukulan (BUK!, PLAK!, dll.) dikecilkan supaya tidak menutupi pemain.
+- Gerbang sekolah baru seperti aslinya: dua pilar putih, atap kayu bertingkat gaya joglo, papan "SEKOLAH MENENGAH EKONOMI ATAS · SMEA 70 JAKARTA", pintu besi hitam berujung tombak. Papan nama sekolah hitam berbingkai oranye di atas dua tiang, pagar bilah oranye bertekstur kayu.
+- Tanaman: semak huruf "SMEA 70" bertekstur daun dan permukaan rimbun, pot gentong batu dengan tanaman tropis berdaun, pohon palem di belakang pagar.
+- Gerobak jajanan di seberang sekolah: Bakso Malang (lemari kaca, panci, saus, atap biru, tabung gas), Cilok (gerobak merah, payung warna-warni), Gorengan (lemari kaca, wajan di atas kompor, tabung gas, bangku kayu).
+
 ## Tampilan UI (v1.8)
 
 - Gaya grunge/urban, tidak kartun: menu dan tombol berupa strip lakban hitam bertekstur dengan tepi kasar dan sedikit miring, aksen merah bata.
