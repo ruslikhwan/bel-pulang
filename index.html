@@ -5230,7 +5230,7 @@ if($('#authPin')) $('#authPin').addEventListener('keydown', e => {
   if(e.key === 'Enter') $('#authSubmitBtn').click();
 });
 
-if($('#authSubmitBtn')) $('#authSubmitBtn').addEventListener('click', () => {
+if($('#authSubmitBtn')) $('#authSubmitBtn').addEventListener('click', async () => {
   const name = ($('#authName').value || '').trim();
   const pin = ($('#authPin').value || '').trim();
   const errEl = $('#authErr');
