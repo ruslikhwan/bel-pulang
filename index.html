@@ -582,6 +582,7 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
         </div>
         <div style="display:flex;gap:6px">
           <button type="button" id="menuEditCharBtn" class="b-tiny" title="Kustom Model 3D">✏️ EDIT</button>
+          <button type="button" id="menuSyncBtn" class="b-tiny" style="background:#f39c12" title="Pindah Profil ke iPad / HP">📲 KODE</button>
           <button type="button" id="menuSwitchBtn" class="b-tiny alt" title="Ganti Profil / Logout">🔄 GANTI</button>
         </div>
       </div>
@@ -701,6 +702,14 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
     <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
       <button type="button" class="cta" id="authSubmitBtn">LANJUT</button>
       <button type="button" class="cta alt" id="authCancelBtn">BATAL</button>
+    </div>
+    <div style="margin-top:14px;padding:10px;background:rgba(0,0,0,0.05);border-radius:10px;border:1px dashed var(--navy2)">
+      <p style="font-size:11px;font-weight:800;color:var(--navy2);margin-bottom:6px">📲 PINDAH PERANGKAT (DARI LAPTOP KE IPAD):</p>
+      <div style="display:flex;gap:6px">
+        <input class="inp" id="syncCodeInp" placeholder="Tempel Kode Profil (BP:...)" style="font-size:11px;padding:8px">
+        <button type="button" class="cta" id="syncImportBtn" style="width:auto;padding:8px 12px;font-size:11px;background:#f39c12">IMPOR</button>
+      </div>
+    </div>
     </div>
   </div>
 </div>
@@ -2249,6 +2258,7 @@ function writeSave(){
       const accs = getAccounts();
       accs[activeProfile.id] = activeProfile;
       saveAccounts(accs);
+      syncProfileToCloud(activeProfile);
     }
     localStorage.setItem(SAVE_KEY, JSON.stringify({level, perks}));
   }catch(e){}
@@ -3744,7 +3754,13 @@ const vc={ch:null,code:'',peers:{},mic:null,on:false,all:false,mute:false,info:{
 vc.ns=true;vc.auto=false;vc.dev='';
 try{const o=JSON.parse(localStorage.getItem(VC_KEY)||'{}');vc.all=!!o.all;vc.mute=!!o.mute;vc.ns=o.ns!==false;vc.auto=!!o.auto;vc.dev=o.dev||'';}catch(e){}
 function vcSave(){try{localStorage.setItem(VC_KEY,JSON.stringify({all:vc.all,mute:vc.mute,ns:vc.ns,auto:vc.auto,dev:vc.dev}));}catch(e){}}
-function micCons(){const a={echoCancellation:true,noiseSuppression:vc.ns,autoGainControl:true};if(vc.dev)a.deviceId={ideal:vc.dev};return {audio:a,video:false};}
+function micCons(){
+  // Safari on iOS / iPadOS rejects noiseSuppression/autoGainControl and video:false
+  const a={echoCancellation:true};
+  if(!isIOS){if(vc.ns)a.noiseSuppression=true;a.autoGainControl=true;}
+  if(vc.dev)a.deviceId={ideal:vc.dev};
+  return {audio:a};
+}
 function micErr(e){const n=e&&e.name;if(n==='NotAllowedError'||n==='SecurityError')return 'Izin mikrofon ditolak. Buka Settings → Mikrofon untuk cara mengizinkan.';if(n==='NotFoundError'||n==='OverconstrainedError')return 'Mikrofon tidak ditemukan di HP ini.';if(n==='NotReadableError')return 'Mikrofon sedang dipakai aplikasi lain (telepon, rekam suara). Tutup dulu lalu coba lagi.';return 'Mikrofon tidak bisa dipakai di browser ini.';}
 function vcOk(){return !!(window.RTCPeerConnection&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);}
 function vcMeta(){return {pid:myPid,team:net?net.me.team:0,name:net?net.me.name:'',on:vc.on,all:vc.all};}
@@ -4240,8 +4256,27 @@ const isAndroid=/Android/.test(navigator.userAgent);
 const mt={ms:null,an:null,raf:0,rec:null};
 async function micPerm(){
   if(!window.isSecureContext||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return 'nosupport';
-  try{if(navigator.permissions&&navigator.permissions.query){const r=await navigator.permissions.query({name:'microphone'});return r.state;}}catch(e){}
-  try{return localStorage.getItem('belpulang-mic-ok')==='1'?'granted':'unknown';}catch(e){return 'unknown';}
+  // 1. Standard Permissions API (Chrome/Edge/Android)
+  try{
+    if(navigator.permissions&&navigator.permissions.query){
+      const r=await navigator.permissions.query({name:'microphone'});
+      if(r&&r.state)return r.state;
+    }
+  }catch(e){}
+  // 2. Safari iOS / iPad detection: enumerateDevices labels audio input once granted
+  try{
+    const ds=await navigator.mediaDevices.enumerateDevices();
+    const auds=ds.filter(d=>d.kind==='audioinput');
+    if(auds.some(d=>d.label&&d.label.length>0)){
+      try{localStorage.setItem('belpulang-mic-ok','1');}catch(e){}
+      return 'granted';
+    }
+  }catch(e){}
+  // 3. Fallback cache
+  try{
+    if(localStorage.getItem('belpulang-mic-ok')==='1')return 'granted';
+  }catch(e){}
+  return 'prompt';
 }
 async function micStatus(){
   const st=await micPerm(),box=$('#micStat'),T=$('#micStatT'),D=$('#micStatD');
@@ -4266,8 +4301,14 @@ async function micDevices(){
     sel.value=vc.dev&&[...sel.options].some(o=>o.value===vc.dev)?vc.dev:'';}catch(e){}
 }
 async function micGet(){
-  initAudio();if(actx&&actx.state==='suspended')actx.resume();
-  const ms=await navigator.mediaDevices.getUserMedia(micCons());
+  initAudio();if(actx&&actx.state==='suspended'){try{await actx.resume();}catch(e){}}
+  let ms=null;
+  try{
+    ms=await navigator.mediaDevices.getUserMedia(micCons());
+  }catch(e1){
+    console.warn('micCons failed on Safari, retrying with simple audio constraint:', e1);
+    ms=await navigator.mediaDevices.getUserMedia({audio:true});
+  }
   try{localStorage.setItem('belpulang-mic-ok','1');}catch(e){}
   return ms;
 }
@@ -4710,6 +4751,60 @@ function frame(now){
   renderer.render(scene,camera);
 }
 
+
+/* ================= CROSS-DEVICE PROFILE SYNC & CODE TRANSFER ================= */
+async function syncProfileToCloud(prof){
+  if(!prof) return;
+  try{
+    await loadSB();
+    await sb().from('game_profiles').upsert({
+      id: prof.id,
+      name: prof.name,
+      pin: prof.pin,
+      level: prof.level || 1,
+      perks: prof.perks || {},
+      appearance: prof.appearance || {},
+      updated_at: new Date().toISOString()
+    });
+  }catch(e){
+    // Silent fallback if table not yet created
+  }
+}
+
+function exportProfileCode(prof){
+  if(!prof) return '';
+  const obj = { id: prof.id, name: prof.name, pin: prof.pin, level: prof.level||1, perks: prof.perks||{}, appearance: prof.appearance||{} };
+  return 'BP:' + btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+}
+
+function importProfileCode(str){
+  str = (str || '').trim();
+  if(!str.startsWith('BP:')) throw new Error('Format kode profil tidak valid. Harus diawali BP:');
+  const jsonStr = decodeURIComponent(escape(atob(str.slice(3))));
+  const obj = JSON.parse(jsonStr);
+  if(!obj.name || !obj.pin) throw new Error('Data profil di dalam kode tidak lengkap.');
+  const id = (obj.id || obj.name).toLowerCase();
+  const accs = getAccounts();
+  const restored = {
+    id: id,
+    name: obj.name,
+    pin: String(obj.pin),
+    level: Math.min(50, Math.max(1, (obj.level || 1)|0)),
+    perks: obj.perks || {},
+    appearance: obj.appearance || {},
+    createdAt: Date.now()
+  };
+  accs[id] = restored;
+  saveAccounts(accs);
+  setActiveProfileId(id);
+  activeProfile = restored;
+  level = restored.level;
+  perks = restored.perks;
+  writeSave();
+  syncProfileToCloud(restored);
+  return restored;
+}
+
 /* ================= CHARACTER STUDIO & ACCOUNT CONTROLLER ================= */
 let crScene = null, crCamera = null, crRenderer = null, crCharGroup = null, crCharData = null;
 let crRotation = 0, crTime = 0;
@@ -5077,22 +5172,51 @@ if($('#authSubmitBtn')) $('#authSubmitBtn').addEventListener('click', () => {
     activeProfile = newProf;
     level = 1; perks = {};
     writeSave();
+    // Async sync to Supabase game_profiles if table exists
+    syncProfileToCloud(newProf);
     $('#authOv').hidden = true;
     openCharacterCreator();
   } else {
     // Login / Load mode
-    if(!accs[id]){
-      errEl.textContent = 'Profil "' + name + '" belum terdaftar. Silakan buat profil baru.';
+    // Check local accounts first
+    let prof = accs[id];
+    if(!prof){
+      // Check Supabase Cloud database
+      errEl.textContent = 'Mencari profil dari cloud / database…';
+      errEl.hidden = false;
+      try{
+        await loadSB();
+        const { data, error } = await sb().from('game_profiles').select('*').eq('id', id).eq('pin', pin).single();
+        if(data && !error){
+          prof = {
+            id: data.id,
+            name: data.name,
+            pin: data.pin,
+            level: data.level || 1,
+            perks: data.perks || {},
+            appearance: data.appearance || {},
+            createdAt: data.created_at ? new Date(data.created_at).getTime() : Date.now()
+          };
+          accs[id] = prof;
+          saveAccounts(accs);
+        }
+      }catch(err){
+        console.warn('Cloud profile lookup failed:', err);
+      }
+    }
+
+    if(!prof){
+      errEl.textContent = 'Profil "' + name + '" belum terdaftar di perangkat ini. Buat profil baru atau gunakan Kode Sinkron.';
       errEl.hidden = false;
       return;
     }
-    if(accs[id].pin !== pin){
+    if(prof.pin !== pin){
       errEl.textContent = 'PIN salah! Coba ingat kembali 4 digit PIN kamu.';
       errEl.hidden = false;
       return;
     }
     setActiveProfileId(id);
-    activeProfile = accs[id];
+    activeProfile = prof;
     level = Math.min(50, Math.max(1, (activeProfile.level || 1)|0));
     perks = activeProfile.perks || {};
     writeSave();
@@ -5100,6 +5224,41 @@ if($('#authSubmitBtn')) $('#authSubmitBtn').addEventListener('click', () => {
     updateProfileUI();
     popup('Selamat datang kembali, ' + activeProfile.name + '!', {x:0, y:2, z:0}, 2.5, 'info');
     if(typeof afterLogin==='function')afterLogin();
+  }
+});
+
+
+if($('#menuSyncBtn')) $('#menuSyncBtn').addEventListener('click', () => {
+  if(!activeProfile) return;
+  const code = exportProfileCode(activeProfile);
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code).then(() => {
+      alert('Kode profil berhasil disalin!\n\nBuka game di iPad, klik MASUKKAN PIN, lalu tempel kode di kolom PINDAH PERANGKAT.');
+    }).catch(() => {
+      prompt('Salin kode profil ini untuk dibuka di iPad:', code);
+    });
+  } else {
+    prompt('Salin kode profil ini untuk dibuka di iPad:', code);
+  }
+});
+
+if($('#syncImportBtn')) $('#syncImportBtn').addEventListener('click', () => {
+  const code = ($('#syncCodeInp').value || '').trim();
+  const errEl = $('#authErr');
+  errEl.hidden = true;
+  if(!code){
+    errEl.textContent = 'Tempel kode profil yang didapat dari laptop.';
+    errEl.hidden = false;
+    return;
+  }
+  try {
+    const prof = importProfileCode(code);
+    $('#authOv').hidden = true;
+    updateProfileUI();
+    popup('Profil ' + prof.name + ' berhasil diimpor ke iPad!', {x:0, y:2, z:0}, 2.5, 'info');
+  } catch(e) {
+    errEl.textContent = 'Gagal impor: ' + (e.message || 'Kode profil salah.');
+    errEl.hidden = false;
   }
 });
 
