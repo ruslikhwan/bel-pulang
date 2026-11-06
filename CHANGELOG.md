@@ -29,6 +29,10 @@ Semua pembaruan penting, fitur baru, dan perbaikan bug didokumentasikan di sini.
 
 ### Perbaikan Bug
 - **Akses Mikrofon Safari (iPad & iPhone)**:
+  - Memperbaiki urutan deklarasi `isIOS` di skrip utama yang sebelumnya berada di bawah fungsi `micCons()` (Temporal Dead Zone), yang sempat memicu `ReferenceError` pada Safari.
+  - Memperbarui `vcMicOn()` agar menggunakan `micGet()` yang memiliki fallback audio murni saat WebKit menolak constraint lanjutan.
+  - Menambahkan auto-upgrade HTTP ke HTTPS karena Safari memblokir total akses mikrofon pada koneksi HTTP biasa.
+  - Memperjelas pesan diagnostik mikrofon jika Safari memblokir izin di Pengaturan iPad (*Pengaturan Situs Web -> Mikrofon -> Izinkan*).
   - Menghapus parameter konstrain audio yang tidak didukung WebKit (`video: false`, `noiseSuppression`, `autoGainControl`) yang sebelumnya menyebabkan Safari menolak izin dengan *OverconstrainedError*.
   - Menambahkan fallback otomatis ke konstrain audio standar (`{ audio: true }`).
   - Memperbaiki deteksi izin mikrofon di iOS menggunakan `navigator.mediaDevices.enumerateDevices()` sehingga status izin langsung berubah hijau (`✅ MIKROFON DIIZINKAN`) setelah menekan "Izinkan" di Safari.

@@ -890,6 +890,11 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
 <script>
 (function(){
 "use strict";
+if(location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1'){
+  location.replace('https://' + location.host + location.pathname + location.search + location.hash);
+}
+const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && (navigator.maxTouchPoints || 0) > 1);
+const isAndroid = /Android/.test(navigator.userAgent);
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
 const pick=a=>a[Math.floor(Math.random()*a.length)];
@@ -3892,7 +3897,28 @@ function micCons(){
   if(vc.dev)a.deviceId={ideal:vc.dev};
   return {audio:a};
 }
-function micErr(e){const n=e&&e.name;if(n==='NotAllowedError'||n==='SecurityError')return 'Izin mikrofon ditolak. Buka Settings → Mikrofon untuk cara mengizinkan.';if(n==='NotFoundError'||n==='OverconstrainedError')return 'Mikrofon tidak ditemukan di HP ini.';if(n==='NotReadableError')return 'Mikrofon sedang dipakai aplikasi lain (telepon, rekam suara). Tutup dulu lalu coba lagi.';return 'Mikrofon tidak bisa dipakai di browser ini.';}
+function micErr(e){
+  const n=e&&e.name;
+  const msg=(e&&e.message)||'';
+  if(!window.isSecureContext||location.protocol==='http:'){
+    return 'Buka lewat HTTPS (https://' + location.host + '). Safari memblokir mikrofon di koneksi HTTP biasa.';
+  }
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    return 'Browser memblokir akses mikrofon. Buka langsung di Safari biasa (bukan webview / tab privat).';
+  }
+  if(n==='NotAllowedError'||n==='SecurityError'||msg.includes('Permission denied')||msg.includes('not allowed')){
+    return isIOS
+      ? 'Izin mikrofon ditolak. Di Safari, ketuk ikon aA di kolom alamat → Pengaturan Situs Web → Mikrofon → pilih Izinkan.'
+      : 'Izin mikrofon ditolak. Buka Settings → Mikrofon untuk cara mengizinkan.';
+  }
+  if(n==='NotFoundError'||n==='OverconstrainedError'){
+    return 'Mikrofon tidak ditemukan atau format audio tidak didukung perangkat ini.';
+  }
+  if(n==='NotReadableError'||n==='AbortError'){
+    return 'Mikrofon sedang dipakai aplikasi lain (telepon/rekaman/Siri). Tutup dulu lalu coba lagi.';
+  }
+  return 'Kendala mikrofon: ' + (msg || n || 'Cek izin Safari');
+}
 function vcOk(){return !!(window.RTCPeerConnection&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);}
 function vcMeta(){return {pid:myPid,team:net?net.me.team:0,name:net?net.me.name:'',on:vc.on,all:vc.all};}
 function vcTrack(){if(!vc.ch)return;const m=vcMeta(),k=JSON.stringify(m);if(k===vc.last)return;vc.last=k;try{const r=vc.ch.track(m);if(r&&r.catch)r.catch(()=>{});}catch(e){}vcRouteAll();}
@@ -3962,7 +3988,7 @@ function vcRouteAll(){for(const pid in vc.peers)vcRoute(pid);}
 async function vcMicOn(){
   initAudio();
   try{
-    const ms=await navigator.mediaDevices.getUserMedia(micCons());
+    const ms=await micGet();
     if(!vc.ch){ms.getTracks().forEach(t=>t.stop());return;}
     vc.mic=ms.getAudioTracks()[0];vc.on=true;
     try{if(actx){const an=actx.createAnalyser();an.fftSize=256;actx.createMediaStreamSource(ms).connect(an);vc.meAn=an;}}catch(e){}
@@ -4382,8 +4408,6 @@ function openSettings(){
 $('#setAvatar').addEventListener('click',()=>{creatorFrom='settings';hideSubs();openCharacterCreator();});
 
 /* ---- settings: mikrofon ---- */
-const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
-const isAndroid=/Android/.test(navigator.userAgent);
 const mt={ms:null,an:null,raf:0,rec:null};
 async function micPerm(){
   if(!window.isSecureContext||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return 'nosupport';
