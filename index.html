@@ -540,7 +540,7 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
     <button type="button" class="mm-btn" id="mmMulti">MULTIPLAYER<small>SMEA 70 vs XTM · 50 vs 50 online</small></button>
     <button type="button" class="mm-btn" id="mmSettings">SETTINGS<small>Avatar &amp; mikrofon</small></button>
     <p class="hint" id="iosHint" hidden><b>Biar layar penuh di iPhone:</b> ketuk tombol Share di Safari, pilih <b>Add to Home Screen</b>, lalu buka game dari ikon Bel Pulang di layar utama.</p>
-    <p class="mm-foot">v2.1 · Sporadis Games</p>
+    <p class="mm-foot">v2.2 · Sporadis Games</p>
   </div>
   <div hidden><button class="cta" id="startBtn">MAIN LEVEL 1</button><button class="cta" id="onlineBtn">ONLINE</button><button class="cta alt" id="resetBtn" hidden>ULANG</button></div>
 </div>
@@ -4886,21 +4886,29 @@ function frame(now){
 
 
 /* ================= CROSS-DEVICE PROFILE SYNC & CODE TRANSFER ================= */
+async function bpRpc(fn,args){
+  await loadSB();
+  const {data,error}=await sb().rpc(fn,args);
+  if(error)throw error;
+  return data||{};
+}
+// v2.2: PIN tidak pernah dikirim ke tabel / dibaca balik; server cek hash bcrypt via RPC
+let cloudBusy=false,cloudAgain=null;
 async function syncProfileToCloud(prof){
-  if(!prof) return;
+  if(!prof||!prof.pin) return;
+  if(cloudBusy){cloudAgain=prof;return;}
+  cloudBusy=true;
   try{
-    await loadSB();
-    await sb().from('game_profiles').upsert({
-      id: prof.id,
-      name: prof.name,
-      pin: prof.pin,
-      level: prof.level || 1,
-      perks: prof.perks || {},
-      appearance: prof.appearance || {},
-      updated_at: new Date().toISOString()
-    });
+    let r=await bpRpc('bp_save',{p_id:prof.id,p_pin:String(prof.pin),p_level:prof.level||1,p_perks:prof.perks||{},p_appearance:prof.appearance||{}});
+    if(r.status==='none'){
+      r=await bpRpc('bp_register',{p_id:prof.id,p_name:prof.name,p_pin:String(prof.pin),p_level:prof.level||1,p_perks:prof.perks||{},p_appearance:prof.appearance||{}});
+    }
+    prof.cloud=r.status==='ok'?'ok':r.status;
   }catch(e){
-    // Silent fallback if table not yet created
+    // offline / gagal: tetap jalan lokal, coba lagi di simpan berikutnya
+  }finally{
+    cloudBusy=false;
+    if(cloudAgain){const p=cloudAgain;cloudAgain=null;syncProfileToCloud(p);}
   }
 }
 
@@ -5304,6 +5312,17 @@ if($('#authSubmitBtn')) $('#authSubmitBtn').addEventListener('click', async () =
       errEl.hidden = false;
       return;
     }
+    // cek nama di cloud dulu supaya tidak menimpa profil orang lain
+    try{
+      errEl.textContent = 'Mendaftarkan profil…';
+      errEl.hidden = false;
+      const r = await bpRpc('bp_register', {p_id:id, p_name:name, p_pin:pin, p_level:1, p_perks:{}, p_appearance:Object.assign({}, tempAppearance)});
+      if(r.status === 'taken'){
+        errEl.textContent = 'Nama "' + name + '" sudah dipakai pemain lain. Kalau itu profilmu, pilih MASUKKAN PIN.';
+        return;
+      }
+      errEl.hidden = true;
+    }catch(err){ errEl.hidden = true; /* offline: buat lokal, sinkron nanti */ }
     const newProf = {
       id: id,
       name: name,
@@ -5319,8 +5338,8 @@ if($('#authSubmitBtn')) $('#authSubmitBtn').addEventListener('click', async () =
     activeProfile = newProf;
     level = 1; perks = {};
     writeSave();
-    // Async sync to Supabase game_profiles if table exists
-    syncProfileToCloud(newProf);
+    // profil sudah didaftarkan di atas; writeSave() menyinkronkan perubahan berikutnya
+    
     $('#authOv').hidden = true;
     openCharacterCreator();
   } else {
@@ -5333,21 +5352,28 @@ if($('#authSubmitBtn')) $('#authSubmitBtn').addEventListener('click', async () =
       errEl.hidden = false;
       try{
         await loadSB();
-        const { data, error } = await sb().from('game_profiles').select('*').eq('id', id).single();
-        if(data && !error){
-          if(String(data.pin) !== String(pin)){
-            errEl.textContent = 'PIN salah! Coba ingat kembali 4 digit PIN kamu.';
-            errEl.hidden = false;
-            return;
-          }
+        const data = await bpRpc('bp_login', {p_id:id, p_pin:pin});
+        if(data.status === 'wrong'){
+          errEl.textContent = 'PIN salah! Coba ingat kembali 4 digit PIN kamu.';
+          errEl.hidden = false;
+          return;
+        }
+        if(data.status === 'locked'){
+          errEl.textContent = 'Terlalu banyak PIN salah. Profil dikunci 10 menit, coba lagi nanti.';
+          errEl.hidden = false;
+          return;
+        }
+        if(data.status === 'ok'){
+          errEl.hidden = true;
           prof = {
             id: data.id,
             name: data.name,
-            pin: String(data.pin),
+            pin: pin,
             level: data.level || 1,
             perks: data.perks || {},
             appearance: data.appearance || {},
-            createdAt: data.created_at ? new Date(data.created_at).getTime() : Date.now()
+            createdAt: data.created_at ? new Date(data.created_at).getTime() : Date.now(),
+            cloud: 'ok'
           };
           accs[id] = prof;
           saveAccounts(accs);

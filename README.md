@@ -4,6 +4,12 @@ Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi
 
 Main di: https://belpulang.netlify.app atau https://belpulang.win
 
+## v2.2 — Keamanan profil cloud
+- PIN profil tidak lagi disimpan polos: server hanya menyimpan hash bcrypt, dan PIN tidak pernah dikirim balik ke HP.
+- Tabel `game_profiles` dikunci (RLS tanpa akses langsung); daftar/masuk/simpan lewat fungsi server `bp_register`, `bp_login`, `bp_save` yang mengecek PIN.
+- Nama yang sudah dipakai orang lain tidak bisa ditimpa; salah PIN 5x → profil dikunci 10 menit.
+- Skema lengkap di `supabase_schema.sql` (sudah diterapkan ke database).
+
 ## v2.1 — Kamera belakang (over-the-shoulder)
 - Mode kamera baru **BELAKANG** (gaya Bully) selain **ATAS**; default diatur di Pengaturan → KAMERA, bisa diganti juga dari menu Pause.
 - Di mode belakang joystick bergerak relatif ke arah kamera; kamera ikut arah lari, geser layar kosong untuk memutar (Q/R di keyboard).
