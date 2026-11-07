@@ -540,7 +540,7 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
     <button type="button" class="mm-btn" id="mmMulti">MULTIPLAYER<small>SMEA 70 vs XTM · 50 vs 50 online</small></button>
     <button type="button" class="mm-btn" id="mmSettings">SETTINGS<small>Avatar &amp; mikrofon</small></button>
     <p class="hint" id="iosHint" hidden><b>Biar layar penuh di iPhone:</b> ketuk tombol Share di Safari, pilih <b>Add to Home Screen</b>, lalu buka game dari ikon Bel Pulang di layar utama.</p>
-    <p class="mm-foot">v2.3 · Sporadis Games</p>
+    <p class="mm-foot">v2.4 · Sporadis Games</p>
   </div>
   <div hidden><button class="cta" id="startBtn">MAIN LEVEL 1</button><button class="cta" id="onlineBtn">ONLINE</button><button class="cta alt" id="resetBtn" hidden>ULANG</button></div>
 </div>
@@ -2345,6 +2345,230 @@ const WPN={
   molotov:{name:'Molotov',ranged:true,fire:true,dmg:8,n:1,speed:14,wind:0.45,kb:2,weight:8,unlock:8,words:['WUSH!']}
 };
 const WKEYS=['batu','botol','sabuk','bambu','papan','kursi','helm','payung','katana','celurit','molotov'];
+
+/* ================= v2.4: 100 SENJATA ================= */
+// tipe dasar: dmg, jangkauan, sudut, jumlah pakai, ancang-ancang, durasi, titik kena, pental, bobot muncul
+const WARCH={
+  J:{melee:true,dmg:4,range:2.0,arc:1.0,n:15,wind:0.3,dur:0.28,hitAt:0.1,kb:3,weight:6},
+  L:{melee:true,dmg:12,range:2.0,arc:1.0,n:12,wind:0.34,dur:0.3,hitAt:0.11,kb:5,weight:12},
+  M:{melee:true,dmg:18,range:2.4,arc:1.0,n:9,wind:0.46,dur:0.38,hitAt:0.15,kb:7,weight:12},
+  G:{melee:true,dmg:20,range:3.0,arc:0.85,n:8,wind:0.55,dur:0.44,hitAt:0.18,kb:8,weight:11},
+  W:{melee:true,dmg:17,range:2.9,arc:1.35,n:10,wind:0.44,dur:0.36,hitAt:0.14,kb:5,weight:10},
+  H:{melee:true,dmg:30,range:2.3,arc:1.25,n:4,wind:0.8,dur:0.55,hitAt:0.26,kb:14,weight:8},
+  X:{melee:true,dmg:40,range:2.4,arc:1.4,n:3,wind:1.0,dur:0.62,hitAt:0.32,kb:18,weight:5},
+  B:{melee:true,deadly:true,dmg:44,range:2.3,arc:1.05,n:6,wind:0.55,dur:0.42,hitAt:0.16,kb:7,weight:6},
+  T:{ranged:true,dmg:14,n:3,speed:17,wind:0.35,kb:3,weight:12},
+  TH:{ranged:true,dmg:26,n:2,speed:13,wind:0.5,kb:7,weight:9},
+  TS:{ranged:true,dmg:6,n:4,speed:17,wind:0.3,kb:2,weight:10}
+};
+// [kunci, nama, tipe, bentuk, warna1, warna2, ukuran, ekstra{}, bunyi]
+const WNEW=[
+ ['sendal','Sendal jepit','J','sandal',0x2f6db5,0xf2f2f2,1,{},['PLEK!','TEPLAK!']],
+ ['sapulidi','Sapu lidi','L','broom',0xc8a85a,0x7a4b2a,1,{},['SRAK!','CEPLES!']],
+ ['kemoceng','Kemoceng','J','duster',0x7a4b2a,0xd23a8a,1,{},['FUSH!']],
+ ['gagangsapu','Gagang sapu','G','stick',0x2f8f4f,0,1.6,{},['TAK!','DUK!']],
+ ['kaleng','Kaleng minuman','T','can',0xd23a3a,0xdfe6ee,1,{},['KLONTANG!']],
+ ['penggaris','Penggaris besi','M','bar',0xc9ccd0,0x1d1d1f,1.1,{},['CTAK!','TING!']],
+ ['bantal','Bantal','J','pillow',0xf2efe6,0,1,{dmg:0,kb:6},['BUFF!']],
+ ['telur','Telur busuk','TS','egg',0xf1e6c8,0,1,{fx:'slow',slow:1.5,splat:0xd9c24a},['PLOK!']],
+ ['ember','Ember','M','bucket',0x2f6db5,0,1,{},['DONGG!']],
+ ['tas','Tas ransel','M','bag',0x1d1d1f,0xd23a3a,1,{},['BUG!']],
+ ['kamus','Kamus tebal','L','book',0x2a5fa8,0xf2efe6,1,{},['PLAK!','BLEP!']],
+ ['tomat','Tomat busuk','TS','ball',0xd23a3a,0,0.13,{fx:'slow',slow:1.5,splat:0xd23a3a},['CEPROT!']],
+ ['pel','Pel lantai','G','mop',0x9aa3ac,0xe8e2d0,1.5,{},['CEPLAK!']],
+ ['tongkatpramuka','Tongkat pramuka','G','stick',0xb08050,0,1.7,{},['TOK!','DUK!']],
+ ['raket','Raket badminton','L','racket',0x1d1d1f,0xd23a3a,1,{},['PLENG!']],
+ ['balonair','Balon air','TS','ball',0x4ab0e8,0,0.15,{fx:'slow',slow:2.2,splat:0x8fd0f2},['BYUR!']],
+ ['rotan','Rotan','W','stick',0xc9a26b,0,1.4,{r:0.018},['CTAR!','CETAR!']],
+ ['pasir','Segenggam pasir','TS','sand',0xd9c08a,0,1,{fx:'smoke',smoke:0xd9c08a,dmg:2,r:2.0,t:2.5},['FFFT!']],
+ ['kerikil','Kerikil','T','pebble',0x8d8a86,0,1,{fx:'spread',dmg:8,n:4},['TAK! TAK!']],
+ ['skate','Skateboard','M','board',0x1d1d1f,0xe9c63a,1,{},['GLODAK!']],
+ ['panci','Panci','M','pot',0xc9ccd0,0x1d1d1f,1,{},['TENG!','DOENG!']],
+ ['wajan','Wajan','M','pan',0x2a2a2e,0x7a4b2a,1,{kb:9},['TONGGG!']],
+ ['termos','Termos','M','can',0xd23a3a,0xf2efe6,2.2,{},['DUG!']],
+ ['cilok','Cilok','TS','ball',0xe8dcc4,0,0.08,{n:6,dmg:5},['PLUK!']],
+ ['bakso','Bakso','TS','ball',0x8a6a4a,0,0.11,{n:5,dmg:7},['PLOK!']],
+ ['gorengan','Gorengan panas','T','fritter',0xd9a040,0,1,{dmg:10,fx:'slow',slow:1,splat:0xe8b04a},['CESS!']],
+ ['bola','Bola basket','T','ball',0xe07a2a,0,0.2,{kb:8,dmg:12},['BOING!']],
+ ['sepatu','Sepatu PDL','L','boot',0x1d1d1f,0x5a3a20,1,{},['DUG!','BLETAK!']],
+ ['handuk','Handuk basah','W','cloth',0xf2efe6,0x4ab0e8,1,{dmg:13},['CEPLAS!']],
+ ['sarung','Sarung isi batu','W','cloth',0x7a2a3a,0x2a5fa8,1,{dmg:21,kb:7},['BUGH!']],
+ ['selang','Selang air','W','hose',0x2f8f4f,0,1,{},['CTAS!']],
+ ['kabel','Kabel listrik','W','hose',0x1d1d1f,0,1,{dmg:18},['CTAR!']],
+ ['pecut','Pecut','W','whip',0x5a3a20,0xc9a26b,1,{range:3.4,dmg:15},['CETARR!']],
+ ['baseball','Tongkat baseball','M','bat',0xc9a26b,0x1d1d1f,1,{dmg:21,kb:9},['DUAGH!','PLETAK!']],
+ ['golf','Stik golf','G','golf',0xc9ccd0,0x1d1d1f,1,{},['TING!','CLANG!']],
+ ['hoki','Stik hoki','G','hockey',0x7a4b2a,0x1d1d1f,1,{},['TOK!']],
+ ['gitar','Gitar','H','guitar',0xb06a2a,0x3a2210,1,{},['JRENGG!']],
+ ['toa','Toa','M','megaphone',0xf2efe6,0xd23a3a,1,{},['WOOONG!']],
+ ['kerucut','Kerucut lalu lintas','M','cone',0xf26a1b,0xf2f2f2,1,{kb:9},['BLUK!']],
+ ['kayubalok','Kayu balok','M','box',0x9a6a3a,0,[0.14,1.1,0.14],{dmg:22},['DUK!','BLETAK!']],
+ ['bilahpagar','Bilah pagar','G','box',0xe08a2a,0,[0.16,1.5,0.03],{},['PLAK!']],
+ ['gagangcangkul','Gagang cangkul','G','stick',0x8a5a32,0,1.5,{r:0.04,dmg:22},['DUK!']],
+ ['pentungan','Pentungan satpam','M','stick',0x1d1d1f,0,0.75,{r:0.035,dmg:20},['BUK!','PLETAK!']],
+ ['paralon','Paralon','G','pipe',0xf2f2f2,0,1.5,{dmg:16},['TOK!','PLOK!']],
+ ['pipabesi','Pipa besi','G','pipe',0x8f949a,0,1.4,{dmg:25,kb:9},['TANGG!','DENG!']],
+ ['kunciinggris','Kunci inggris','M','wrench',0xc9ccd0,0,1,{dmg:21},['TENG!']],
+ ['kunciroda','Kunci roda','M','lwrench',0x5d646b,0,1,{dmg:22},['DANG!']],
+ ['palu','Palu','M','hammer',0x5d646b,0x8a5a32,1,{dmg:24,kb:9},['TOK!','DOK!']],
+ ['spion','Spion motor','L','mirror',0x1d1d1f,0xcfe6f2,1,{},['PRAK!']],
+ ['knalpot','Knalpot copot','M','exhaust',0xb8bcc0,0x3a3a3a,1,{dmg:22},['BLENG!']],
+ ['rantai','Rantai motor','W','chain',0x4a4a4e,0,1,{dmg:20},['CRANG!','SRENG!']],
+ ['sabukgir','Sabuk gir','W','gear',0x1d1d1f,0xb8bcc0,1,{dmg:24,kb:6},['CRING!','JDAK!']],
+ ['gembok','Gembok rantai','W','lock',0x4a4a4e,0xc9a43a,1,{dmg:23},['KLANG!']],
+ ['linggis','Linggis','G','bar',0x3a3a3e,0,1.5,{dmg:26,kb:10,n:6},['TANG!']],
+ ['dongkrak','Dongkrak','H','box',0xd23a3a,0x2a2a2e,[0.22,0.3,0.16],{},['DONGK!']],
+ ['ulekan','Ulekan','H','stone',0x6b6b66,0,1,{n:5},['BLETUK!']],
+ ['cat','Kaleng cat','T','paint',0xd9dce0,0x2f6db5,1,{fx:'slow',slow:3,splat:0x2f6db5},['CROT!']],
+ ['sambal','Botol sambal','T','bottle',0xd23a3a,0xf2efe6,0.8,{fx:'slow',slow:2.5,splat:0xc0281e,dmg:9},['PEDES!']],
+ ['gelas','Gelas kaca','T','glass',0xcfe6f2,0,1,{dmg:18},['PRANG!']],
+ ['ketapel','Ketapel','T','sling',0x7a4b2a,0xd23a3a,1,{n:6,speed:24,dmg:12},['PYUH!','TAK!']],
+ ['paving','Paving block','TH','box',0x9aa0a6,0,[0.2,0.08,0.11],{},['BLUK!']],
+ ['batako','Batako','TH','box',0x8d8a86,0,[0.3,0.12,0.15],{dmg:30,kb:9},['BRUK!']],
+ ['genteng','Genteng','TH','tile',0xb5532a,0,1,{dmg:22},['PRAK!']],
+ ['lumpur','Lumpur','TS','ball',0x5a4030,0,0.14,{fx:'slow',slow:2.5,splat:0x5a4030},['PLOK!']],
+ ['bomasap','Bom asap','TS','can',0x6b7a5a,0xf2efe6,0.9,{fx:'smoke',smoke:0xcfd3d6,dmg:0,r:3.2,t:5},['PSSSHH!']],
+ ['flare','Flare suporter','TS','flare',0xd23a3a,0xff9a2a,1,{fx:'smoke',smoke:0xe2553e,dmg:4,r:2.8,t:4.5},['FSSS!']],
+ ['petasan','Petasan','T','firecracker',0xd23a3a,0xe9c63a,1,{fx:'boom',aoe:14,r:2.2,dmg:6},['DUAR!']],
+ ['kembangapi','Kembang api','T','rocket',0x2f6db5,0xe9c63a,1,{fx:'boom',aoe:20,r:2.8,dmg:8,n:2},['DUARR!','CTARR!']],
+ ['papannama','Papan nama warung','H','sign',0xf2efe6,0x2f6db5,1,{},['BLETAK!']],
+ ['banbekas','Ban bekas','H','tire',0x1d1d1f,0,1,{kb:16},['BUG!','BOING!']],
+ ['tongsampah','Tong sampah','H','bin',0x2f8f4f,0x1d1d1f,1,{},['GUBRAK!']],
+ ['galon','Galon','H','jug',0x9fd0f2,0x2f6db5,1,{},['DUNG!']],
+ ['kursilipat','Kursi lipat besi','H','chair',0x8f949a,0,1,{dmg:32},['GEDUBRAK!']],
+ ['mejakantin','Meja kantin','X','table',0x9a6a3a,0x5d646b,1,{},['BRAKK!']],
+ ['tabunggas','Tabung gas melon','X','tank',0x2f8f4f,0xd23a3a,1,{dmg:44},['DUNGG!']],
+ ['ruyung','Ruyung','L','nunchaku',0x1d1d1f,0xc9ccd0,1,{n:16,dmg:14,wind:0.26,dur:0.24,hitAt:0.08},['CIAT!','PLAK!']],
+ ['toya','Toya','G','stick',0x8a5a32,0,2.0,{r:0.032,range:3.4,arc:1.2,dmg:22},['HIAT!','TOK!']],
+ ['pisau','Pisau dapur','B','knife',0x1d1d1f,0xdfe6ee,0.6,{dmg:36,range:1.9,wind:0.4,dur:0.32,hitAt:0.12},['SRET!']],
+ ['badik','Badik','B','knife',0x5a3a20,0xdfe6ee,0.75,{dmg:40,range:2.0},['SRET!','CRES!']],
+ ['kerambit','Kerambit','B','karambit',0x1d1d1f,0xdfe6ee,1,{dmg:38,range:1.8,wind:0.36,dur:0.3,hitAt:0.11,n:8},['SRAT!']],
+ ['keris','Keris','B','keris',0x7a4b2a,0xc9ccd0,1,{dmg:46},['SRING!']],
+ ['garpu','Garpu taman','B','fork',0x8a5a32,0x8f949a,1,{dmg:40,range:2.9,arc:0.8},['JLEB!']],
+ ['cangkul','Cangkul','B','hoe',0x8a5a32,0x8f949a,1,{dmg:48,kb:10,wind:0.7},['JGRAK!']],
+ ['arit','Arit','B','sickle',0x7a4b2a,0xdfe6ee,0.75,{dmg:46},['SRAK!']],
+ ['golok','Golok','B','machete',0x5a3a20,0xdfe6ee,1,{dmg:50},['SRAK!','CRAS!']],
+ ['parang','Parang','B','machete',0x3a2a1a,0xdfe6ee,1.2,{dmg:52,range:2.5},['SRAKK!']],
+ ['tombak','Tombak bambu','B','spear',0xc8b46a,0xdfe6ee,1,{dmg:44,range:3.4,arc:0.7},['JLEB!']],
+ ['kapak','Kapak','B','axe',0x7a4b2a,0x8f949a,1,{dmg:58,kb:10,wind:0.75,n:5},['JDUK!','CRAK!']],
+ ['mandau','Mandau','B','machete',0x3a2210,0xe8e8e8,1.35,{dmg:60,range:2.6},['SRINGG!']]
+];
+const WX={};
+(function(){
+  const used=new Set([3,6,8,9,12]);const deadlySlots=[];for(let L=52;L<=97;L+=4)deadlySlots.push(L);deadlySlots.forEach(L=>used.add(L));
+  const free=[];for(let L=2;L<=99;L++)if(!used.has(L))free.push(L);
+  let fi=0,di=0;
+  for(const [k,name,arch,shape,c1,c2,size,ex,words] of WNEW){
+    const A=WARCH[arch],d=Object.assign({},A,{name,words},ex);
+    d.unlock=A.deadly?deadlySlots[Math.min(di++,deadlySlots.length-1)]:free[Math.min(fi++,free.length-1)];
+    if(ex.dmg==null)d.dmg=Math.round(A.dmg*(1+d.unlock/250));
+    WPN[k]=d;WKEYS.push(k);WX[k]={shape,c1,c2,size};
+  }
+})();
+const _wm={};const wmat=c=>_wm[c]||(_wm[c]=lam(c));
+function wxMesh(type,g){
+  const X=WX[type],s=X.size,c1=X.c1,c2=X.c2||0x1d1d1f,EX=WPN[type];
+  const add=(geo,c,x,y,z,rx,ry,rz)=>{const o=new THREE.Mesh(geo,c&&c.isMaterial?c:wmat(c));o.position.set(x||0,y||0,z||0);o.rotation.set(rx||0,ry||0,rz||0);o.castShadow=true;g.add(o);return o;};
+  const B=(w,h,d)=>new THREE.BoxGeometry(w,h,d),C=(a,b,h,n)=>new THREE.CylinderGeometry(a,b,h,n||8),S=(r,a,b)=>new THREE.SphereGeometry(r,a||10,b||8);
+  const handle=(h,c,r)=>add(C(r||0.035,r||0.035,h,7),c||0x5a3a20,0,h/2);
+  switch(X.shape){
+    case 'sandal':add(B(0.12,0.3,0.03),c1,0,0.15);add(B(0.08,0.02,0.05),c2,0,0.2,0.03);break;
+    case 'broom':add(C(0.015,0.015,0.6,5),c2,0,0.3);add(C(0.02,0.16,0.7,8),c1,0,0.95);break;
+    case 'duster':handle(0.5,c1,0.02);add(C(0.12,0.05,0.4,8),c2,0,0.7);break;
+    case 'stick':add(C(EX.r||0.028,EX.r||0.028,s,7),c1,0,s/2-0.1);break;
+    case 'pipe':add(C(0.045,0.045,s,10),c1,0,s/2-0.1);add(C(0.055,0.055,0.06,10),c1,0,s-0.12);break;
+    case 'bar':add(B(0.05,s,0.015),c1,0,s/2-0.1);break;
+    case 'can':add(C(0.07,0.07,0.24*s,10),c1,0,0.12*s);add(C(0.072,0.072,0.03,10),c2,0,0.24*s);break;
+    case 'pillow':add(B(0.45,0.3,0.14),c1,0,0.25);break;
+    case 'egg':add(S(0.09),c1,0,0.05).scale.set(1,1.3,1);break;
+    case 'ball':add(S(s,12,9),c1,0,s);break;
+    case 'pebble':[[-0.05,0],[0.05,0.04],[0,0.08]].forEach(([x,y])=>add(new THREE.DodecahedronGeometry(0.06,0),c1,x,y));break;
+    case 'sand':add(S(0.1,8,6),c1,0,0.05).scale.set(1,0.6,1);break;
+    case 'bucket':add(C(0.17,0.13,0.28,12),c1,0,0.25);add(new THREE.TorusGeometry(0.16,0.012,5,16,Math.PI),0x9aa3ac,0,0.39,0,0,0,0);break;
+    case 'bag':add(B(0.32,0.4,0.16),c1,0,0.3);add(B(0.28,0.16,0.06),c2,0,0.22,0.1);add(B(0.04,0.2,0.03),c1,0,0.05);break;
+    case 'book':add(B(0.24,0.32,0.09),c1,0,0.16);add(B(0.22,0.3,0.08),c2,0.012,0.16);break;
+    case 'mop':handle(1.2,c1,0.018);add(C(0.12,0.04,0.3,8),c2,0,1.3);break;
+    case 'racket':handle(0.35,c1,0.016);add(new THREE.TorusGeometry(0.11,0.012,5,16),c2,0,0.5,0,0,0,0).scale.set(1,1.35,1);break;
+    case 'board':add(B(0.2,0.8,0.03),c1,0,0.35);[0.1,0.6].forEach(y=>[-0.07,0.07].forEach(x=>add(C(0.025,0.025,0.03,8),c2,x,y,0.03,Math.PI/2)));break;
+    case 'pot':handle(0.2,c2,0.02);add(C(0.16,0.15,0.18,14),c1,0,0.33);break;
+    case 'pan':handle(0.3,c2,0.022);add(C(0.19,0.14,0.05,16),c1,0,0.48,0,Math.PI/2);break;
+    case 'fritter':add(B(0.12,0.16,0.05),c1,0,0.08);break;
+    case 'boot':add(B(0.12,0.28,0.12),c1,0,0.14);add(B(0.13,0.06,0.24),c2,0,0.02,0.06);break;
+    case 'cloth':add(B(0.1,0.85,0.02),c1,0,0.42);add(S(0.09,8,6),c2,0,0.88);break;
+    case 'hose':for(let i=0;i<6;i++)add(new THREE.TorusGeometry(0.12,0.02,5,14),c1,0,0.15+i*0.02,0,Math.PI/2);add(C(0.02,0.02,0.6,5),c1,0,0.5);break;
+    case 'whip':handle(0.3,c2,0.025);add(C(0.008,0.015,1.2,5),c1,0,0.9);break;
+    case 'bat':add(C(0.05,0.022,1.0,10),c1,0,0.45);add(C(0.03,0.03,0.05,8),c2,0,-0.02);break;
+    case 'golf':add(C(0.012,0.012,1.0,6),c1,0,0.45);add(B(0.12,0.05,0.04),c2,0.04,0.96);break;
+    case 'hockey':add(C(0.025,0.025,1.0,6),c1,0,0.45);add(B(0.22,0.06,0.05),c2,0.1,0.96);break;
+    case 'guitar':add(B(0.05,0.5,0.03),c2,0,0.25);add(S(0.2,12,8),c1,0,0.68).scale.set(1,1.2,0.35);add(S(0.15,12,8),c1,0,0.43).scale.set(1,1,0.35);break;
+    case 'megaphone':add(B(0.05,0.15,0.05),c2,0,0.07);add(C(0.16,0.06,0.35,12),c1,0,0.3);break;
+    case 'cone':add(C(0.03,0.16,0.5,10),c1,0,0.3);add(C(0.08,0.11,0.08,10),c2,0,0.28);add(B(0.36,0.04,0.36),c1,0,0.04);break;
+    case 'box':add(B(s[0],s[1],s[2]),c1,0,s[1]/2);if(X.c2)add(B(s[0]*0.6,s[1]*0.3,s[2]*1.05),c2,0,s[1]*0.7);break;
+    case 'wrench':add(B(0.05,0.45,0.02),c1,0,0.22);add(new THREE.TorusGeometry(0.05,0.02,5,10,Math.PI*1.4),c1,0,0.48);break;
+    case 'lwrench':add(C(0.02,0.02,0.5,6),c1,0,0.25);add(C(0.02,0.02,0.25,6),c1,0.1,0.5,0,0,0,Math.PI/2);add(C(0.035,0.035,0.06,6),c1,0.22,0.5,0,0,0,Math.PI/2);break;
+    case 'hammer':handle(0.4,c2,0.022);add(B(0.18,0.07,0.07),c1,0,0.42);break;
+    case 'mirror':add(C(0.012,0.012,0.35,5),c1,0,0.17);add(C(0.09,0.09,0.03,12),c1,0,0.42,0,Math.PI/2);add(C(0.08,0.08,0.035,12),c2,0,0.42,0.005,Math.PI/2);break;
+    case 'exhaust':add(C(0.07,0.06,0.65,10),c1,0,0.3);add(C(0.045,0.045,0.08,8),c2,0,0.66);break;
+    case 'chain':for(let i=0;i<9;i++)add(new THREE.TorusGeometry(0.035,0.011,4,8),c1,0,i*0.08,0,0,i%2?Math.PI/2:0);break;
+    case 'gear':add(B(0.07,0.8,0.03),c1,0,0.4);add(C(0.12,0.12,0.03,12),c2,0,0.88,0,Math.PI/2);break;
+    case 'lock':for(let i=0;i<7;i++)add(new THREE.TorusGeometry(0.035,0.011,4,8),c1,0,i*0.08,0,0,i%2?Math.PI/2:0);add(B(0.1,0.1,0.04),c2,0,0.62);break;
+    case 'stone':add(C(0.06,0.08,0.22,8),c1,0,0.11);break;
+    case 'paint':add(C(0.1,0.1,0.2,12),c1,0,0.1);add(C(0.101,0.101,0.08,12),c2,0,0.1);break;
+    case 'bottle':add(C(0.05,0.05,0.2*s/0.8,8),c1,0,0.1);add(C(0.02,0.04,0.08,8),c2,0,0.24);break;
+    case 'glass':add(C(0.06,0.045,0.14,10),lam(c1,{transparent:true,opacity:0.6}),0,0.07);break;
+    case 'sling':add(C(0.02,0.02,0.2,5),c1,0,0.1);add(C(0.015,0.015,0.14,5),c1,-0.05,0.26,0,0,0,0.45);add(C(0.015,0.015,0.14,5),c1,0.05,0.26,0,0,0,-0.45);add(B(0.12,0.02,0.02),c2,0,0.34);break;
+    case 'tile':add(new THREE.CylinderGeometry(0.13,0.13,0.25,10,1,true,0,Math.PI),lam(c1,{side:THREE.DoubleSide}),0,0.12);break;
+    case 'flare':add(C(0.03,0.03,0.3,8),c1,0,0.15);{const f=new THREE.Mesh(new THREE.ConeGeometry(0.05,0.14,6),new THREE.MeshBasicMaterial({color:c2}));f.position.y=0.36;g.add(f);}break;
+    case 'firecracker':for(let i=0;i<3;i++)add(C(0.02,0.02,0.16,6),c1,(i-1)*0.045,0.08);add(C(0.004,0.004,0.1,4),c2,0,0.2);break;
+    case 'rocket':add(C(0.004,0.004,0.6,4),0x7a4b2a,0,0.3);add(C(0.03,0.03,0.16,8),c1,0,0.66);add(new THREE.ConeGeometry(0.035,0.08,8),c2,0,0.78);break;
+    case 'sign':handle(0.6,0x7a4b2a,0.025);add(B(0.6,0.35,0.03),c1,0,0.75);add(B(0.5,0.08,0.035),c2,0,0.78);break;
+    case 'tire':add(new THREE.TorusGeometry(0.26,0.08,8,16),c1,0,0.3);break;
+    case 'bin':add(C(0.2,0.17,0.55,12),c1,0,0.3);add(C(0.21,0.21,0.04,12),c2,0,0.58);break;
+    case 'jug':add(C(0.15,0.15,0.4,12),lam(c1,{transparent:true,opacity:0.75}),0,0.22);add(C(0.05,0.05,0.07,8),c2,0,0.45);break;
+    case 'chair':add(B(0.42,0.45,0.03),c1,0,0.25);add(B(0.42,0.03,0.4),c1,0,0.48,0.2);[[-0.19,0],[0.19,0]].forEach(([x])=>add(C(0.015,0.015,0.9,5),c1,x,0.5,0.1));break;
+    case 'table':add(B(0.7,0.04,0.5),c1,0,0.75);[[-0.3,-0.2],[0.3,-0.2],[-0.3,0.2],[0.3,0.2]].forEach(([x,z])=>add(C(0.02,0.02,0.7,5),c2,x,0.38,z));break;
+    case 'tank':add(C(0.13,0.13,0.32,12),c1,0,0.22);add(new THREE.SphereGeometry(0.13,10,6,0,Math.PI*2,0,Math.PI/2),c1,0,0.38);add(C(0.03,0.03,0.08,8),c2,0,0.52);break;
+    case 'nunchaku':add(C(0.022,0.022,0.3,7),c1,0,0.15);add(C(0.022,0.022,0.3,7),c1,0.08,0.42,0,0,0,0.5);add(C(0.004,0.004,0.1,4),c2,0.03,0.31);break;
+    case 'knife':add(C(0.022,0.022,0.12,6),c1,0,0.06);add(B(0.045,0.3*s,0.008),c2,0,0.12+0.15*s);break;
+    case 'karambit':add(C(0.02,0.02,0.12,6),c1,0,0.06);add(new THREE.TorusGeometry(0.1,0.012,4,10,Math.PI*0.9),c2,-0.1,0.13);break;
+    case 'keris':add(C(0.025,0.02,0.12,6),c1,0,0.06);for(let i=0;i<6;i++)add(B(0.035,0.07,0.008),c2,(i%2?0.012:-0.012),0.16+i*0.06);break;
+    case 'fork':handle(1.1,c1,0.02);for(let i=-1;i<=1;i++)add(C(0.008,0.008,0.2,4),c2,i*0.04,1.2);add(B(0.12,0.02,0.02),c2,0,1.1);break;
+    case 'hoe':handle(1.1,c1,0.024);add(B(0.22,0.18,0.02),c2,0,1.1,0.08,Math.PI/2.4);break;
+    case 'sickle':add(C(0.022,0.022,0.25,6),c1,0,0.12);add(new THREE.TorusGeometry(0.2,0.02,4,14,Math.PI*1.05),c2,-0.2,0.25);break;
+    case 'machete':add(C(0.024,0.024,0.18,6),c1,0,0.09);add(B(0.08,0.55*s,0.008),c2,0.012,0.18+0.275*s);break;
+    case 'spear':add(C(0.022,0.022,1.7,6),c1,0,0.75);add(new THREE.ConeGeometry(0.04,0.22,6),c2,0,1.7);break;
+    case 'axe':handle(0.6,c1,0.024);add(B(0.2,0.14,0.02),c2,0.08,0.55);break;
+    default:add(B(0.1,0.4,0.1),c1,0,0.2);
+  }
+}
+
+/* efek khusus senjata lempar: lambat (belepotan), asap, ledakan kecil */
+let smokes=[];
+function wFx(def,x,z,team,owner,hit){
+  if(!def.fx)return;
+  if(def.fx==='slow'){
+    if(hit){hit.slowT=Math.max(hit.slowT||0,def.slow||2);popup(def.slow>=2.5?'BELEPOTAN!':'LENGKET!',hit.pos,2.2,'info');}
+    burst(x,0.6,z,8,def.splat||0xd9c24a,0.9);
+  }else if(def.fx==='smoke'){
+    const g=new THREE.Group();const n=gfx.trees?7:4;
+    for(let i=0;i<n;i++){const m=new THREE.Mesh(new THREE.SphereGeometry(rand(0.7,1.1),8,6),new THREE.MeshLambertMaterial({color:def.smoke,transparent:true,opacity:0.5,depthWrite:false}));m.position.set(rand(-0.9,0.9),rand(0.5,1.3),rand(-0.9,0.9));g.add(m);}
+    g.position.set(x,0,z);scene.add(g);smokes.push({g,t:def.t||4,max:def.t||4,r:def.r||2.8,team,x,z});
+    if(dist({pos:{x,z}},focusF())<16)sfx('fire',0.6);
+  }else if(def.fx==='boom'){
+    const R=def.r||2.4;burst(x,0.6,z,16,0xffd23f,1.6);burst(x,0.6,z,10,0xff6a2a,1.2);
+    if(Math.hypot(x-focusF().pos.x,z-focusF().pos.z)<16){sfx('crash',0.8);shake=Math.max(shake,0.35);}
+    for(const o of fighters){if(o===hit||o.team===team||!alive(o)||o.safe)continue;const dx=o.pos.x-x,dz=o.pos.z-z,d=Math.hypot(dx,dz)||0.01;if(d<R)damage(o,def.aoe||14,dx/d,dz/d,9,owner,def);}
+    for(const p of peds){const dx=p.pos.x-x,dz=p.pos.z-z,d=Math.hypot(dx,dz)||0.01;if(d<R&&p.state!=='down')pedHurt(p,(def.aoe||14)*0.6,dx/d,dz/d,6,owner);}
+  }
+}
+function smokeFrame(dt){
+  for(let i=smokes.length-1;i>=0;i--){const s=smokes[i];s.t-=dt;
+    const k=Math.max(0,s.t/s.max);s.g.children.forEach((m,j)=>{m.material.opacity=0.5*Math.min(1,k*1.6);m.scale.setScalar(1+(1-k)*0.6);m.position.y+=dt*0.15*(j%2?1:0.6);});
+    for(const o of fighters){if(o.team===s.team||!alive(o))continue;if(Math.hypot(o.pos.x-s.x,o.pos.z-s.z)<s.r){o.slowT=Math.max(o.slowT||0,0.5);o.dazed=0.5;}}
+    if(s.t<=0){scene.remove(s.g);s.g.children.forEach(m=>{m.geometry.dispose();m.material.dispose();});smokes.splice(i,1);}}
+}
+function clearSmokes(){smokes.forEach(s=>scene.remove(s.g));smokes=[];}
+const JAJAN=new Set(['cilok','bakso','gorengan']);
 const KICK={dmg:16,range:2.15,arc:0.95,dur:0.5,hitAt:0.22,kb:12,words:['DUAG!','BRAK!']};
 const UPPER={dmg:20,range:1.95,arc:1.25,dur:0.44,hitAt:0.16,kb:10,words:['JEDER!']};
 const SLAM={slam:true,dmg:28,r:3.4,kb:13,wind:1.1,words:['BLARR!']};
@@ -2362,10 +2586,12 @@ function wMesh(type){
   else if(type==='katana'){add(new THREE.BoxGeometry(0.06,0.3,0.06),dark,0,0);add(new THREE.BoxGeometry(0.16,0.03,0.12),gold,0,0.16);add(new THREE.BoxGeometry(0.035,1.05,0.1),steel,0,0.7);}
   else if(type==='celurit'){add(new THREE.CylinderGeometry(0.035,0.035,0.32,6),wood,0,0);add(new THREE.TorusGeometry(0.34,0.035,5,18,Math.PI*1.15),steel,-0.34,0.17);}
   else if(type==='molotov'){const gm=lam(0x8a5a1a,{transparent:true,opacity:0.9});add(new THREE.CylinderGeometry(0.09,0.09,0.3,8),gm,0,0.1);add(new THREE.CylinderGeometry(0.035,0.06,0.14,8),gm,0,0.32);add(new THREE.BoxGeometry(0.05,0.14,0.05),0xf2efe6,0,0.45);const fl=new THREE.Mesh(new THREE.ConeGeometry(0.06,0.16,6),new THREE.MeshBasicMaterial({color:0xff9a2a}));fl.position.set(0,0.58,0);g.add(fl);}
+  if(WX[type])wxMesh(type,g);
   return g;
 }
-function pickWeaponType(){
-  const ks=WKEYS.filter(k=>!WPN[k].unlock||WPN[k].unlock<=(net?99:level));const wt=k=>WPN[k].weight*(net&&(WPN[k].deadly||WPN[k].fire)?0.4:1);let tot=0;ks.forEach(k=>tot+=wt(k));
+function pickWeaponType(x,z){
+  const nearCart=x!=null&&z>3.8&&x>1&&x<19;
+  const ks=WKEYS.filter(k=>!WPN[k].unlock||WPN[k].unlock<=(net?99:level));const wt=k=>WPN[k].weight*(net&&(WPN[k].deadly||WPN[k].fire)?0.4:1)*(JAJAN.has(k)?(nearCart?6:0.25):1);let tot=0;ks.forEach(k=>tot+=wt(k));
   let r=Math.random()*tot;for(const k of ks){r-=wt(k);if(r<=0)return k;}return 'batu';
 }
 
@@ -2464,6 +2690,7 @@ function wCost(w){if(!w||w===WPN.fist)return 8;if(w===UPPER)return 12;if(w===KIC
 const DODGE_COST=12;
 function stUse(f,c){f.st=Math.max(0,f.st-c);f.stD=0.75;if(f.st<f.maxSt*0.12)f.tired=true;}
 function stTick(f,dt){
+  if(f.slowT>0)f.slowT-=dt;
   f.stD-=dt;
   if(f.stD<=0&&f.st<f.maxSt&&f.state!=='attack'&&f.state!=='windup'&&f.state!=='strike'){f.st=Math.min(f.maxSt,f.st+(f.moving>0.1?11:18)*f.stReg*dt);}
   if(f.tired&&f.st>=f.maxSt*0.55)f.tired=false;
@@ -2637,7 +2864,7 @@ function makeFighter(team,isPlayer,opt){
   else if(team===1){f.maxHp=100;f.dmgMul=1;f.spd=4.1;}
   else{f.maxHp=Math.round(100*(1+0.15*P('teman')));f.dmgMul=1+0.15*P('teman');}
   if(!net&&opt.champ){f.maxHp=Math.round(100*cfg.hpMul*3.2);f.dmgMul=cfg.dmgMul*1.15;f.kbMul=0.6;f.reach=1.1;f.champ=true;f.sc*=1.15;r.group.scale.setScalar(f.sc);}
-  if(!net&&opt.leader){f.maxHp=Math.round(100*cfg.hpMul*2.6);f.spd=2.7;f.kbMul=0.7;f.leader=true;f.sc*=1.1;r.group.scale.setScalar(f.sc);}
+  if(!net&&opt.leader){f.maxHp=Math.round(100*cfg.hpMul*2.6);f.spd=3.6;f.kbMul=0.7;f.leader=true;f.sc*=1.1;r.group.scale.setScalar(f.sc);}
   if(opt.warga){f.maxHp=90;f.spd=2.7;f.warga=true;}
   if(net&&!opt.boss&&!opt.vip)f.maxHp=NET_HP;
   if(isPlayer){f.maxSt=plSt();f.stReg=plStReg();}else if(opt.boss){f.maxSt=180;f.stReg=1.1;}
@@ -2895,6 +3122,7 @@ function throwAt(f,type,tx,tz){
   const dx=tx-sx,dz=tz-sz,d=Math.hypot(dx,dz)||0.01,T=Math.max(0.22,d/def.speed),ty=1.1;
   const m=wMesh(type);m.position.set(sx,sy,sz);scene.add(m);
   projs.push({id:++uid,m,type,owner:f,team:f.team,vx:dx/T,vy:(ty-sy)/T+0.5*G*T,vz:dz/T,life:3});
+  if(def.fx==='spread'&&!f._spr){f._spr=1;const a=Math.atan2(dx,dz);[-0.28,0.28].forEach(o=>throwAt(f,type,sx+Math.sin(a+o)*d,sz+Math.cos(a+o)*d));f._spr=0;}
   if(f===player||dist(f,focusF())<14)sfx('swing');
 }
 function carHit(f,c){
@@ -3031,7 +3259,7 @@ function updateHuman(p,ix,iz,dt){
     }
   }
   if(p.state==='idle'||p.state==='walk'){
-    const spd=5.6*(1+0.1*P('kaki'));
+    const spd=5.6*(1+0.1*P('kaki'))*(p.slowT>0?0.55:1);
     if(mag>0.12){p.pos.x+=ix*spd*dt;p.pos.z+=iz*spd*dt;turn(p,Math.atan2(ix,iz),16,dt);p.moving=Math.min(1,mag);p.walk+=dt*11*mag;p.state='walk';}
     else{p.moving=0;p.state='idle';}
     tg=walkPose(p);if(!p.moving)tg.y=Math.sin(clock*4)*0.02;
@@ -3183,7 +3411,7 @@ function updateAI(f,dt){
       }
       for(const o of fighters){if(o===f||!alive(o))continue;const ox=f.pos.x-o.pos.x,oz=f.pos.z-o.pos.z,od=Math.hypot(ox,oz),mn=0.5*(f.sc+o.sc);if(od<mn&&od>0.001){mvx+=ox/od*(mn-od)*2;mvz+=oz/od*(mn-od)*2;}}
       const m=Math.hypot(mvx,mvz);
-      if(m>0.05){const base=f.danger!==null||f.flee?6:f.spd;const v=base*Math.min(1,m)/m;f.pos.x+=mvx*v*dt;f.pos.z+=mvz*v*dt;
+      if(m>0.05){const base=(f.danger!==null||(f.flee&&!f.leader)?6:(f.flee?f.spd*1.25:f.spd))*(f.slowT>0?0.55:1);const v=base*Math.min(1,m)/m;f.pos.x+=mvx*v*dt;f.pos.z+=mvz*v*dt;
         if(!T||f.goalW||f.danger!==null||f.flee||f.goalP)turn(f,Math.atan2(mvx,mvz),9,dt);f.moving=Math.min(1,m);f.walk+=dt*10*Math.min(1,m)/f.sc;}
       else f.moving*=0.8;
       tg=walkPose(f);
@@ -3628,21 +3856,23 @@ function updateWorld(dt){
     for(const o of fighters){if(o.team===q.team||!alive(o)||o.safe)continue;const dx=o.pos.x-q.m.position.x,dz=o.pos.z-q.m.position.z;if(dx*dx+dz*dz<0.42*o.sc*o.sc&&q.m.position.y<2.2*o.sc&&q.m.position.y>0.2){hit=o;break;}}
     const def=WPN[q.type];
     if(!hit){let hp=null;for(const p of peds){if(p.state==='down')continue;const dx=p.pos.x-q.m.position.x,dz=p.pos.z-q.m.position.z;if(dx*dx+dz*dz<0.42*p.sc*p.sc&&q.m.position.y<2.2*p.sc&&q.m.position.y>0.2){hp=p;break;}}
-      if(hp){const v=Math.hypot(q.vx,q.vz)||1;pedHurt(hp,def.dmg*((q.owner&&q.owner.dmgMul)||1),q.vx/v,q.vz/v,def.kb,q.owner);
+      if(hp){const v=Math.hypot(q.vx,q.vz)||1;pedHurt(hp,def.dmg*((q.owner&&q.owner.dmgMul)||1),q.vx/v,q.vz/v,def.kb,q.owner);wFx(def,q.m.position.x,q.m.position.z,q.team,q.owner,null);
         if(def.fire)spawnFire(q.m.position.x,q.m.position.z,q.team,q.owner);else burst(q.m.position.x,q.m.position.y,q.m.position.z,4,0x9a968f);
         scene.remove(q.m);projs.splice(i,1);continue;}}
-    if(hit){const v=Math.hypot(q.vx,q.vz)||1;damage(hit,def.dmg,q.vx/v,q.vz/v,def.kb,q.owner,def);
+    if(hit){const v=Math.hypot(q.vx,q.vz)||1;damage(hit,def.dmg,q.vx/v,q.vz/v,def.kb,q.owner,def);wFx(def,q.m.position.x,q.m.position.z,q.team,q.owner,hit);
       if(def.fire){spawnFire(q.m.position.x,q.m.position.z,q.team,q.owner);scene.remove(q.m);projs.splice(i,1);continue;}
       const near=dist(hit,focusF())<16?1:0.3;
       if(q.type==='botol'){sfx('glass',near);burst(q.m.position.x,q.m.position.y,q.m.position.z,9,0x6fc28a,1.1);}else{sfx('thud',near);burst(q.m.position.x,q.m.position.y,q.m.position.z,4,0x9a968f);}
       scene.remove(q.m);projs.splice(i,1);continue;}
     if(q.m.position.y<=0.1||q.life<=0){
+      wFx(def,q.m.position.x,q.m.position.z,q.team,q.owner,null);
       if(def.fire){spawnFire(q.m.position.x,q.m.position.z,q.team,q.owner);scene.remove(q.m);projs.splice(i,1);continue;}
       if(q.type==='botol'){burst(q.m.position.x,0.15,q.m.position.z,8,0x6fc28a,0.9);if(Math.hypot(q.m.position.x-focusF().pos.x,q.m.position.z-focusF().pos.z)<16)sfx('glass',0.5);}
       else burst(q.m.position.x,0.15,q.m.position.z,3,0x9a968f,0.6);
       scene.remove(q.m);projs.splice(i,1);}
   }
   for(let i=fighters.length-1;i>=0;i--){const f=fighters[i];if(!f.isPlayer&&!f.vip&&f.state==='down'&&f.t>3)removeFighter(f);}
+  smokeFrame(dt);
 }
 function capFor(t){if(net)return 18;return t===0?Math.min(12,5+Math.floor(elapsed/12)):Math.min(cfg.cap,6+Math.floor(elapsed/10));}
 function updateSpawns(dt){
@@ -3667,7 +3897,7 @@ function updateSpawns(dt){
   const hujan=M.type==='hujan', wcap=hujan?18:11;
   if(wSpawnT<=0&&!noWeaponsNow()){
     wSpawnT=hujan?rand(0.6,1.2):rand(2,4);
-    if(ground.length<wcap){const cx=net?rand(-8,30):focusF().pos.x;dropGround(pickWeaponType(),0,Math.max(-26,Math.min(40,cx+rand(-11,13))),rand(-10.2,5.8));}
+    if(ground.length<wcap){const cx=net?rand(-8,30):focusF().pos.x;const gx=Math.max(-26,Math.min(40,cx+rand(-11,13))),gz=rand(-10.2,5.8);dropGround(pickWeaponType(gx,gz),0,gx,gz);}
   }
   if(!net&&player.state==='down'&&!pendingEnd){
     respawnT-=dt;
@@ -4080,7 +4310,7 @@ function clearAll(){
   pops.forEach(q=>q.el.remove());pops=[];
   cars.filter(c=>c.k==='polisi'||c.drop||c.ab).forEach(c=>{scene.remove(c.g);cars.splice(cars.indexOf(c),1);});
   clearPeds();pedT=3;drvT=rand(15,25);
-  missionCleanup();
+  missionCleanup();clearSmokes();
 }
 function startLevel(){
   attractOn=false;hideSubs();$('#mmProf').hidden=true;

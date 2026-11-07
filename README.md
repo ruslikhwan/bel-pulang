@@ -4,6 +4,13 @@ Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi
 
 Main di: https://belpulang.netlify.app atau https://belpulang.win
 
+## v2.4 — 100 senjata
+- 89 senjata baru (total 100): alat bengkel & motor, alat olahraga, alat sekolah, dapur & warung, bangunan, lemparan, jajanan gerobak, ruyung & toya, dan senjata tajam (khusus level 52+).
+- Tiap senjata punya bentuk 3D sendiri dan ciri main: ringan/cepat, berat/mental jauh, jangkauan panjang, cambuk, lempar, lempar berat.
+- Efek khusus: belepotan/lengket (gerak melambat), bom asap & flare (asap bikin lambat), petasan & kembang api (ledakan kecil), kerikil (sebar 3).
+- Terbuka bertahap ~1 senjata per level sampai level 99. Jajanan (cilok, bakso, gorengan) lebih sering muncul dekat gerobak.
+- Ketua di misi Kejar Ketua sekarang bisa dikejar (sebelumnya larinya terlalu cepat).
+
 ## v2.3 — Musuh bertingkat, 99 level, misi baru, suasana
 - 10 sekolah musuh dari paling lemah ke paling kuat: SMEA 6, SMEA 82, SMEA 74, SMEA 46, SMEK Poernama, XTM Kafal, XTM Laoed, XTM Budud, XTM Chapptoenn, Arek-Arek (preman). Satu sekolah per level, naik tiap 5 level.
 - Single player sampai level 99. Level 51–99 "Angkatan Tua": urutan sekolah diulang, lebih kuat dan lebih ramai. Bos baru di 60/70/80/90 dan bos terakhir Raja Bulungan di level 99.
