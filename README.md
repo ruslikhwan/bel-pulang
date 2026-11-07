@@ -4,6 +4,13 @@ Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi
 
 Main di: https://belpulang.netlify.app atau https://belpulang.win
 
+## v2.3 — Musuh bertingkat, 99 level, misi baru, suasana
+- 10 sekolah musuh dari paling lemah ke paling kuat: SMEA 6, SMEA 82, SMEA 74, SMEA 46, SMEK Poernama, XTM Kafal, XTM Laoed, XTM Budud, XTM Chapptoenn, Arek-Arek (preman). Satu sekolah per level, naik tiap 5 level.
+- Single player sampai level 99. Level 51–99 "Angkatan Tua": urutan sekolah diulang, lebih kuat dan lebih ramai. Bos baru di 60/70/80/90 dan bos terakhir Raja Bulungan di level 99.
+- 10 misi baru: Cegat Metromini, Pertahankan Gerbang, Rebut Panji, Bebaskan Teman, Kejar Ketua, Tangan Kosong, Razia, Duel Jagoan, Tawuran Malam, Selamatkan Warga. Misi baru muncul bertahap ("MISI BARU").
+- Suasana per level: siang, sore, malam (makin sering di level tinggi) dan hujan. Lampu jalan menyala sore/malam, lampu mobil menyala saat malam.
+- Perbaikan: jalan tidak lagi berkedip hijau di kamera belakang (rumput bertumpuk dengan aspal).
+
 ## v2.2 — Keamanan profil cloud
 - PIN profil tidak lagi disimpan polos: server hanya menyimpan hash bcrypt, dan PIN tidak pernah dikirim balik ke HP.
 - Tabel `game_profiles` dikunci (RLS tanpa akses langsung); daftar/masuk/simpan lewat fungsi server `bp_register`, `bp_login`, `bp_save` yang mengecek PIN.
