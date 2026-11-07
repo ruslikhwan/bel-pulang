@@ -489,6 +489,23 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
 .b.kick.jurus{background:radial-gradient(circle at 50% 40%,rgba(255,196,60,.95),rgba(196,52,38,.9))!important;color:#fff!important;border-color:#ffe08a!important;animation:jurusP .5s ease-in-out infinite alternate}
 @keyframes jurusP{from{transform:scale(1)}to{transform:scale(1.08)}}
 @media (max-height:380px){#squad{top:30%}#squad .sq{padding:5px 7px;font-size:10px}}
+
+#codexOv .cx-card{max-width:min(920px,96vw);width:96vw;max-height:92vh;display:flex;flex-direction:column}
+#codexOv .sm-head{align-items:center;gap:10px}
+.cx-count{font-family:var(--display);font-size:14px;letter-spacing:.1em;opacity:.8;margin-left:auto}
+#cxGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;overflow:auto;padding-right:4px;-webkit-overflow-scrolling:touch}
+.cx{background:rgba(255,255,255,.05);border:1px solid rgba(233,229,218,.22);padding:7px 10px;display:flex;flex-direction:column;gap:2px}
+.cx b{font-family:var(--display);font-size:14px;letter-spacing:.06em}
+.cx i{font-style:normal;font-size:10.5px;opacity:.7;letter-spacing:.04em}
+.cx span{font-size:11.5px;line-height:1.35;opacity:.92}
+.cx.dl b{color:#ff9c88}
+.cx.lk{opacity:.42}.cx.lk b{letter-spacing:.3em}
+#hlBox{margin:4px 0 8px;display:flex;gap:10px;align-items:center}
+#hlBox[hidden]{display:none}
+#hlBox video{width:46%;max-height:26vh;background:#000;display:block;border:1px solid rgba(233,229,218,.3);object-fit:cover}
+.hl-side{flex:1;min-width:0}
+#hlLbl{font-family:var(--display);font-size:12px;letter-spacing:.12em;margin:4px 0;color:#ffcf7a}
+.hl-row{display:flex;flex-direction:column;gap:6px}.hl-row .cta{margin:0;padding:8px 10px;font-size:14px}
 </style>
 
 <div id="game"></div>
@@ -547,9 +564,10 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
     <p class="mm-sub">SMEA 70 · DEPAN HALTE BULUNGAN</p>
     <button type="button" class="mm-btn" id="mmSingle">SINGLE PLAYER<small>99 level, misi beda tiap level</small></button>
     <button type="button" class="mm-btn" id="mmMulti">MULTIPLAYER<small>SMEA 70 vs XTM · 50 vs 50 online</small></button>
+    <button type="button" class="mm-btn" id="mmCodex">BUKU SENJATA<small id="mmCodexSub">Catatan 100 senjata tawuran</small></button>
     <button type="button" class="mm-btn" id="mmSettings">SETTINGS<small>Avatar &amp; mikrofon</small></button>
     <p class="hint" id="iosHint" hidden><b>Biar layar penuh di iPhone:</b> ketuk tombol Share di Safari, pilih <b>Add to Home Screen</b>, lalu buka game dari ikon Bel Pulang di layar utama.</p>
-    <p class="mm-foot">v2.5 · Sporadis Games</p>
+    <p class="mm-foot">v2.6 · Sporadis Games</p>
   </div>
   <div hidden><button class="cta" id="startBtn">MAIN LEVEL 1</button><button class="cta" id="onlineBtn">ONLINE</button><button class="cta alt" id="resetBtn" hidden>ULANG</button></div>
 </div>
@@ -660,6 +678,9 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
       <button type="button" class="sm-opt hot" id="setAvatar">SET AVATAR<small id="setAvatarSub">Atur kulit, badan, baju, topi, dan kacamata</small></button>
       <button type="button" class="sm-opt" id="setMic">MIKROFON<small id="setMicSub">Izin mikrofon, tes suara, dan voice chat</small></button>
       <button type="button" class="sm-opt" id="setCam">KAMERA: <span id="setCamV">ATAS</span><small>Atas = lihat keramaian · Belakang = dari punggung karakter, geser layar untuk memutar</small></button>
+      <button type="button" class="sm-opt" id="setMus">MUSIK: <span id="setMusV">NYALA</span><small>Ska/punk waktu tawuran, lebih tegang waktu malam</small></button>
+      <button type="button" class="sm-opt" id="setHap">GETAR: <span id="setHapV">NYALA</span><small>HP bergetar waktu kena pukul atau ditabrak mobil</small></button>
+      <button type="button" class="sm-opt" id="setHl">REKAM HIGHLIGHT: <span id="setHlV">NYALA</span><small id="setHlSub">Rekam otomatis KO terbaik tiap level, bisa dibagikan ke TikTok/IG</small></button>
       <button type="button" class="sm-opt" id="setGfx">GRAFIK: <span id="setGfxV">OTOMATIS</span><small id="setGfxSub">Ketuk untuk ganti: Otomatis, Rendah, Sedang, Tinggi</small></button>
     </div>
     <button type="button" class="cta" id="gfxReload" hidden onclick="location.reload()">MUAT ULANG SEKARANG</button>
@@ -854,6 +875,14 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
   </div>
 </div>
 
+<div class="ov" id="codexOv" hidden>
+  <div class="card sm-card cx-card">
+    <div class="sm-head"><h2 class="title">BUKU SENJATA</h2><span id="cxCount" class="cx-count">0 / 100</span><button type="button" class="sm-back" id="cxBack">← KEMBALI</button></div>
+    <p class="hint" style="margin:2px 0 8px">Catatan terbuka begitu senjatanya kamu ambil pertama kali.</p>
+    <div id="cxGrid"></div>
+  </div>
+</div>
+
 <div class="ov" id="pauseOv" hidden>
   <div class="card">
     <p class="kicker" id="pauseKick">LEVEL 1</p>
@@ -863,6 +892,8 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
     <button class="cta alt" id="restartBtn">ULANG LEVEL INI</button>
     <button class="cta alt" id="soundBtn">SUARA: NYALA</button>
     <button class="cta alt" id="pauseCamBtn">KAMERA: ATAS</button>
+    <button class="cta alt" id="pauseMusBtn">MUSIK: NYALA</button>
+    <button class="cta alt" id="pauseCodexBtn">BUKU SENJATA</button>
     <button class="cta alt" id="menuBtn">KE MENU</button>
   </div>
 </div>
@@ -890,6 +921,7 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
       <div><b id="stCar">0</b>KETABRAK</div>
       <div><b id="stChain">0</b>HIT BERUNTUN</div>
     </div>
+    <div id="hlBox" hidden><video id="hlVid" muted loop playsinline autoplay></video><div class="hl-side"><p id="hlLbl">HIGHLIGHT</p><div class="hl-row"><button type="button" class="cta" id="hlShareBtn">BAGIKAN</button><button type="button" class="cta alt" id="hlSaveBtn">SIMPAN</button></div></div></div>
     <button class="cta" id="againBtn">COBA LAGI</button>
     <button class="cta alt" id="endMenuBtn">KE MENU</button>
   </div>
@@ -2927,6 +2959,7 @@ function removeFighter(f){
 function setWeapon(f,type,n){
   if(f.held){f.r.armR.remove(f.held);f.held=null;}
   if(!type){f.weapon=null;return;}
+  if(f===player)codexAdd(type);
   f.weapon={type,n};const m=wMesh(type);m.rotation.x=Math.PI;m.position.set(0,-0.62,0.02);f.r.armR.add(m);f.held=m;
 }
 function armRandom(f,chance){if(Math.random()<chance){const t=pickWeaponType();setWeapon(f,t,WPN[t].n);}}
@@ -3101,8 +3134,9 @@ function damage(o,dmg,dx,dz,kb,src,w){
   popup(pick(w.words),o.pos,2.4*s,o===player?'me':'');
   const armored=o.boss&&(o.state==='windup'||o.state==='strike');
   if(!armored){release(o);clearRing(o);}
-  if(o.isPlayer){o.inv=0.45;if(o===player){hurtFlash();shake=Math.max(shake,0.3);sfx('hurt');chain=0;}}
-  if(src&&src===player){chain++;chainT=1.8;bestChain=Math.max(bestChain,chain);freeze=Math.max(freeze,kb>=10?0.07:0.04);shake=Math.max(shake,0.12+kb*0.02);}
+  if(o.isPlayer){o.inv=0.45;if(o===player){hurtFlash();shake=Math.max(shake,0.3);sfx('hurt');chain=0;buzz(kb>=10?'big':'hit');}}
+  if(kb>=10&&!net)dust(o.pos.x,o.pos.z,kb>=16?12:7);
+  if(src&&src===player){chain++;chainT=1.8;bestChain=Math.max(bestChain,chain);freeze=Math.max(freeze,kb>=10?0.08:0.045);shake=Math.max(shake,0.15+kb*0.028);if(w===JURUS){buzz('jurus');slowmo(0.35);}}
   if(o.hp<=0){KO(o,src,w);}
   else if(armored){}
   else if(kb>=10&&!o.boss){o.state='knock';o.t=0;o.inv=0.9;}
@@ -3116,6 +3150,7 @@ function KO(o,src,w,car){
   if(o.weapon&&o.weapon.n>0)dropGround(o.weapon.type,o.weapon.n,o.pos.x,o.pos.z);
   setWeapon(o,null);
   if(src&&src.isPlayer&&o.team!==src.team)src.kos=(src.kos||0)+1;
+  if(!net&&o.team===1&&player){let sc=0,lb='';if(src===player){sc=1;lb='KO';if(chain>=5){sc=2+Math.min(3,chain/5);lb='COMBO '+chain+' HIT';}if(w===JURUS){sc=4;lb='TENDANGAN PAMUNGKAS';}if(w&&w.words&&/GLUDUK|BRAKK|GUBRAK/.test(w.words[0])){sc=3;lb='KENA '+(w.words[0]==='BRAKK!'?'PAPAN IKLAN':'BARANG JALANAN');}if(w&&w.fx==='boom'){sc=3;lb='DUAR!';}}else if(car&&dist(o,player)<12){sc=3;lb='KETABRAK MOBIL!';}if(o.boss){sc=6;lb=cfg.boss+' TUMBANG';slowmo(0.9);}if(sc)hlEvent(sc,lb);if(src===player)buzz('ko');}
   if(src&&src===player&&o.team!==player.team){myKO++;if(P('semangat')&&alive(player)){player.hp=Math.min(player.maxHp,player.hp+4*P('semangat'));}}
   burst(o.pos.x,0.4,o.pos.z,8,0xc9b9a0,0.8);
   if(o.isPlayer){respawnT=3;if(w!==BUSTED)popup('KO!',o.pos,2.6,'me');if(net&&o===player){spectate=true;banner(w===BUSTED?'KAMU BUSTED':'KAMU TUMBANG',w===BUSTED?'Ditangkap Wito. Kamera ikut teman satu sekolah':'Kamera ikut teman satu sekolah',2400);}}
@@ -3143,7 +3178,8 @@ function carHit(f,c){
   let dmg=c.dmg;if(f.isPlayer&&!net)dmg*=0.8*Math.max(0.3,1-0.2*P('kebal'));if(f.vip)dmg*=0.6;if(f.boss)dmg*=2;
   f.hp-=dmg;f.flash=0.2;release(f);clearRing(f);
   popup('BRAKK!',f.pos,2.6,'car');sfx('crash',f.isPlayer?1:0.6);burst(f.pos.x,1,f.pos.z,10,0xfff3c4,1.4);
-  if(f===player){hurtFlash();shake=Math.max(shake,0.6);chain=0;}
+  if(f===player){hurtFlash();shake=Math.max(shake,0.6);chain=0;buzz('car');}
+  if(!net)dust(f.pos.x,f.pos.z,12);
   else if(dist(f,focusF())<14)shake=Math.max(shake,0.2);
   if(f.hp<=0){carKO++;KO(f,null,null,c);}else{f.state='knock';f.t=0;f.inv=0.9;}
 }
@@ -3971,7 +4007,7 @@ function setupMission(){
 }
 function inZone(Z,t){let n=0;for(const f of fighters){if(f.team!==t||!alive(f)||f.state==='knock'||f.safe||f.vip)continue;if(Math.hypot(f.pos.x-Z.x,f.pos.z-Z.z)<Z.r)n++;}return n;}
 function zoneColor(c){zoneRing.children.forEach(m=>m.material.color.setHex(c));}
-function finish(win,msg,delay){if(pendingEnd)return;pendingEnd={t:delay==null?1.3:delay,win,msg};}
+function finish(win,msg,delay){if(pendingEnd)return;pendingEnd={t:delay==null?1.3:delay,win,msg};if(win&&!net){slowmo(1.1);hlEvent(5,'MENANG!');}}
 function updateMission(dt){
   M.t+=dt;
   if(net){netTimer(dt);if(M.siege){if(!net.ended)siegeTick(dt);return;}if(!net.ended)raidTick(dt);if(!net.ended&&xbus.hp<=0){netHostEnd(0,'bus');return;}if(!net.ended&&M.timer<=0&&gate.hp>0){netHostEnd(0,'time');return;}if(!net.ended){hostCheckGateWin();const a=teamLeft(0),b=teamLeft(1);if(!net.ended&&(a===0||b===0)){if(a===0&&b===0)netHostEnd(1,'wipe');else startSiege(a===0?1:0);}}return;}
@@ -4356,6 +4392,274 @@ function wetFric(){return AMB.rain&&!net?4.3:7;}
 function litAt(x,z){for(const l of LAMPS)if(Math.abs(l.x-x)<6.5&&Math.abs(l.z-z)<6)return true;for(const c of cars)if(c.g&&Math.abs(c.x-x)<8&&Math.abs(c.z-z)<3)return true;return false;}
 function darkHide(f){return !net&&AMB.time==='malam'&&player&&f.team!==player.team&&!f.boss&&!f.champ&&!f.leader&&dist(f,player)>8&&!litAt(f.pos.x,f.pos.z);}
 
+
+const WSTORY={
+batu:'Senjata paling tua di Bulungan. Selalu ada di pinggir trotoar, entah dari mana datangnya.',
+botol:'Bekas botol kecap warung Bu Imah. Pecahnya nyaring, bikin satu jalan nengok.',
+sabuk:'Ikat pinggang seragam, gespernya mengkilap. Dilepas kalau situasi sudah panas.',
+bambu:'Dulu tiang bendera tujuh belasan. Panjang, ringan, bikin lawan jaga jarak.',
+papan:'Papan sisa renovasi kantin yang nggak pernah selesai.',
+kursi:'Kursi plastik warung yang selalu hilang satu tiap pulang sekolah.',
+helm:'Helm SNI pinjaman abang ojol. Dipakai mukul, bukan dipakai di kepala.',
+payung:'Payung lipat titipan nyokap. Jangan sampai rusak, nanti diomelin.',
+katana:'Katanya oleh-oleh om dari Jepang. Nggak ada yang tahu kenapa ada di jalan.',
+celurit:'Senjata yang bikin satu jalan langsung sepi. Lebih baik jangan sampai ketemu.',
+molotov:'Botol berisi bensin eceran. Yang bawa biasanya paling nekat.',
+sendal:'Sendal jepit swallow. Lemah, tapi kalau kena muka tetap malu.',
+sapulidi:'Pinjam dari tukang sapu sekolah. Sakitnya perih, bukan memar.',
+kemoceng:'Bulu ayamnya rontok tiap dipukulkan. Lebih ke menghina daripada menyakiti.',
+gagangsapu:'Sapunya udah botak, tinggal gagang. Justru jadi lebih berguna.',
+kaleng:'Kaleng minuman sisa jajan. Bunyinya lebih seram dari sakitnya.',
+penggaris:'Penggaris besi 1 meter punya Pak Guru Matematika. Bunyi CTAK-nya legendaris.',
+bantal:'Bantal dari mana? Nggak ada yang tahu. Nggak sakit, tapi bikin lawan terguling.',
+telur:'Telur busuk dari tempat sampah pasar. Baunya bikin lawan jalan pelan.',
+ember:'Ember cucian di belakang kantin. Masih basah, kadang masih ada busanya.',
+tas:'Tas ransel isi buku paket enam mata pelajaran. Berat dan berguna.',
+kamus:'Kamus Inggris-Indonesia 900 juta kata. Akhirnya kepake juga.',
+tomat:'Tomat busuk lempar-lemparan. Lawan belepotan merah dan jadi lambat.',
+pel:'Kain pel bau apek. Musuh lebih takut baunya daripada pukulannya.',
+tongkatpramuka:'Tongkat pramuka warisan kakak kelas. Masih ada tali simpul di ujungnya.',
+raket:'Raket badminton senar putus. Cepat diayun, enak buat nyerang duluan.',
+balonair:'Balon air sisa lomba agustusan. Bikin jalan licin di sekitar lawan.',
+rotan:'Rotan yang dulu dipakai guru BK. Sekarang balas dendam.',
+pasir:'Pasir dari proyek galian sebelah. Dilempar, mata lawan perih.',
+kerikil:'Segenggam kerikil, dilempar menyebar. Satu pasti kena.',
+skate:'Papan skate anak tongkrongan Blok M. Rodanya masih muter.',
+panci:'Panci rebus mie kantin. Bunyi TENG-nya kedengaran sampai halte.',
+wajan:'Wajan gorengan Bang Udin, gagangnya panas. Pentalannya mantap.',
+termos:'Termos es teh guru piket. Isinya tumpah, lantainya licin.',
+cilok:'Cilok gerobak seberang sekolah. Lebih enak dimakan, tapi ya sudahlah.',
+bakso:'Bakso urat dari gerobak Bakso Malang. Pantul-pantul di kepala lawan.',
+gorengan:'Gorengan baru diangkat dari wajan. Panasnya bikin lawan loncat-loncat.',
+bola:'Bola basket lapangan sekolah. Mentul, bikin lawan terdorong.',
+sepatu:'Sepatu PDL bekas abang tentara. Solnya keras kayak batu.',
+handuk:'Handuk basah habis olahraga. Dipelintir, dilecutkan. CEPLAS!',
+sarung:'Sarung diisi batu. Tradisi turun-temurun tawuran gang.',
+selang:'Selang air taman sekolah. Panjang dan lentur, lecutannya perih.',
+kabel:'Kabel listrik sisa pasang lampu. Untung nggak nyetrum.',
+pecut:'Pecut tukang delman. Jangkauannya paling jauh di antara senjata cambuk.',
+baseball:'Tongkat baseball klub yang nggak pernah latihan. Akhirnya dipakai juga.',
+golf:'Stik golf om tetangga. Ringan, panjang, bunyinya TING.',
+hoki:'Stik hoki lapangan, ujungnya bengkok. Enak buat ngait kaki lawan.',
+gitar:'Gitar tongkrongan yang senarnya tinggal dua. Satu ayunan, satu lagu terakhir.',
+toa:'Toa demo yang ketinggalan. Bunyinya WOOONG pas kena kepala.',
+kerucut:'Kerucut lalu lintas oranye. Polisi pasti nyariin.',
+kayubalok:'Balok kayu sisa bangunan. Berat tapi mantap.',
+bilahpagar:'Bilah pagar oranye sekolah yang copot. Pak satpam pasti marah.',
+gagangcangkul:'Gagang cangkul tukang kebun sekolah. Cangkulnya entah di mana.',
+pentungan:'Pentungan satpam yang ketinggalan di pos. Pendek tapi padat.',
+paralon:'Pipa paralon putih. Bunyinya lucu, sakitnya lumayan.',
+pipabesi:'Pipa besi galian PAM. Berat dan dingin.',
+kunciinggris:'Kunci inggris bengkel motor depan halte. Montir-nya lagi makan siang.',
+kunciroda:'Kunci roda bentuk L. Biasanya dipakai ganti ban, sekarang ganti suasana.',
+palu:'Palu tukang yang benerin atap kelas. Kecil tapi padat.',
+spion:'Spion motor yang patah pas parkir. Cerminnya masih bisa buat ngaca.',
+knalpot:'Knalpot racing yang copot. Masih hangat dan bau oli.',
+rantai:'Rantai motor yang putus di tanjakan. Lecutannya bikin ngilu.',
+sabukgir:'Gir motor diikat sabuk. Senjata khas tawuran yang paling ditakuti anak baru.',
+gembok:'Gembok gerbang diikat rantai. Berat di ujung, sakit kalau kena.',
+linggis:'Linggis tukang gali. Panjang, berat, dan susah patah.',
+dongkrak:'Dongkrak mobil yang ketinggalan di pinggir jalan. Berat banget.',
+ulekan:'Ulekan cobek warung pecel. Batu asli dari gunung.',
+cat:'Kaleng cat biru sisa ngecat pagar. Lawan belepotan dan jalannya lambat.',
+sambal:'Botol sambal warung. Kena mata, pedasnya bikin lawan lambat.',
+gelas:'Gelas kaca es teh manis. PRANG!',
+ketapel:'Ketapel kayu buatan sendiri. Pelurunya banyak, lesatannya cepat.',
+paving:'Paving block yang copot dari trotoar. Pemerintah daerah harus tahu.',
+batako:'Batako proyek sebelah. Lemparan paling berat, pentalan paling jauh.',
+genteng:'Genteng jatuh dari atap warung. Pecah kena kepala.',
+lumpur:'Lumpur got depan halte. Bau dan bikin lawan susah jalan.',
+bomasap:'Bom asap suporter bola. Asapnya bikin musuh di dalamnya jalan pelan.',
+flare:'Flare merah suporter. Asap merahnya bikin suasana kayak di stadion.',
+petasan:'Petasan sisa lebaran. Ledakan kecil yang mementalkan semua di dekatnya.',
+kembangapi:'Kembang api tahun baru. Ledakannya lebih besar dari petasan.',
+papannama:'Papan nama warung kopi. Pemiliknya cuma bisa geleng-geleng.',
+banbekas:'Ban bekas tambal ban. Mantul, mental, mantap.',
+tongsampah:'Tong sampah hijau Dinas Kebersihan. Lawan masuk ke dalamnya.',
+galon:'Galon air isi ulang. Berat 19 liter, sakitnya 19 kali lipat.',
+kursilipat:'Kursi lipat besi ala smackdown. Diayunkan dengan penuh gaya.',
+mejakantin:'Meja kantin. Butuh dua tangan dan seluruh tenaga. Tapi satu ayunan cukup.',
+tabunggas:'Tabung gas melon tiga kilo. Paling berat, paling pelan, paling sakit.',
+ruyung:'Ruyung latihan silat. Cepat sekali, cocok buat yang hobi nonton film laga.',
+toya:'Toya perguruan silat. Panjang dan sapuannya lebar.',
+pisau:'Pisau dapur kantin. Ini sudah bukan tawuran main-main.',
+badik:'Badik pusaka orang Bugis. Pendek dan berbahaya.',
+kerambit:'Kerambit melengkung. Cepat dan mematikan.',
+keris:'Keris pusaka, katanya ada isinya. Lebih baik jangan dipegang.',
+garpu:'Garpu taman tukang kebun. Tiga mata, jangkauan panjang.',
+cangkul:'Cangkul utuh. Kalau sampai keluar ini, polisi pasti datang.',
+arit:'Arit pemotong rumput. Melengkung dan berbahaya.',
+golok:'Golok tebas. Berat di ujung, satu ayunan bisa mengakhiri tawuran.',
+parang:'Parang panjang. Jangkauannya lebih jauh dari golok.',
+tombak:'Tombak bambu runcing, seperti zaman perjuangan.',
+kapak:'Kapak pembelah kayu. Paling sakit di antara semua senjata.',
+mandau:'Mandau Kalimantan. Senjata terakhir dan paling ditakuti di Bulungan.'
+};
+
+/* ================= v2.6: BUKU SENJATA ================= */
+const CODEX_KEY='belpulang-codex';
+let codex=new Set();try{(JSON.parse(localStorage.getItem(CODEX_KEY)||'[]')||[]).forEach(k=>codex.add(k));}catch(e){}
+function codexAdd(k){
+  if(!k||codex.has(k)||!WPN[k])return;codex.add(k);
+  try{localStorage.setItem(CODEX_KEY,JSON.stringify([...codex]));}catch(e){}
+  if(mode==='play'&&player){popup('📖 CATATAN BARU: '+WPN[k].name.toUpperCase(),player.pos,3.3,'info');}
+}
+function wJenis(d){if(d.ranged)return d.fx==='boom'?'Lempar · meledak':d.fx==='smoke'?'Lempar · asap':d.fx==='slow'?'Lempar · bikin lambat':d.fx==='spread'?'Lempar · menyebar':'Lempar';
+  if(d.deadly)return 'Tajam';if(d.dmg<=5)return 'Lucu-lucuan';if(d.arc>=1.3&&d.range>=2.8)return 'Cambuk';if(d.range>=2.9)return 'Jangkauan panjang';if(d.dmg>=28||d.kb>=14)return 'Berat';if(d.wind<=0.36)return 'Ringan & cepat';return 'Pukul';}
+function openCodex(from){
+  codexFrom=from||'menu';hideSubs();$('#menu').hidden=true;$('#mmProf').hidden=true;$('#pauseOv').hidden=true;
+  const g=$('#cxGrid');g.innerHTML='';
+  const ks=WKEYS.slice().sort((a,b)=>(WPN[a].unlock||1)-(WPN[b].unlock||1));
+  for(const k of ks){const d=WPN[k],on=codex.has(k),c=document.createElement('div');c.className='cx'+(on?'':' lk')+(d.deadly?' dl':'');
+    if(on)c.innerHTML='<b>'+d.name+'</b><i>'+wJenis(d)+' · dmg '+d.dmg+(d.ranged?' · '+d.n+'x':'')+'</i><span>'+(WSTORY[k]||'')+'</span>';
+    else c.innerHTML='<b>???</b><i>'+(d.unlock&&d.unlock>1?'Muncul mulai Lv '+d.unlock:'Muncul sejak awal')+'</i><span>Ambil senjata ini sekali untuk membuka catatannya.</span>';
+    g.appendChild(c);}
+  $('#cxCount').textContent=codex.size+' / '+WKEYS.length;
+  $('#codexOv').hidden=false;
+}
+let codexFrom='menu';
+
+/* ================= v2.6: EFEK PUKULAN (slow-motion, debu, getar) ================= */
+let slowT=0;
+function slowmo(t){if(net)return;slowT=Math.max(slowT,t);}
+function dust(x,z,n){burst(x,0.15,z,n||8,0xc9b9a0,1.1);}
+
+/* ================= v2.6: GETAR (haptic) ================= */
+const HAP_KEY='belpulang-haptic';let hapOn=true;try{hapOn=localStorage.getItem(HAP_KEY)!=='0';}catch(e){}
+let hapLast=0,hapLbl=null;
+function buzz(kind){
+  if(!hapOn)return;const now=performance.now();if(now-hapLast<70)return;hapLast=now;
+  const pat={hit:22,car:[70,40,110],ko:[18,30,18],jurus:[40,20,60],big:50}[kind]||20;
+  try{if(navigator.vibrate){navigator.vibrate(pat);return;}}catch(e){}
+  // iPhone (iOS 18+): checkbox "switch" memberi getar kecil saat di-toggle
+  try{if(!hapLbl){hapLbl=document.createElement('label');hapLbl.style.cssText='position:fixed;left:-99px;top:-99px;opacity:0;pointer-events:none';const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');hapLbl.appendChild(i);document.body.appendChild(hapLbl);}hapLbl.click();}catch(e){}
+}
+
+/* ================= v2.6: MUSIK (dibuat langsung oleh browser) ================= */
+const MUS_KEY='belpulang-music';let musOn=true;try{musOn=localStorage.getItem(MUS_KEY)!=='0';}catch(e){}
+const MUS={bus:null,style:null,next:0,step:0,timer:0,tempo:160};
+const NOTE=n=>440*Math.pow(2,(n-69)/12);
+const STYLES={
+  ska:{tempo:168,vol:0.5,prog:[48,48,53,53,55,55,53,55],kind:'ska'},
+  punk:{tempo:184,vol:0.5,prog:[45,45,48,48,43,43,50,52],kind:'punk'},
+  tegang:{tempo:104,vol:0.55,prog:[45,45,45,45,41,41,43,44],kind:'tegang'},
+  menu:{tempo:150,vol:0.32,prog:[48,52,53,55,48,52,53,55],kind:'ska'}
+};
+function musBus(){if(!actx)return null;if(!MUS.bus){MUS.bus=actx.createGain();MUS.bus.gain.value=0;MUS.bus.connect(master);}return MUS.bus;}
+function mOsc(type,f,t,d,v,dest,f2){const o=actx.createOscillator(),g=actx.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(v,t+0.008);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.connect(g).connect(dest);o.start(t);o.stop(t+d+0.02);}
+function mNoise(t,d,v,hp,dest){const s=actx.createBufferSource();s.buffer=noiseBuf;const f=actx.createBiquadFilter();f.type='highpass';f.frequency.value=hp;const g=actx.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);s.connect(f).connect(g).connect(dest);s.start(t,Math.random()*0.3);s.stop(t+d+0.02);}
+function musStep(S,i,t,dest){
+  const bar=Math.floor(i/16)%S.prog.length,s=i%16,root=S.prog[bar],k=S.kind;
+  if(k==='tegang'){
+    if(s%4===0)mOsc('sine',NOTE(root-12),t,0.5,0.35,dest);
+    if(s%2===0)mOsc('triangle',NOTE(root),t,0.18,0.12,dest);
+    if(s===0&&bar%2===0)mOsc('sawtooth',NOTE(root+12),t,3.2,0.03,dest);
+    if(s%4===2)mNoise(t,0.04,0.08,7000,dest);
+    if(s===12&&bar%4===3)mOsc('square',NOTE(root+15),t,0.6,0.04,dest,NOTE(root+14));
+    if(s===0||s===10)mOsc('sine',120,t,0.25,0.5,dest,40);
+    return;}
+  // drum
+  const kick=k==='punk'?(s%4===0||s===6):(s===0||s===8);
+  if(kick)mOsc('sine',140,t,0.18,0.7,dest,45);
+  if(s===4||s===12){mNoise(t,0.12,0.35,1800,dest);mOsc('triangle',200,t,0.08,0.15,dest,120);}
+  if(s%2===0)mNoise(t,0.03,0.09,8000,dest);
+  // bass
+  if(k==='ska'){const walk=[0,0,4,4,7,7,9,7][Math.floor(s/2)];if(s%2===0)mOsc('triangle',NOTE(root-12+walk),t,0.16,0.32,dest);}
+  else if(s%2===0)mOsc('sawtooth',NOTE(root-12),t,0.14,0.18,dest);
+  // gitar
+  if(k==='ska'){if(s%4===2){[0,4,7].forEach(n=>mOsc('square',NOTE(root+12+n),t,0.07,0.045,dest));}}
+  else{if(s%2===0){[0,7,12].forEach(n=>mOsc('sawtooth',NOTE(root+n),t,0.12,0.05,dest));}}
+  // terompet ska sesekali
+  if(k==='ska'&&bar%4===3&&(s===0||s===3||s===6))mOsc('sawtooth',NOTE(root+24+[0,4,7][s/3]),t,0.18,0.05,dest);
+}
+function musTick(){
+  if(!actx||!MUS.style||actx.state!=='running')return;
+  const S=STYLES[MUS.style],dest=musBus(),spb=60/S.tempo/4;
+  if(MUS.next<actx.currentTime)MUS.next=actx.currentTime+0.05;
+  while(MUS.next<actx.currentTime+0.25){try{musStep(S,MUS.step,MUS.next,dest);}catch(e){}MUS.step++;MUS.next+=spb;}
+}
+function musPlay(style){
+  if(!actx)return;const b=musBus();if(!b)return;
+  const want=musOn&&!muted?style:null;
+  if(want!==MUS.style){MUS.style=want;MUS.step=0;MUS.next=actx.currentTime+0.1;}
+  const v=want?STYLES[want].vol*(mode==='paused'?0.35:1):0;b.gain.setTargetAtTime(v,actx.currentTime,0.4);
+  if(!MUS.timer)MUS.timer=setInterval(musTick,60);
+}
+function musFor(){
+  if(mode==='menu'||mode==='lobby')return 'menu';
+  if(net)return 'ska';
+  if(cfg&&cfg.mission==='bos')return 'punk';
+  if(AMB.time==='malam')return 'tegang';
+  if(cfg&&(cfg.mission==='duel'||cfg.mission==='kejar'))return 'punk';
+  return 'ska';
+}
+let musChk=0;
+function musFrame(dt){const n=performance.now();if(n<musChk)return;musChk=n+500;if(!actx)return;musPlay(mode==='over'?null:musFor());}
+
+/* ================= v2.6: REPLAY HIGHLIGHT ================= */
+const HL_KEY='belpulang-hl';
+let hlOn=true;try{const v=localStorage.getItem(HL_KEY);hlOn=v==null?(GFX_LV!=='low'):v==='1';}catch(e){}
+const HL={ok:false,cv:null,cx:null,stream:null,recs:[],best:null,pending:null,mime:'',score:0,label:''};
+(function(){try{HL.ok=!!(window.MediaRecorder&&HTMLCanvasElement.prototype.captureStream);
+  if(HL.ok){const ms=['video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];HL.mime=ms.find(m=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m))||'';if(!HL.mime)HL.ok=false;}}catch(e){HL.ok=false;}})();
+function hlActive(){return HL.ok&&hlOn&&!net&&mode==='play';}
+function hlInit(){
+  if(HL.cv)return;const W=640,H=Math.round(640/Math.max(1.3,camera.aspect||2.16))&~1;
+  HL.cv=document.createElement('canvas');HL.cv.width=W;HL.cv.height=H;HL.cx=HL.cv.getContext('2d');
+  HL.stream=HL.cv.captureStream(30);
+  // ikutkan suara game (pukulan, musik) ke rekaman
+  try{if(actx&&master){const dst=actx.createMediaStreamDestination();master.connect(dst);const at=dst.stream.getAudioTracks()[0];
+    const ms=['video/mp4;codecs=avc1,mp4a.40.2','video/mp4','video/webm;codecs=vp8,opus','video/webm'].find(m=>MediaRecorder.isTypeSupported(m));
+    if(at&&ms){HL.stream.addTrack(at);HL.mime=ms;}}}catch(e){}
+}
+function hlNewRec(slot){
+  try{const r=new MediaRecorder(HL.stream,{mimeType:HL.mime,videoBitsPerSecond:2200000});const rec={r,start:performance.now(),chunks:[],keep:false,slot};
+    r.ondataavailable=e=>{if(e.data&&e.data.size)rec.chunks.push(e.data);};
+    r.onstop=()=>{if(rec.keep&&rec.chunks.length){const blob=new Blob(rec.chunks,{type:HL.mime.split(';')[0]});hlSet(blob,rec.score,rec.label);}
+      if(HL.recs[slot]===rec){HL.recs[slot]=null;if(hlActive())HL.recs[slot]=hlNewRec(slot);}};
+    r.start(500);return rec;}catch(e){HL.ok=false;return null;}
+}
+function hlStart(){
+  if(!HL.ok||!hlOn||net)return;hlInit();hlStopAll(false);
+  HL.recs=[hlNewRec(0),null];HL.offT=setTimeout(()=>{if(hlActive())HL.recs[1]=hlNewRec(1);},4000);
+}
+function hlStopAll(keepPending){clearTimeout(HL.offT);for(const r of HL.recs){if(!r||r.r.state==='inactive')continue;if(keepPending&&r.keep)continue;r.keep=false;try{r.r.stop();}catch(e){}}if(!keepPending)HL.recs=[];}
+function hlFrame(){
+  if(!HL.cv||!HL.recs.length)return;
+  const c=renderer.domElement,W=HL.cv.width,H=HL.cv.height,x=HL.cx;
+  try{x.drawImage(c,0,0,W,H);}catch(e){return;}
+  x.fillStyle='rgba(0,0,0,.55)';x.fillRect(W-178,H-30,170,22);x.fillStyle='#fff';x.font='600 13px Oswald, Impact, sans-serif';x.fillText('BEL PULANG · belpulang.win',W-170,H-14);
+  if(HL.pending&&performance.now()-HL.pending.at<1400){x.fillStyle='rgba(196,52,38,.9)';x.fillRect(10,10,x.measureText(HL.pending.label).width+20,26);x.fillStyle='#fff';x.font='700 15px Oswald, Impact, sans-serif';x.fillText(HL.pending.label,20,28);}
+  const now=performance.now();
+  for(const r of HL.recs){if(r&&!r.keep&&now-r.start>8000){try{r.r.stop();}catch(e){}}}
+}
+// peristiwa seru: semakin tinggi skornya, semakin layak jadi highlight
+function hlEvent(score,label){
+  if(!hlActive()||!HL.recs.length)return;
+  if(score<=HL.score||HL.pending)return;
+  const now=performance.now();let best=null;
+  for(const r of HL.recs){if(!r||r.keep)continue;const age=now-r.start;if(age>=2500&&(!best||age>now-best.start))best=r;}
+  if(!best)best=HL.recs.find(r=>r&&!r.keep);if(!best)return;
+  best.keep=true;best.score=score;best.label=label;HL.score=score;HL.pending={at:now,label};
+  setTimeout(()=>{HL.pending=null;try{best.r.stop();}catch(e){}},1900);
+}
+function hlSet(blob,score,label){if(HL.best&&HL.best.url)URL.revokeObjectURL(HL.best.url);HL.best={blob,url:URL.createObjectURL(blob),score,label};hlShow();}
+function hlReset(){if(HL.best&&HL.best.url)URL.revokeObjectURL(HL.best.url);HL.best=null;HL.score=0;HL.pending=null;const b=$('#hlBox');if(b)b.hidden=true;}
+function hlShow(){
+  const box=$('#hlBox');if(!box||!HL.best)return;
+  const ov=!$('#perkOv').hidden?$('#perkOv .card'):!$('#endOv').hidden?$('#endOv .card'):null;if(!ov)return;
+  const anc=ov.querySelector('#perkMsg,#endMsg');if(box.previousSibling!==anc)ov.insertBefore(box,anc.nextSibling);
+  const v=$('#hlVid');if(v.src!==HL.best.url){v.src=HL.best.url;v.play().catch(()=>{});}
+  $('#hlLbl').textContent='HIGHLIGHT · '+HL.best.label;box.hidden=false;
+}
+async function hlShare(){
+  if(!HL.best)return;const ext=HL.best.blob.type.includes('mp4')?'mp4':'webm';
+  const file=new File([HL.best.blob],'belpulang-highlight.'+ext,{type:HL.best.blob.type});
+  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Bel Pulang',text:'Highlight tawuran gue di Bel Pulang 🔥 belpulang.win'});return;}}catch(e){if(e&&e.name==='AbortError')return;}
+  hlSave();
+}
+function hlSave(){if(!HL.best)return;const ext=HL.best.blob.type.includes('mp4')?'mp4':'webm';const a=document.createElement('a');a.href=HL.best.url;a.download='belpulang-highlight.'+ext;document.body.appendChild(a);a.click();a.remove();}
+
 /* ================= HUD ================= */
 const $stFill=$('#stFill'),$stBar=$('#stBar'),$hpFill=$('#hpFill'),$hpTxt=$('#hpTxt'),$wTxt=$('#wTxt'),$usN=$('#usN'),$themN=$('#themN'),$usBar=$('#usBar'),$themBar=$('#themBar'),$combo=$('#combo'),$atk=$('#atkBtn'),$swap=$('#swapBtn'),$edge=$('#edge'),$misT=$('#misT'),$misV=$('#misV'),$misA=$('#misA'),$misB=$('#misB'),$misBarW=$('#misBarW'),$misP=$('#misPanel'),$lv=$('#lvTxt');
 let lastHud='';
@@ -4495,7 +4799,7 @@ function startLevel(){
   for(let i=0;i<4;i++){res[0]--;const a=makeFighter(0,false);a.pos.set(rand(-2.5,2.5),0,-9-i*1.3);}
   for(let i=0;i<5;i++){res[1]--;const e=makeFighter(1,false);e.pos.set(28+i*2.2,0,rand(-9,4));e.face=-Math.PI/2;armRandom(e,cfg.armed);}
   gateReset(false);$('#foeName').textContent=foeNow().n.toUpperCase();
-  setAmbience(cfg.amb);propsReset(true);
+  setAmbience(cfg.amb);propsReset(true);hlReset();setTimeout(()=>{if(mode==='play'&&!net)hlStart();},300);
   setupMission();setSquad('serbu',true);if($('#squad'))$('#squad').hidden=false;
   if(!M.noWeapons){dropGround('batu',3,5,-9.2);dropGround(pickWeaponType(),0,8,4.6);}
   camPos.set(4,16,22);camYaw=Math.PI/2;camPitch=0.32;camDrag=null;
@@ -4519,7 +4823,7 @@ function pause(){if(mode!=='play')return;
   $('#restartBtn').hidden=false;$('#menuBtn').textContent='KE MENU';mode='paused';$('#pauseKick').textContent='LEVEL '+level+' · '+(cfg.boss||MIS[cfg.mission].t);$('#pauseMis').textContent=cfg.mission==='bos'?'Kalahkan '+cfg.boss+'.':MIS[cfg.mission].d;$('#pauseOv').hidden=false;}
 function resume(){if(net){$('#pauseOv').hidden=true;return;}if(mode!=='paused')return;mode='play';$('#pauseOv').hidden=true;last=performance.now();}
 function endGame(win,msg){
-  mode='over';$('#controls').hidden=true;$('#edge').style.opacity=0;
+  mode='over';hlStopAll(true);setTimeout(hlShow,60);$('#controls').hidden=true;$('#edge').style.opacity=0;
   if(win){
     sfx('win');
     if(level>=MAXLV){
@@ -5176,7 +5480,7 @@ const GUEST_AP_KEY='belpulang-guest-ap';
 function readGuestAp(){try{const a=JSON.parse(localStorage.getItem(GUEST_AP_KEY)||'null');return a&&typeof a==='object'?a:null;}catch(e){return null;}}
 function saveGuestAp(a){try{localStorage.setItem(GUEST_AP_KEY,JSON.stringify(a));}catch(e){}}
 function getMyAp(){return (activeProfile&&activeProfile.appearance)||readGuestAp();}
-const SUBS=['#spOv','#loadOv','#mpOv','#crRoomOv','#pinOv','#setOv','#micOv'];
+const SUBS=['#spOv','#loadOv','#mpOv','#crRoomOv','#pinOv','#setOv','#micOv','#codexOv'];
 function hideSubs(){SUBS.forEach(s=>$(s).hidden=true);if(typeof micTestStop==='function')micTestStop();}
 let creatorFrom='', afterLogin=null, pendingRoom=null, pinTarget=null;
 
@@ -5195,7 +5499,7 @@ function updMainProf(){
   b.textContent=activeProfile?('👤 '+activeProfile.name+' · Lv '+level):'👤 Tamu · Lv '+level;
   b.hidden=$('#menu').hidden;
 }
-function openMain(){hideSubs();$('#lobbyOv').hidden=true;$('#menu').hidden=false;updMainProf();dirUnwatch();}
+function openMain(){try{feelUi();}catch(e){}hideSubs();$('#lobbyOv').hidden=true;$('#menu').hidden=false;updMainProf();dirUnwatch();}
 
 /* ---- single player ---- */
 function openSp(){
@@ -5241,7 +5545,7 @@ function openSettings(){
   hideSubs();$('#menu').hidden=true;$('#mmProf').hidden=true;
   $('#setAvatarSub').textContent=activeProfile?('Avatar profil '+activeProfile.name):'Avatar tamu (tersimpan di HP ini)';
   $('#setOv').hidden=false;
-  micStatus();gfxUi();camUi();
+  micStatus();gfxUi();camUi();feelUi();
 }
 $('#setAvatar').addEventListener('click',()=>{creatorFrom='settings';hideSubs();openCharacterCreator();});
 
@@ -5487,6 +5791,18 @@ $('#mpName').addEventListener('change',()=>saveName(($('#mpName').value||'').tri
 $('#mmSingle').addEventListener('click',()=>{initAudio();openSp();});
 $('#mmMulti').addEventListener('click',()=>{initAudio();openMp();});
 $('#mmSettings').addEventListener('click',()=>{initAudio();openSettings();});
+$('#mmCodex').addEventListener('click',()=>{initAudio();openCodex('menu');});
+$('#pauseCodexBtn').addEventListener('click',()=>openCodex('pause'));
+$('#cxBack').addEventListener('click',()=>{$('#codexOv').hidden=true;if(codexFrom==='pause'&&mode==='paused')$('#pauseOv').hidden=false;else openMain();});
+function feelUi(){$('#setMusV').textContent=musOn?'NYALA':'MATI';$('#pauseMusBtn').textContent='MUSIK: '+(musOn?'NYALA':'MATI');$('#setHapV').textContent=hapOn?'NYALA':'MATI';
+  $('#setHlV').textContent=!HL.ok?'TIDAK DIDUKUNG':hlOn?'NYALA':'MATI';if(!HL.ok)$('#setHlSub').textContent='Browser ini belum bisa merekam layar game';
+  const c=$('#mmCodexSub');if(c)c.textContent='Catatan '+codex.size+' dari '+WKEYS.length+' senjata terbuka';}
+const togMus=()=>{musOn=!musOn;try{localStorage.setItem(MUS_KEY,musOn?'1':'0');}catch(e){}initAudio();musChk=0;feelUi();};
+$('#setMus').addEventListener('click',togMus);$('#pauseMusBtn').addEventListener('click',togMus);
+$('#setHap').addEventListener('click',()=>{hapOn=!hapOn;try{localStorage.setItem(HAP_KEY,hapOn?'1':'0');}catch(e){}feelUi();if(hapOn)buzz('ko');});
+$('#setHl').addEventListener('click',()=>{if(!HL.ok)return;hlOn=!hlOn;try{localStorage.setItem(HL_KEY,hlOn?'1':'0');}catch(e){}feelUi();});
+$('#hlShareBtn').addEventListener('click',hlShare);$('#hlSaveBtn').addEventListener('click',hlSave);
+feelUi();
 $('#mmProf').addEventListener('click',()=>openLoad());
 document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.back==='sp')openSp();else if(b.dataset.back==='set')openSettings();else openMain();}));
 
@@ -5713,7 +6029,7 @@ loadSave();showMenu();
 for(let i=0;i<4;i++){if(spawnCar(i%2))cars[cars.length-1].x=rand(-40,50);}
 function frame(now){
   requestAnimationFrame(frame);
-  let dt=Math.max(0,Math.min(0.05,(now-last)/1000));last=now;clock+=dt;
+  let dt=Math.max(0,Math.min(0.05,(now-last)/1000));last=now;if(slowT>0&&!net){slowT-=dt;dt*=mode==='play'?0.3:1;}clock+=dt;musFrame(dt);
   if(flagMesh)flagMesh.rotation.y=Math.sin(clock*2.2)*0.25;
   gateFrame(dt);bloodFrame(dt);busFrame(dt);lampFrame(dt);rainFrame(dt);
   if(raidZones&&raidZones.visible)raidZones.children.forEach(z=>z.children[1].material.opacity=0.55+0.4*Math.sin(clock*6));
@@ -5764,6 +6080,7 @@ function frame(now){
   else{const a=clock*0.07;camera.position.set(10.5+Math.sin(a)*3.5,5.4,6.8+Math.cos(a)*1.2);camera.lookAt(3.2,1.3,-8.6);}
   updatePops(dt);
   renderer.render(scene,camera);
+  if(HL.recs.length)hlFrame();
 }
 
 

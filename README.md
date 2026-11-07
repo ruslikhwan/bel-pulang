@@ -4,6 +4,13 @@ Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi
 
 Main di: https://belpulang.netlify.app atau https://belpulang.win
 
+## v2.6 — Buku senjata, rasa pukulan, musik, highlight, getar
+- Buku Senjata (menu utama & pause): 100 catatan dengan cerita singkat, terbuka begitu senjatanya diambil pertama kali.
+- Rasa pukulan: slow-motion saat menang/bos tumbang/jurus, debu saat terpental, layar bergetar lebih berasa.
+- Musik dibuat langsung di browser: ska waktu tawuran, punk saat bos/duel/kejar, tegang waktu malam, santai di menu. Bisa dimatikan (Settings/Pause).
+- Replay highlight: KO terbaik tiap level direkam otomatis (±5 detik, ada suara & watermark belpulang.win), muncul di layar akhir level dengan tombol BAGIKAN/SIMPAN. Bisa dimatikan di Settings.
+- Getar: HP bergetar saat kena pukul, ditabrak mobil, KO, dan jurus (Android; iPhone iOS 18+ getar ringan). Bisa dimatikan.
+
 ## v2.5 — Perintah pasukan, jurus, barang di jalan, cuaca berpengaruh
 - Perintah teman (single player): tombol SERBU / TAHAN / IKUT AKU di kiri layar (keyboard 1/2/3).
 - Jurus Pamungkas: 3 pukulan kena beruntun lalu TENDANG (tombol menyala "JURUS!") = tendangan kuat yang mementalkan jauh.
