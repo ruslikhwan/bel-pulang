@@ -4,6 +4,13 @@ Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi
 
 Main di: https://belpulang.netlify.app atau https://belpulang.win
 
+## v2.5 — Perintah pasukan, jurus, barang di jalan, cuaca berpengaruh
+- Perintah teman (single player): tombol SERBU / TAHAN / IKUT AKU di kiri layar (keyboard 1/2/3).
+- Jurus Pamungkas: 3 pukulan kena beruntun lalu TENDANG (tombol menyala "JURUS!") = tendangan kuat yang mementalkan jauh.
+- Jurus khas tiap sekolah musuh: dorong, tendangan terbang, sapu kaki, lempar pasir, pukulan beruntun, seruduk, banting (Arek-Arek). Ada aba-aba nama jurus + badan memerah sebelum menyerang.
+- Barang di jalan: tong sampah bisa ditendang menggelinding, gerobak gorengan bisa didorong ke musuh, papan iklan bisa dipukul sampai rubuh menimpa musuh.
+- Cuaca: hujan bikin jalan licin (pentalan lebih jauh, terpeleset lebih lama). Malam: musuh yang jauh dan di tempat gelap tidak kelihatan bar nyawa & penandanya.
+
 ## v2.4 — 100 senjata
 - 89 senjata baru (total 100): alat bengkel & motor, alat olahraga, alat sekolah, dapur & warung, bangunan, lemparan, jajanan gerobak, ruyung & toya, dan senjata tajam (khusus level 52+).
 - Tiap senjata punya bentuk 3D sendiri dan ciri main: ringan/cepat, berat/mental jauh, jangkauan panjang, cambuk, lempar, lempar berat.
