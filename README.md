@@ -4,6 +4,12 @@ Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi
 
 Main di: https://belpulang.netlify.app atau https://belpulang.win
 
+## v2.7 — Mode cerita
+- Komik singkat (cutscene) sebelum setiap level di single player, nyambung dari Prolog (sejarah SMEA 70 vs SMEA 6, 700 meter, final Bulungan Cup 1989) sampai Level 99 dan Epilog.
+- Tiap level menceritakan kenapa sekolah lawan menyerang: ospek jalanan, adu domba, rebutan wilayah halte & parkir, rebutan pacar, ricuh turnamen, fitnah media sosial, bandar taruhan, alumni & preman, sampai terbongkarnya Raja Bulungan.
+- Panel komik dengan potret 3D tokoh, kotak narasi, dan balon dialog. Bisa LEWATI, dibaca ulang dari menu Pause, dan dimatikan di Settings → CERITA.
+- Cerita fiksi (ada keterangan di prolog).
+
 ## v2.6.1 — Ekspansi Perk untuk 99 Level (18 Perk, 121 Level Upgrade)
 - Batas maksimal 11 perk lama dinaikkan agar cukup sampai Level 99 (**Badan Badak**, **Tangan Besi**, **Solidaritas**, **Latihan Bareng** sampai Lv 10; **Kaki Kuda**, **Langkah Seribu**, **Semangat Juang**, **Napas Panjang** sampai Lv 8; **Tangan Awet** & **Kulit Tebal** sampai Lv 5; **Bawaan Tas** sampai Lv 3).
 - Ditambah **7 perk baru** sehingga pilihan selalu bervariasi di setiap level:

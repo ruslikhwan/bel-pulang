@@ -506,6 +506,27 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
 .hl-side{flex:1;min-width:0}
 #hlLbl{font-family:var(--display);font-size:12px;letter-spacing:.12em;margin:4px 0;color:#ffcf7a}
 .hl-row{display:flex;flex-direction:column;gap:6px}.hl-row .cta{margin:0;padding:8px 10px;font-size:14px}
+
+#comicOv{z-index:60;background:rgba(8,7,10,.92)!important;padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+#comicOv .comic{width:min(1040px,100%);height:calc(var(--vh,100vh) - 20px);max-height:100%;display:flex;flex-direction:column;gap:8px;margin:auto}
+.comic-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#comicTitle{font-family:var(--display);font-weight:700;letter-spacing:.12em;font-size:clamp(12px,2.2vw,16px);color:#f3e9d2;background:#c43426;padding:5px 12px;clip-path:polygon(0 0,100% 6%,98% 100%,2% 94%)}
+#comicSkip{font-family:var(--display);font-size:12px;letter-spacing:.1em;background:transparent;color:#efe9dc;border:1px solid rgba(239,233,220,.4);padding:5px 10px}
+#comicPage{flex:1;min-height:0;display:flex;gap:10px;background:#f1ead8;padding:10px;border:3px solid #111;box-shadow:6px 6px 0 rgba(0,0,0,.6)}
+.cpanel{flex:1;min-width:0;position:relative;border:3px solid #111;overflow:hidden;opacity:0;transform:scale(.92) rotate(-1deg);transition:opacity .25s,transform .25s;
+  background:radial-gradient(circle,rgba(0,0,0,.16) 1.2px,transparent 1.4px) 0 0/7px 7px,linear-gradient(160deg,#ffd27a,#f08a4b)}
+.cpanel.c1{background:radial-gradient(circle,rgba(0,0,0,.16) 1.2px,transparent 1.4px) 0 0/7px 7px,linear-gradient(160deg,#9fd0f2,#4a7fc0)}
+.cpanel.c2{background:radial-gradient(circle,rgba(0,0,0,.16) 1.2px,transparent 1.4px) 0 0/7px 7px,linear-gradient(160deg,#f4a3a3,#c43426)}
+.cpanel.narr{background:radial-gradient(circle,rgba(255,255,255,.08) 1.2px,transparent 1.4px) 0 0/7px 7px,linear-gradient(160deg,#2b2a30,#111014)}
+.cpanel.in{opacity:1;transform:none}
+.cpanel img{position:absolute;left:50%;bottom:-4%;height:78%;transform:translateX(-50%);image-rendering:auto;filter:contrast(1.08) saturate(1.05) drop-shadow(3px 3px 0 rgba(0,0,0,.35))}
+.cpanel .bub{position:absolute;left:6%;right:6%;top:6%;background:#fff;color:#111;border:2.5px solid #111;border-radius:16px;padding:7px 10px 8px;font-size:clamp(11px,1.7vw,15px);line-height:1.3;box-shadow:3px 3px 0 rgba(0,0,0,.4)}
+.cpanel .bub:after{content:'';position:absolute;left:42%;bottom:-13px;border:7px solid transparent;border-top:9px solid #111}
+.cpanel .bub b{display:block;font-family:var(--display);font-size:.78em;letter-spacing:.1em;color:#c43426;margin-bottom:2px}
+.cpanel .cap{position:absolute;left:7%;right:7%;top:50%;transform:translateY(-50%);background:#ffe27a;color:#111;border:2.5px solid #111;padding:10px 12px;font-family:'Special Elite',var(--display),serif;font-size:clamp(11px,1.7vw,15px);line-height:1.4;box-shadow:4px 4px 0 rgba(0,0,0,.5)}
+.comic-bot{display:flex;justify-content:flex-end;flex:0 0 auto}#comicNext{margin:0!important;width:auto!important;min-width:170px;padding:8px 18px!important;font-size:15px!important}
+body:has(#comicOv:not([hidden])) #scrTag,body:has(#comicOv:not([hidden])) #grunge{display:none!important}
+@media (max-height:420px){#comicPage{padding:6px;gap:6px}.cpanel .bub{padding:5px 8px;font-size:11px}.cpanel .cap{font-size:11px;padding:7px 9px}.comic-bot .cta{padding:7px 12px}}
 </style>
 
 <div id="game"></div>
@@ -567,7 +588,7 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
     <button type="button" class="mm-btn" id="mmCodex">BUKU SENJATA<small id="mmCodexSub">Catatan 100 senjata tawuran</small></button>
     <button type="button" class="mm-btn" id="mmSettings">SETTINGS<small>Avatar &amp; mikrofon</small></button>
     <p class="hint" id="iosHint" hidden><b>Biar layar penuh di iPhone:</b> ketuk tombol Share di Safari, pilih <b>Add to Home Screen</b>, lalu buka game dari ikon Bel Pulang di layar utama.</p>
-    <p class="mm-foot">v2.6 · Sporadis Games</p>
+    <p class="mm-foot">v2.7 · Sporadis Games</p>
   </div>
   <div hidden><button class="cta" id="startBtn">MAIN LEVEL 1</button><button class="cta" id="onlineBtn">ONLINE</button><button class="cta alt" id="resetBtn" hidden>ULANG</button></div>
 </div>
@@ -678,6 +699,7 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
       <button type="button" class="sm-opt hot" id="setAvatar">SET AVATAR<small id="setAvatarSub">Atur kulit, badan, baju, topi, dan kacamata</small></button>
       <button type="button" class="sm-opt" id="setMic">MIKROFON<small id="setMicSub">Izin mikrofon, tes suara, dan voice chat</small></button>
       <button type="button" class="sm-opt" id="setCam">KAMERA: <span id="setCamV">ATAS</span><small>Atas = lihat keramaian · Belakang = dari punggung karakter, geser layar untuk memutar</small></button>
+      <button type="button" class="sm-opt" id="setStory">CERITA: <span id="setStoryV">NYALA</span><small>Komik singkat sebelum tiap level (single player)</small></button>
       <button type="button" class="sm-opt" id="setMus">MUSIK: <span id="setMusV">NYALA</span><small>Ska/punk waktu tawuran, lebih tegang waktu malam</small></button>
       <button type="button" class="sm-opt" id="setHap">GETAR: <span id="setHapV">NYALA</span><small>HP bergetar waktu kena pukul atau ditabrak mobil</small></button>
       <button type="button" class="sm-opt" id="setHl">REKAM HIGHLIGHT: <span id="setHlV">NYALA</span><small id="setHlSub">Rekam otomatis KO terbaik tiap level, bisa dibagikan ke TikTok/IG</small></button>
@@ -883,6 +905,14 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
   </div>
 </div>
 
+<div class="ov" id="comicOv" hidden>
+  <div class="comic">
+    <div class="comic-top"><span id="comicTitle">LEVEL 1</span><button type="button" id="comicSkip">LEWATI ✕</button></div>
+    <div id="comicPage"></div>
+    <div class="comic-bot"><button type="button" class="cta" id="comicNext">LANJUT ▸</button></div>
+  </div>
+</div>
+
 <div class="ov" id="pauseOv" hidden>
   <div class="card">
     <p class="kicker" id="pauseKick">LEVEL 1</p>
@@ -894,6 +924,7 @@ body:has(.ov:not([hidden])) #scrTag{display:block}
     <button class="cta alt" id="pauseCamBtn">KAMERA: ATAS</button>
     <button class="cta alt" id="pauseMusBtn">MUSIK: NYALA</button>
     <button class="cta alt" id="pauseCodexBtn">BUKU SENJATA</button>
+    <button class="cta alt" id="pauseStoryBtn">BACA CERITA LEVEL INI</button>
     <button class="cta alt" id="menuBtn">KE MENU</button>
   </div>
 </div>
@@ -4667,6 +4698,220 @@ async function hlShare(){
 }
 function hlSave(){if(!HL.best)return;const ext=HL.best.blob.type.includes('mp4')?'mp4':'webm';const a=document.createElement('a');a.href=HL.best.url;a.download='belpulang-highlight.'+ext;document.body.appendChild(a);a.click();a.remove();}
 
+
+/* ================= v2.7: MODE CERITA (cutscene komik) ================= */
+// tiap panel: [peran, teks]. 'N' = kotak narasi. 'musuh' = anak sekolah lawan di level itu.
+const STORY_PRO=[
+ ['N','Cerita ini fiksi. Nama sekolah, tokoh, dan kejadian hanya karangan.'],
+ ['N','SMEA 70 dan SMEA 6 cuma berjarak 700 meter. Satu halte, satu jalan, satu jam bubar sekolah.'],
+ ['N','1989. Final basket Bulungan Cup. Kapten SMEA 6 jatuh, katanya disikut anak SMEA 70. Lapangan ricuh, bendera SMEA 6 dibakar.'],
+ ['N','Sejak itu "utang" diwariskan dari angkatan ke angkatan. Lewat senior, lewat ospek, lewat cerita tongkrongan. Tidak ada yang ingat siapa yang benar.'],
+ ['senior','Lo anak baru? Di sini cuma ada satu aturan.'],
+ ['senior','Jangan pulang sendirian. Bel pulang itu bukan tanda pulang. Itu tanda perang.']
+];
+const STORY_EPI=[
+ ['N','Raja Bulungan diborgol Wito. Buku setoran, flashdisk, dan panji mahkota jadi bukti 30 tahun permusuhan yang sengaja dipelihara.'],
+ ['dodi','Panji ini... gue kira udah dibakar. Makasih udah balikin.'],
+ ['osis6','Mulai besok, bel pulang kita bunyinya bareng. Jalannya juga bareng.'],
+ ['conge','700 meter doang ternyata. Dari dulu deket, cuma kita aja yang jauh.'],
+ ['N','Bel berbunyi. Untuk pertama kalinya anak SMEA 70 dan SMEA 6 berjalan bersama ke Halte Bulungan. TAMAT.']
+];
+const STORY=[null,
+// Babak 1 · 700 Meter — SMEA 6
+[['N','Hari pertama. Bel pulang berbunyi.'],['musuh','Anak baru 70 ya? Sini, kita "sambut" dulu!'],['kamu','Ini ospek atau tawuran?!']],
+[['N','Video tawuran kemarin viral. 2 juta views. Wito mulai patroli.'],['wito','Sekali lagi ada ribut, saya angkut semua!'],['musuh','Balas sekarang sebelum polisi dateng!']],
+[['kepsek','Semua tas dirazia! Senjata disita!'],['musuh','Nggak ada senjata? Tangan kosong aja. Yang kalah traktir es Gondrong!'],['kamu','Gengsi doang... tapi oke.']],
+[['N','Pagi ini ada spanduk di Halte Bulungan: "WILAYAH SMEA 6".'],['musuh','Anak 70 dilarang naik 610 dari sini!'],['dimas','Halte ini punya semua orang. Tahan!']],
+[['N','Coretan merah di gerbang: "70 BANCI".'],['musuh','Malam ini papan nama sekolah lo jadi pajangan kita!'],['kamu','Tutup gerbang. Nggak ada yang masuk.']],
+// Babak 2 · Adu Domba — SMEA 82
+[['N','Conge ditemukan babak belur di gang belakang.'],['conge','Bukan anak 6... seragamnya SMEA 82. Mereka bilang dibayar.'],['kamu','Pegangan. Gue antar lo pulang.']],
+[['N','Jam bubar kantor. SMEA 82 sengaja mancing ribut di tengah penyeberangan.'],['imah','Nak, warga kejebak di tengah jalan!'],['kamu','Seberangkan mereka dulu. Nama sekolah taruhannya.']],
+[['sasa','Dimas, mantan gue ngamuk. Dia bawa anak-anak 82...'],['dimas','Gara-gara cewek, satu sekolah ikut ribut.'],['musuh','Mana yang namanya Dimas?!']],
+[['N','Warung Bu Imah hancur. Kaca, meja, gerobak.'],['imah','Dua puluh tahun saya jualan di sini...'],['wito','Siapa pun yang masih di jalan pas sirene bunyi, saya tangkap.']],
+[['N','Dia muncul dari antara motor parkir. Rompi oranye, peluit di leher.'],['jarot','Gue Bang Jarot. Lapak parkir gue sepi sejak lo bikin parkiran sendiri.'],['jarot','Gue yang bayar anak 6 dan 82. Dan gue nggak sendirian.']],
+// Babak 3 · Warisan Senior — SMEA 74
+[['N','Jarot kalah. Sebelum lari, dia keceplosan: "Gue cuma disuruh Raja."'],['musuh','Kita anak 74. Tradisi angkatan: anak baru harus dapet korban dari 70.'],['kamu','Tradisi siapa? Yang bikin aja udah pada kerja.']],
+[['N','Spanduk Bulungan Cup SMEA 70 hilang. Ada di markas SMEA 74.'],['dimas','Kita ambil panji angkatan mereka. Buat tukeran.'],['kamu','Ambil panjinya, bawa ke gerbang.']],
+[['musuh','Balikin panji kita!'],['N','Satu angkatan SMEA 74 datang ke gerbang.'],['kamu','Tahan sampai bel. Panji ini alat tawar.']],
+[['N','Akun anonim @bulungan.raja menyebar foto anak 74 yang luka. Caption: "Ulah SMEA 70."'],['kamu','Itu fitnah! Kita nggak pernah ke sana!'],['musuh','Bacot! Serbu!']],
+[['N','Metromini 640 penuh anak SMEA 74. Sewanya dibayar tunai.'],['conge','Siapa yang bayarin satu bus buat tawuran?'],['kamu','Hancurin busnya sebelum semua turun.']],
+// Babak 4 · Turnamen — SMEA 46
+[['N','Bulungan Cup digelar lagi. Conge point guard andalan SMEA 70.'],['musuh','Point guard 70 nggak boleh sampai final.'],['kamu','Conge, jalan di belakang gue.']],
+[['N','SMEA 46 kalah di semifinal. Suporternya ngamuk.'],['imah','Penonton ibu-ibu kejebak di tribun jalan!'],['kamu','Warga dulu. Baru urusan sama mereka.']],
+[['N','Ketua suporter 46 yang melempar flare ke lapangan kabur ke arah Metromini.'],['dimas','Dia tahu siapa yang bayarin semua ini!'],['kamu','Jangan sampai dia naik bus!']],
+[['ketua','Oke, oke! Busnya gratis... disewain "Raja"!'],['N','Gelombang kedua suporter datang. Bus yang sama.'],['kamu','Cegat. Jangan biarin turun.']],
+[['N','Seorang lelaki berkumis tebal turun dari mobil. Di tangannya kertas taruhan.'],['kumis','Gue Si Kumis. Taruhan gue hangus gara-gara kalian menang.'],['kumis','Duit gue harus balik. Lewat badan lo.']],
+// Babak 5 · Anak Buangan — SMEK Poernama
+[['N','Raka, anak SMEA 70 yang dikeluarkan karena tawuran tahun lalu, kini berseragam SMEK Poernama.'],['raka','Sekolah buang gue. Sekarang gue yang buang sekolah ini.'],['wito','Ada laporan lagi. Saya meluncur!']],
+[['N','Empat anak kelas 10 diikat di trotoar. Raka merekam pakai HP.'],['raka','Konten jam 5 sore. Mau ditonton satu Jakarta?'],['kamu','Bebasin mereka sebelum videonya naik!']],
+[['raka','Halte Bulungan jadi milik Poernama. Itu syarat gue diterima geng.'],['kamu','Lo dulu nunggu bus di halte ini juga, Rak.'],['raka','Itu dulu.']],
+[['N','Orang tua murid dipanggil ke sekolah. Rapat darurat di aula.'],['kepsek','Sekali lagi ada tawuran, sekolah ini bisa ditutup.'],['musuh','Pas banget, semua orang tua lagi di sini!']],
+[['N','Razia senjata se-Bulungan. Tapi ada yang menyelipkan gir ke tas anak SMEA 70.'],['wito','Siapa pun yang ketahuan bawa senjata, langsung saya angkut.'],['kamu','Jangan pegang apa-apa pas mobil polisi lewat!']],
+// Babak 6 · Anak Teknik — XTM Kafal
+[['N','Anak-anak XTM Kafal, sekolah teknik di ujung jalan, datang membawa obeng dan kunci bengkel.'],['musuh','Bulungan Cup? Turnamen anak kantoran. Spanduknya buat bengkel kita!'],['kamu','Spanduk itu punya semua sekolah.']],
+[['conge','Gue cuma bilang motor mereka jelek di story...'],['musuh','Ngomong lagi soal motor kita!'],['kamu','Ayo jalan, Ge. Gue di depan.']],
+[['N','Jagoan XTM Kafal, juara lomba las se-provinsi, menantang duel. Disiarkan live.'],['musuh','Satu lawan satu. Lo menang, Kafal nggak bakal ke Bulungan lagi.'],['kamu','Deal.']],
+[['N','Janji tinggal janji. Metromini datang lagi. Sopirnya alumni XTM Kafal.'],['conge','Mereka nggak pernah niat damai.'],['kamu','Hancurin busnya.']],
+[['gondrong','Nak... yang mimpin Kafal itu abang gue sendiri. Mas Gondrong.'],['masgon','Bengkel gue dimodalin Raja. Syaratnya cuma satu: anak-anak gue harus tetep ribut.'],['gondrong','Tolong. Sadarin abang gue.']],
+// Babak 7 · Malam Bulungan — XTM Laoed
+[['masgon','Gue salah. Raja yang bayar semua. Ketua angkatan Laoed pegang buku setorannya.'],['N','Ketua XTM Laoed lari membawa buku setoran.'],['kamu','Kejar! Buku itu buktinya!']],
+[['musuh','Tim kita dicoret dari Bulungan Cup gara-gara ricuh. Spanduk ini punya kita sekarang!'],['dimas','Dendam gara-gara dicoret panitia.'],['kamu','Ambil balik spanduknya.']],
+[['N','Praktik bengkel XTM Laoed selesai magrib. Tepat saat anak ekskul SMEA 70 pulang.'],['N','Malam pertama. Lampu jalan jadi satu-satunya teman.'],['kamu','Jangan jauh-jauh dari lampu.']],
+[['musuh','Gerbang 70 malam ini rubuh!'],['N','XTM Laoed membalas pencoretan tim mereka dengan menyerbu sekolah.'],['kamu','Tahan sampai bel.']],
+[['N','Razia besar. Kunci roda dan gir diselipkan ke tas anak SMEA 70.'],['wito','Kali ini saya periksa semua tas.'],['kamu','Buang semua senjata kalau Wito lewat!']],
+// Babak 8 · Daftar Pelanggan — XTM Budud
+[['N','XTM Budud datang tepat saat anak SD di sebelah bubar sekolah.'],['imah','Anak-anak SD masih di trotoar!'],['kamu','Seberangkan mereka dulu!']],
+[['musuh','Magang di bengkel dealer itu jatah anak teknik! Anak SMEA ngapain ikut?'],['N','XTM Budud memblokir halte.'],['kamu','Rebutan magang kok sampai blokir halte.']],
+[['N','Ada panji hitam bergambar mahkota di markas XTM Budud.'],['dimas','Mahkota... Raja. Mereka juga cuma dibayar.'],['kamu','Rebut panji itu. Buat bukti ke Wito.']],
+[['N','Batu melayang dari seberang. Conge kena saat menonton dari trotoar.'],['conge','Gue nggak apa-apa... cuma pusing.'],['kamu','Antar dia ke dalam sekolah.']],
+[['N','Seorang lelaki botak dengan baju praktik bengkel lusuh keluar dari bus.'],['botak','Gue Si Botak. Dulu guru praktik, sekarang pegang daftar sekolah "pelanggan" Raja.'],['botak','Mau tahu rahasia? Senior lo sendiri ikut.']],
+// Babak 9 · Pengkhianatan — XTM Chapptoenn
+[['N','Pagi ini senjata menumpuk di sekitar halte. Sebagian buatan bengkel, sebagian dari gudang alumni.'],['conge','Siapa yang naruh semua ini?'],['musuh','Ambil semua! Habisi anak 70!']],
+[['N','Malam, hujan deras. XTM Chapptoenn menyerang saat semua lampu basah.'],['kamu','Jalan licin. Hati-hati, jangan sampai kepeleset ke jalan.'],['musuh','Serbu!']],
+[['musuh','Gudang senjata itu punya anak 70! Ngaku!'],['kamu','Kita buktiin. Gue lawan lo tanpa senjata.'],['N','Tangan kosong. Tanpa satu pun senjata di jalan.']],
+[['N','Foto Dimas bersama Si Botak beredar di grup kelas.'],['dimas','Itu bukan seperti yang kalian kira...'],['musuh','Anak 70 lagi pecah! Sekarang!']],
+[['dimas','Gue disuruh Bang Rendra, alumni kita. Ketua Chapptoenn pegang flashdisk rekaman transaksinya.'],['N','Ketua XTM Chapptoenn kabur ke Metromini.'],['kamu','Flashdisk itu harus kita dapat!']],
+// Babak 10 · Arek-Arek — Preman
+[['N','Preman pendatang menguasai lapak-lapak Bulungan. Mereka menyebut diri Arek-Arek.'],['musuh','Spanduk turnamen? Mulai sekarang jadi spanduk lapak kita.'],['kamu','Bulungan bukan punya preman.']],
+[['N','Empat anak yang memergoki gudang senjata disandera Arek-Arek.'],['musuh','Yang ngintip gudang, nggak pulang!'],['kamu','Bebasin mereka. Sekarang.']],
+[['wito','Saya sudah lihat isi flashdisk. Saya percaya kamu.'],['wito','Tapi tahan dulu. Bantuan baru datang.'],['musuh','Polisi belum dateng! Habisi sebelum sirene!']],
+[['N','Arek-Arek memakai razia untuk menjebak. Senjata disebar di depan mobil patroli.'],['kamu','Jangan sentuh apa pun saat Wito lewat.'],['musuh','Biar anak 70 yang ketangkep!']],
+[['N','Dia datang memakai jaket almamater SMEA 70 angkatan 2009.'],['rendra','Gue Rendra. Legenda sekolah lo. Tradisi ini yang bikin nama 70 besar.'],['rendra','Seragam, senjata, konten viral. Semua laku karena kalian ribut.']],
+// Babak 11 · Kebenaran 1989 — SMEA 6 Angkatan Tua
+[['N','Rendra ditangkap. Kata terakhirnya: "Raja nggak bakal diam." Para alumni dari semua sekolah mulai turun.'],['dodi','Gue Dodi. Kapten SMEA 6 tahun 1989. Duel sama gue.'],['kamu','Bapak... yang dulu disikut itu?']],
+[['dodi','Gue nggak disikut. Gue kepeleset. Yang ngarang cerita itu senior kalian, Harun.'],['N','Alumni SMEA 6 tidak terima pengakuan Pak Dodi. Senjata tajam mulai muncul.'],['kamu','Lindungi warga. Ini sudah bukan tawuran anak sekolah.']],
+[['N','Alumni menyelipkan senjata tajam ke tas anak-anak muda.'],['wito','Senjata tajam? Ini sudah pidana.'],['kamu','Buang semua sebelum Wito lewat!']],
+[['N','Di gudang alumni SMEA 6 tersimpan panji tahun 1989. Simbol dendam 30 tahun.'],['dodi','Ambil panji itu. Kembalikan dengan cara yang benar.'],['kamu','Bukan buat dipamerkan. Buat diselesaikan.']],
+[['osis6','Gue ketua OSIS SMEA 6. Kami nggak mau diwarisi dendam lagi.'],['N','Alumni SMEA 6 menyerbu halte. Anak SMEA 6 sekarang berdiri di sampingmu.'],['kamu','Tahan halte. Bareng-bareng.']],
+// Babak 12 · Bang Codet — SMEA 82 Angkatan Tua
+[['N','Alumni SMEA 82 datang naik Metromini. Sewanya dibayar Raja.'],['musuh','Anak 6 sama 70 temenan? Nggak boleh!'],['kamu','Cegat bus itu.']],
+[['N','Conge, sekarang kelas 11, jadi saksi kunci di kepolisian.'],['conge','Mereka ngincer gue gara-gara mau bersaksi.'],['kamu','Lo bakal sampai. Gue janji.']],
+[['N','Malam. Alumni SMEA 82 mengincar anak ekskul yang pulang telat.'],['osis6','Anak ekskul kami juga di jalan!'],['kamu','Kumpul di bawah lampu!']],
+[['N','Gudang senjata alumni dibongkar dan isinya dihamburkan ke jalan.'],['conge','Seisi Bulungan jadi gudang senjata!'],['kamu','Ambil yang bisa dipakai. Jangan sampai mereka duluan.']],
+[['N','Bekas luka panjang melintang di pipinya.'],['codet','Gue Codet. Tangan kanan Jarot. Semua setoran parkir lewat gue.'],['codet','Lo ganggu duit banyak orang, bocah.']],
+// Babak 13 · Bulungan Cup Damai — SMEA 74 Angkatan Tua
+[['osis6','OSIS 70 dan 6 bikin Bulungan Cup Damai. Semua sekolah diundang.'],['musuh','Damai? Tradisi pembuktian belum selesai! Tangan kosong!'],['kamu','Kalau itu yang lo mau. Tanpa senjata.']],
+[['N','Pengumuman Bulungan Cup Damai viral. Alumni SMEA 74 marah.'],['musuh','Turnamen damai bikin kita nggak dianggap!'],['kamu','Kalian dianggap. Kalau berhenti.']],
+[['N','Kurir Raja membawa dana untuk menyabotase turnamen.'],['dodi','Dia lari ke Metromini!'],['kamu','Kejar!']],
+[['N','Spanduk BULUNGAN CUP DAMAI dipasang di trotoar.'],['musuh','Turunin spanduk itu!'],['kamu','Spanduk ini tetap berdiri.']],
+[['N','Panitia turnamen dari dua sekolah disandera di empat titik.'],['osis6','Ketua panitia kami juga di sana!'],['kamu','Bebasin semua.']],
+// Babak 14 · Si Tato — SMEA 46 Angkatan Tua
+[['N','Alumni SMEA 46 menyerbu sekolah saat rapat panitia.'],['kepsek','Kunci gerbang! Rapat jalan terus!'],['kamu','Tahan sampai rapat selesai.']],
+[['N','Laporan palsu masuk ke polisi: "SMEA 70 simpan senjata."'],['wito','Saya harus periksa. Maaf.'],['kamu','Jangan pegang senjata apa pun saat patroli lewat.']],
+[['N','Pasar sore jadi sasaran. Supaya warga benci anak sekolah.'],['imah','Pedagang pasar kejebak!'],['kamu','Selamatkan warga dulu.']],
+[['N','Mantan juara silat, jagoan alumni SMEA 46.'],['musuh','Satu lawan satu. Biar warga lihat siapa jagoan Bulungan.'],['kamu','Ayo.']],
+[['N','Tato naga melingkar dari leher sampai tangan.'],['tato','Gue Si Tato. Gurunya Si Kumis. Gue udah megang taruhan sejak lo belum lahir.'],['tato','Turnamen damai? Nggak ada yang taruhan di turnamen damai.']],
+// Babak 15 · Raka Pulang — SMEK Poernama Angkatan Tua
+[['N','Alumni SMEK Poernama memanfaatkan Raka untuk merebut halte.'],['raka','Mereka bilang ini balas dendam buat gue...'],['kamu','Rak, mereka cuma pakai lo.']],
+[['raka','Panji Poernama ini... dibeli pakai duit Raja. Gue lihat sendiri.'],['N','Raka mulai ragu.'],['kamu','Rebut panjinya. Biar semua lihat.']],
+[['raka','Conge. Gue... gue yang bantu kawal lo kali ini.'],['conge','Lo serius, Rak?'],['kamu','Dua orang lebih baik dari satu.']],
+[['raka','Gue tahu rute bus Raja. Lewat depan halte jam 4.'],['N','Raka membocorkan rute Metromini sewaan.'],['kamu','Cegat di sana.']],
+[['N','Alumni Poernama marah besar. Semua senjata dihamburkan.'],['raka','Gue minta maaf. Ke sekolah, ke lo, ke semua.'],['kamu','Selamat pulang, Rak.']],
+// Babak 16 · Bengkel Tua — XTM Kafal Angkatan Tua
+[['N','Alumni XTM Kafal angkatan 90-an turun dari bengkel-bengkel mereka. Malam hari.'],['masgon','Mereka angkatan gue. Gue kenal semua.'],['kamu','Jangan jauh dari lampu.']],
+[['masgon','Lo harus bisa bertarung tanpa senjata. Gue ajarin di bengkel.'],['N','Latihan selesai. Alumni Kafal datang menantang.'],['kamu','Tangan kosong. Kayak yang diajarin.']],
+[['N','XTM Kafal generasi lama menyerbu Bulungan.'],['musuh','Anak SMEA nggak boleh lebih jago dari anak teknik!'],['kamu','Bukan soal jago. Soal berhenti.']],
+[['N','Pemasok gir dan rantai untuk semua tawuran kabur.'],['masgon','Itu dia! Dia yang nyuplai senjata dari dulu!'],['kamu','Kejar!']],
+[['N','Logat Surabaya. Seragam praktik XTM Kafal tahun 1995.'],['komandan','Aku Komandan Arek. Aku yang ngumpulin anak teknik se-Jaksel buat Raja.'],['komandan','Kalian pikir tawuran itu muncul sendiri?']],
+// Babak 17 · Bukti — XTM Laoed Angkatan Tua
+[['N','Wartawan majalah sekolah yang menyimpan semua bukti disandera.'],['conge','Laptopnya juga mereka ambil!'],['kamu','Bebasin semua sandera.']],
+[['N','Spanduk Bulungan Cup Damai mau dibakar. Kali ini tim muda XTM Laoed ikut diundang main.'],['musuh','Anak Laoed main di turnamen anak SMEA? Nggak sudi!'],['kamu','Adik-adik kalian yang mau main.']],
+[['N','Polisi bayaran Raja ikut menjebak.'],['wito','Nggak semua polisi bisa dipercaya. Hati-hati.'],['kamu','Buang senjata tiap patroli lewat.']],
+[['N','Bukti siap dikirim ke Polda besok pagi. Malam ini sekolah diserbu.'],['kepsek','Server majalah sekolah di ruang guru!'],['kamu','Tahan gerbang sampai pagi.']],
+[['musuh','Flashdisk itu taruhannya. Duel.'],['N','Jagoan alumni XTM Laoed menantang.'],['kamu','Kalau gue menang, flashdisk-nya ke Wito.']],
+// Babak 18 · Bang Bewok — XTM Budud Angkatan Tua
+[['N','Final Bulungan Cup Damai. Warga menonton di pinggir jalan. XTM Budud alumni datang.'],['imah','Penonton banyak anak-anak!'],['kamu','Lindungi warga!']],
+[['N','Malam sebelum laporan resmi ke Polda.'],['wito','Besok pagi semuanya selesai. Bertahan malam ini.'],['kamu','Satu malam lagi.']],
+[['N','Panji mahkota asli milik Raja disimpan di markas XTM Budud.'],['dodi','Itu panji pertama. Sejak 1989.'],['kamu','Bukti terakhir.']],
+[['N','Conge harus diantar ke kantor polisi untuk bersaksi.'],['conge','Kalau gue nggak sampai, semuanya sia-sia.'],['kamu','Lo sampai. Gue yang jamin.']],
+[['N','Jenggot lebat, badan sebesar pintu.'],['bewok','Gue Bewok. Pengawal pribadi Raja.'],['bewok','Raja nggak pernah kalah. Lo bakal jadi yang pertama nyoba dan yang pertama nyesel.']],
+// Babak 19 · Raja Bulungan — Arek-Arek Angkatan Tua
+[['N','Raja mengosongkan semua gudang senjatanya ke jalan.'],['raja','Kalau nggak ada tawuran, Bulungan nggak ada artinya buat gue.'],['kamu','Ambil semua sebelum mereka.']],
+[['N','Listrik satu Bulungan dipadamkan. Hanya lampu jalan dan lampu mobil.'],['osis6','Anak 6 di sini! Kita bareng!'],['kamu','Ke bawah lampu!']],
+[['N','Untuk pertama kalinya, anak SMEA 70 dan SMEA 6 bertarung berdampingan.'],['osis6','Tanpa senjata. Biar mereka lihat kita beda.'],['kamu','Tangan kosong. Bareng.']],
+[['N','Serbuan terbesar Arek-Arek. Ratusan preman dari seluruh Jakarta.'],['raka','Anak Poernama di sini!'],['masgon','Anak Kafal juga!']],
+[['N','Pertahanan terakhir. Gerbang SMEA 70.'],['kepsek','Gerbang ini pernah dicoret, pernah mau dijebol. Hari ini dia bertahan.'],['kamu','Tahan!']],
+[['N','Spanduk "BEL PULANG DAMAI" dikibarkan di trotoar.'],['musuh','Turunin!'],['osis6','Spanduk ini punya semua sekolah.']],
+[['N','Raja menyandera ketua OSIS kedua sekolah.'],['raja','Mau damai? Tebus pakai nyawa.'],['kamu','Bebasin mereka.']],
+[['wito','Surat penangkapan sudah keluar. Saya sedang ke sana!'],['N','Bertahan sampai Wito datang. Lalu masuk ke gerbang.'],['kamu','Sebentar lagi.']],
+[['N','Jas hitam, kacamata gelap, pin alumni SMEA 70 tahun 1989.'],['raja','Gue Harun. Gue yang bikin cerita sikutan itu. Dan dari cerita itu gue hidup 30 tahun.'],['raja','Parkir, lapak, taruhan, senjata, konten. Semua dari kebencian kalian. Kalian mau ambil itu dari gue?']]
+];
+// wajah tiap peran (dipakai untuk potret di panel)
+const ROLE_NAME={kamu:'KAMU',conge:'CONGE',dimas:'DIMAS',senior:'SENIOR',wito:'WITO',gondrong:'BANG GONDRONG',masgon:'MAS GONDRONG',imah:'BU IMAH',sasa:'SASA',raka:'RAKA',
+  jarot:'BANG JAROT',kumis:'SI KUMIS',botak:'SI BOTAK',rendra:'BANG RENDRA',dodi:'PAK DODI',codet:'BANG CODET',tato:'SI TATO',komandan:'KOMANDAN AREK',bewok:'BANG BEWOK',raja:'RAJA BULUNGAN',
+  osis6:'KETUA OSIS SMEA 6',kepsek:'KEPALA SEKOLAH',ketua:'KETUA SUPORTER',musuh:''};
+function roleLook(r,L){
+  const fi=foeIdx(L||level),F=FOES[fi];const smea=o=>Object.assign({skin:0xc68e62,shirt:0xeeeaf6,pants:0x5d6a7e,hair:0x15110d,uni:'smea',hairStyle:'short'},o);
+  switch(r){
+    case 'kamu':{const a=getMyAp();return a?Object.assign({isCustom:true,uni:'smea',shirt:0xeeeaf6,pants:0x5d6a7e},a):smea({band:0xd7263d});}
+    case 'conge':return smea({skin:0xb07a52,hairStyle:'buzz',bandage:L>=6});
+    case 'dimas':return smea({skin:0xd9a47a,hairStyle:'pompadour'});
+    case 'senior':return smea({skin:0xa8714a,hairStyle:'undercut',mus:true});
+    case 'raka':return L>=21&&L<76?{skin:0xc68e62,shirt:0xf3efe4,pants:0x5a2a2a,hair:0x15110d,uni:'smea',hairStyle:'mohawk',band:0x111114}:smea({hairStyle:'mohawk'});
+    case 'osis6':return {skin:0xd9a47a,shirt:0xeeeaf6,pants:0x2b2f36,hair:0x15110d,uni:'smea',hairStyle:'slick',band:0x2e8b57};
+    case 'wito':return {skin:0x9c6b45,shirt:0x6b5a3a,pants:0x3a3226,hair:0x15110d,uni:'none',hairStyle:'cepak',mus:true};
+    case 'gondrong':return {skin:0xa8714a,shirt:0x2f8f4f,pants:0x34495e,hair:0x15110d,uni:'none',hairStyle:'long',mus:true};
+    case 'masgon':return {skin:0xa8714a,shirt:0x2a2a2e,pants:0x1f2a55,hair:0x15110d,uni:'none',hairStyle:'long',mus:true,band:0xd7263d};
+    case 'imah':return {skin:0xc68e62,shirt:0xc0587e,pants:0x33302c,hair:0x15110d,uni:'none',hijab:0xf2e6d8,skirt:true};
+    case 'sasa':return {skin:0xe0b08a,shirt:0xeeeaf6,pants:0x7a6748,hair:0x15110d,uni:'none',hijab:0xf2f2f2,skirt:true};
+    case 'kepsek':return {skin:0xb07a52,shirt:0xdfe8f2,pants:0x2a2d34,hair:0x5a5a5a,uni:'none',hairStyle:'slick',tie:0x7a1f2b,glasses:'classic',mus:true};
+    case 'dodi':return {skin:0xa8714a,shirt:0xe9e2d0,pants:0x3b3f47,hair:0x8a8a8a,uni:'none',hairStyle:'short',glasses:'classic',mus:true};
+    case 'raja':return {skin:0xc68e62,shirt:0x1d1d1f,pants:0x1d1d1f,hair:0x9a9a9a,uni:'none',hairStyle:'slick',glasses:'sun',mus:true,tie:0xc9a43a};
+    case 'jarot':return {skin:0x9c6b45,shirt:0xf26a1b,pants:0x34495e,hair:0x15110d,uni:'none',hairStyle:'cepak',mus:true};
+    case 'kumis':return {skin:0xb07a52,shirt:0x7a2a3a,pants:0x2a2d34,hair:0x15110d,uni:'none',hairStyle:'slick',mus:true};
+    case 'botak':return {skin:0xa8714a,shirt:0x4a5a6a,pants:0x2a2d34,hair:0xa8714a,uni:'none',hairStyle:'buzz'};
+    case 'rendra':return {skin:0xc68e62,shirt:0x1d1d1f,pants:0x5d6a7e,hair:0x15110d,uni:'smea',hairStyle:'quiff',vest:0x1d1d1f,glasses:'sun'};
+    case 'codet':case 'tato':case 'bewok':case 'komandan':{const b=foeLook(fi);b.vest=0x1d1d1f;b.band=0xffd23f;b.mus=true;if(r==='bewok')b.hairStyle='curly';if(r==='tato')b.hairStyle='buzz';return b;}
+    case 'ketua':{const b=foeLook(fi);b.vest=0x1d1d1f;b.band=0xffd23f;return b;}
+    default:return foeLook(fi);
+  }
+}
+let portR=null,portS=null,portC=null;const portCache={};
+function portrait(r,L){
+  const look=roleLook(r,L);const key=r+'|'+lookKey(look);if(portCache[key])return portCache[key];
+  try{
+    if(!portR){portR=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});portR.setSize(256,256);portR.setPixelRatio(1);portR.outputEncoding=renderer.outputEncoding;
+      portS=new THREE.Scene();portS.add(new THREE.HemisphereLight(0xffffff,0x6a5a4a,1.0));const d=new THREE.DirectionalLight(0xffffff,0.9);d.position.set(2,4,5);portS.add(d);
+      portC=new THREE.PerspectiveCamera(26,1,0.1,50);portC.position.set(0.35,1.62,3.1);portC.lookAt(0,1.42,0);}
+    const ch=makeChar(look);ch.group.rotation.y=0.32;if(r==='raja'||r==='kumis'||r==='rendra')ch.setFace&&ch.setFace(0);
+    if(['jarot','kumis','botak','codet','tato','bewok','komandan','musuh','ketua','raka'].includes(r)&&ch.setFace)ch.setFace(1);
+    portS.add(ch.group);portR.render(portS,portC);const url=portR.domElement.toDataURL('image/png');portS.remove(ch.group);
+    return portCache[key]=url;
+  }catch(e){return '';}
+}
+const STORY_KEY='belpulang-story';let storyOn=true;try{storyOn=localStorage.getItem(STORY_KEY)!=='0';}catch(e){}
+let storySeen={};try{storySeen=JSON.parse(localStorage.getItem('belpulang-story-seen')||'{}')||{};}catch(e){}
+let storyShownThisRun=-1;
+function comicShow(title,panels,L,done){
+  const ov=$('#comicOv'),pg=$('#comicPage');pg.innerHTML='';$('#comicTitle').textContent=title;
+  const per=3,pages=[];for(let i=0;i<panels.length;i+=per)pages.push(panels.slice(i,i+per));
+  let pi=0,shown=0;
+  const render=()=>{pg.innerHTML='';shown=0;
+    pages[pi].forEach(([r,t],i)=>{const d=document.createElement('div');d.className='cpanel'+(r==='N'?' narr':'')+' c'+(i%3);
+      if(r==='N'){d.innerHTML='<div class="cap"></div>';d.querySelector('.cap').textContent=t;}
+      else{const img=portrait(r,L);const nm=ROLE_NAME[r]!=null?(ROLE_NAME[r]||foeNowName(L)):r.toUpperCase();
+        d.innerHTML='<img alt=""><div class="bub"><b></b><span></span></div>';if(img)d.querySelector('img').src=img;else d.querySelector('img').remove();d.querySelector('b').textContent=nm;d.querySelector('span').textContent=t;}
+      pg.appendChild(d);});
+    step();};
+  const step=()=>{const ps=[...pg.querySelectorAll('.cpanel')];ps.forEach((p,i)=>setTimeout(()=>{p.classList.add('in');if(i===0||i===ps.length-1)sfx('pick');},80+i*650));shown=ps.length;pg.dataset.t=Date.now();
+    $('#comicNext').textContent=pi<pages.length-1?'LANJUT ▸':'MULAI ▸';};
+  const next=()=>{const ps=[...pg.querySelectorAll('.cpanel')];if(ps.some(p=>!p.classList.contains('in'))){ps.forEach(p=>p.classList.add('in'));return;}if(pi<pages.length-1){pi++;render();}else finish();};
+  const finish=()=>{ov.hidden=true;$('#comicNext').onclick=null;$('#comicSkip').onclick=null;pg.onclick=null;done&&done();};
+  $('#comicNext').onclick=next;pg.onclick=next;$('#comicSkip').onclick=finish;
+  ov.hidden=false;render();
+}
+function foeNowName(L){return FOES[foeIdx(L||level)].n.toUpperCase();}
+function storyBeforeLevel(L,go){
+  if(!storyOn||net||window.__noStory||storyShownThisRun===L){go();return;}
+  storyShownThisRun=L;
+  const c=levelCfg(L),mt=c.boss?'BOS '+c.boss:MIS[c.mission].t;
+  const show=()=>{const P=STORY[L];if(!P){go();return;}
+    comicShow('LEVEL '+L+' · '+mt+' · VS '+foeNowName(L),P,L,()=>{storySeen[L]=1;try{localStorage.setItem('belpulang-story-seen',JSON.stringify(storySeen));}catch(e){}go();});};
+  if(L===1&&!storySeen.pro){comicShow('BEL PULANG · PROLOG',STORY_PRO,1,()=>{storySeen.pro=1;show();});}
+  else show();
+}
+function storyEpilog(done){if(!storyOn||net||window.__noStory){done();return;}comicShow('EPILOG · BEL PULANG DAMAI',STORY_EPI,99,done);}
+
 /* ================= HUD ================= */
 const $stFill=$('#stFill'),$stBar=$('#stBar'),$hpFill=$('#hpFill'),$hpTxt=$('#hpTxt'),$wTxt=$('#wTxt'),$usN=$('#usN'),$themN=$('#themN'),$usBar=$('#usBar'),$themBar=$('#themBar'),$combo=$('#combo'),$atk=$('#atkBtn'),$swap=$('#swapBtn'),$edge=$('#edge'),$misT=$('#misT'),$misV=$('#misV'),$misA=$('#misA'),$misB=$('#misB'),$misBarW=$('#misBarW'),$misP=$('#misPanel'),$lv=$('#lvTxt');
 let lastHud='';
@@ -4794,7 +5039,8 @@ function clearAll(){
   clearPeds();pedT=3;drvT=rand(15,25);
   missionCleanup();clearSmokes();
 }
-function startLevel(){
+function startLevel(){storyBeforeLevel(level,startLevelNow);}
+function startLevelNow(){
   attractOn=false;hideSubs();$('#mmProf').hidden=true;
   tryLandscape();
   initAudio();if(actx&&actx.state==='suspended')actx.resume();
@@ -4836,8 +5082,8 @@ function endGame(win,msg){
     if(level>=MAXLV){
       level=1;perks={};writeSave();
       $('#endKick').textContent='LEVEL '+MAXLV+' BERES';$('#endTitle').textContent='TAMAT!';
-      $('#endMsg').textContent=msg+' Kamu menaklukkan semua '+MAXLV+' level. SMEA 70 jadi penguasa jalan depan Halte Bulungan.';
-      $('#againBtn').textContent='MAIN LAGI DARI LEVEL 1';fillStats();$('#endOv').hidden=false;return;
+      $('#endMsg').textContent=msg+' Kamu menaklukkan semua '+MAXLV+' level. Raja Bulungan tertangkap, dan bel pulang di Bulungan kini berbunyi damai.';
+      $('#againBtn').textContent='MAIN LAGI DARI LEVEL 1';fillStats();storyEpilog(()=>{$('#endOv').hidden=false;hlShow();});return;
     }
     const done=level;level++;writeSave();
     $('#perkKick').textContent='LEVEL '+done+' BERES · LANJUT KE LEVEL '+level;$('#perkMsg').textContent=msg+' Poin kamu '+(myKO-myInno)+' (KO '+myKO+(myInno?', warga −'+myInno:'')+').';
@@ -5801,9 +6047,11 @@ $('#mmSettings').addEventListener('click',()=>{initAudio();openSettings();});
 $('#mmCodex').addEventListener('click',()=>{initAudio();openCodex('menu');});
 $('#pauseCodexBtn').addEventListener('click',()=>openCodex('pause'));
 $('#cxBack').addEventListener('click',()=>{$('#codexOv').hidden=true;if(codexFrom==='pause'&&mode==='paused')$('#pauseOv').hidden=false;else openMain();});
-function feelUi(){$('#setMusV').textContent=musOn?'NYALA':'MATI';$('#pauseMusBtn').textContent='MUSIK: '+(musOn?'NYALA':'MATI');$('#setHapV').textContent=hapOn?'NYALA':'MATI';
+function feelUi(){$('#setStoryV').textContent=storyOn?'NYALA':'MATI';$('#setMusV').textContent=musOn?'NYALA':'MATI';$('#pauseMusBtn').textContent='MUSIK: '+(musOn?'NYALA':'MATI');$('#setHapV').textContent=hapOn?'NYALA':'MATI';
   $('#setHlV').textContent=!HL.ok?'TIDAK DIDUKUNG':hlOn?'NYALA':'MATI';if(!HL.ok)$('#setHlSub').textContent='Browser ini belum bisa merekam layar game';
   const c=$('#mmCodexSub');if(c)c.textContent='Catatan '+codex.size+' dari '+WKEYS.length+' senjata terbuka';}
+$('#setStory').addEventListener('click',()=>{storyOn=!storyOn;try{localStorage.setItem(STORY_KEY,storyOn?'1':'0');}catch(e){}feelUi();});
+$('#pauseStoryBtn').addEventListener('click',()=>{const P=STORY[level];if(!P||net)return;$('#pauseOv').hidden=true;comicShow('LEVEL '+level+' · CERITA',P,level,()=>{$('#pauseOv').hidden=false;});});
 const togMus=()=>{musOn=!musOn;try{localStorage.setItem(MUS_KEY,musOn?'1':'0');}catch(e){}initAudio();musChk=0;feelUi();};
 $('#setMus').addEventListener('click',togMus);$('#pauseMusBtn').addEventListener('click',togMus);
 $('#setHap').addEventListener('click',()=>{hapOn=!hapOn;try{localStorage.setItem(HAP_KEY,hapOn?'1':'0');}catch(e){}feelUi();if(hapOn)buzz('ko');});
