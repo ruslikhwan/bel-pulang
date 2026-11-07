@@ -4,6 +4,35 @@ Semua pembaruan penting, fitur baru, dan perbaikan bug didokumentasikan di sini.
 
 ---
 
+## [v2.6.1] - 2026-11-08
+
+### Ekspansi Sistem Perk untuk 99 Level (18 Perk & 121 Total Level Upgrade)
+- **Batas Maksimal 11 Perk Lama Dinaikkan**:
+  - **Badan Badak** (
+yawa): Maksimal Lv 5 -> **Lv 10** (+20 HP/level)
+  - **Tangan Besi** (	inju): Maksimal Lv 5 -> **Lv 10** (+15% damage/level)
+  - **Kaki Kuda** (	endang): Maksimal Lv 4 -> **Lv 8** (+25% damage & +15% mental Tendangan & Jurus)
+  - **Langkah Seribu** (kaki): Maksimal Lv 4 -> **Lv 8** (+10% kecepatan lari/level)
+  - **Tangan Awet** (wet): Maksimal Lv 2 -> **Lv 5** (+16% peluang senjata tidak berkurang/level)
+  - **Bawaan Tas** (mulai): Maksimal Lv 1 -> **Lv 3** (Makin tinggi, senjata awal makin mematikan & +2 durabilitas/level)
+  - **Solidaritas** (pasukan): Maksimal Lv 5 -> **Lv 10** (+6 pasukan SMEA 70/level)
+  - **Latihan Bareng** (	eman): Maksimal Lv 5 -> **Lv 10** (+15% HP & damage teman/level)
+  - **Semangat Juang** (semangat): Maksimal Lv 4 -> **Lv 8** (Pulih +5 HP tiap KO musuh/level)
+  - **Kulit Tebal** (kebal): Maksimal Lv 3 -> **Lv 5** (-18% damage tabrakan kendaraan/level)
+  - **Napas Panjang** (
+apas): Maksimal Lv 4 -> **Lv 8** (+20 stamina & +15% pemulihan/level)
+- **7 Perk Baru**:
+  - **Jaket Tebal** (jaket, Maks Lv 6): Mengurangi damage serangan musuh -10%/level & tahan terpental (-11% knockback/level).
+  - **Pukulan Telak** (krit, Maks Lv 6): Peluang +10%/level serangan kritikal (TELAK!) dengan 1.8x damage & mental lebih jauh.
+  - **Gerak Licin** (lincah, Maks Lv 5): Hindar (*dodge*) 15% lebih hemat stamina, jeda *cooldown* lebih singkat, dan durasi kebal (*i-frame*) lebih lama.
+  - **Tangan Panjang** (jangkauan, Maks Lv 5): Jangkauan serangan & radius ambil senjata +12%/level.
+  - **Kantong Tebal** (kantong, Maks Lv 5): Setiap mengambil senjata di jalan dapat ekstra +2 pakai/lemparan per level.
+  - **Darah Muda** (darah, Maks Lv 6): Regenerasi nyawa otomatis +1.5 HP/detik per level selama bertarung.
+  - **Jurus Kilat** (jurus, Maks Lv 3): Jurus Pamungkas aktif cukup dengan 2 pukulan beruntun, waktu siap lebih lama (+0.4 detik/level), dan damage jurus +30%/level.
+- **Indikator Progres Kartu Perk**: Kartu pilihan perk kini menampilkan level tujuan dan batas maksimalnya (mis. Level 3/10 (punya 2x) atau Baru · Maks 6x).
+
+---
+
 ## [v2.2.2] - 2026-11-07
 
 ### Sinkronisasi Progres Cloud Dua Arah (Auto Pull & Anti-Downgrade)

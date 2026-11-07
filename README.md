@@ -4,6 +4,17 @@ Game 3D tawuran sekolah di jalan depan gerbang SMEA 70 dan Halte Bulungan (fiksi
 
 Main di: https://belpulang.netlify.app atau https://belpulang.win
 
+## v2.6.1 — Ekspansi Perk untuk 99 Level (18 Perk, 121 Level Upgrade)
+- Batas maksimal 11 perk lama dinaikkan agar cukup sampai Level 99 (**Badan Badak**, **Tangan Besi**, **Solidaritas**, **Latihan Bareng** sampai Lv 10; **Kaki Kuda**, **Langkah Seribu**, **Semangat Juang**, **Napas Panjang** sampai Lv 8; **Tangan Awet** & **Kulit Tebal** sampai Lv 5; **Bawaan Tas** sampai Lv 3).
+- Ditambah **7 perk baru** sehingga pilihan selalu bervariasi di setiap level:
+  - **Jaket Tebal** (Maks 6): Damage pukulan/senjata musuh -10% dan tahan terpental.
+  - **Pukulan Telak** (Maks 6): Peluang +10% serangan kritikal (TELAK!, damage 1.8x & mental jauh).
+  - **Gerak Licin** (Maks 5): Hindar (*dodge*) lebih hemat stamina, jeda singkat & kebal lebih lama.
+  - **Tangan Panjang** (Maks 5): Jangkauan serangan & ambil senjata +12%.
+  - **Kantong Tebal** (Maks 5): Ambil senjata di jalan dapat ekstra +2 pakai/lemparan.
+  - **Darah Muda** (Maks 6): Nyawa pulih otomatis +1.5 HP/detik saat bertarung.
+  - **Jurus Kilat** (Maks 3): Jurus Pamungkas cukup 2 pukulan beruntun, waktu siap lebih lama & damage +30%.
+
 ## v2.6 — Buku senjata, rasa pukulan, musik, highlight, getar
 - Buku Senjata (menu utama & pause): 100 catatan dengan cerita singkat, terbuka begitu senjatanya diambil pertama kali.
 - Rasa pukulan: slow-motion saat menang/bos tumbang/jurus, debu saat terpental, layar bergetar lebih berasa.

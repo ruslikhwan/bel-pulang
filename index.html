@@ -2729,6 +2729,7 @@ function plSt(){return net?100:100+4*(level-1)+20*P('napas');}
 function plStReg(){return net?1:(1+0.01*(level-1))*(1+0.15*P('napas'));}
 function wCost(w){if(!w||w===WPN.fist)return 8;if(w===UPPER)return 12;if(w===KICK)return 14;if(w.slam)return 16;return Math.round(6+w.dmg*0.35);}
 const DODGE_COST=12;
+function dodgeCost(f){return (f&&f.isPlayer&&!net)?Math.max(4,Math.round(DODGE_COST*(1-0.15*P('lincah')))):DODGE_COST;}
 function stUse(f,c){f.st=Math.max(0,f.st-c);f.stD=0.75;if(f.st<f.maxSt*0.12)f.tired=true;}
 function stTick(f,dt){
   if(f.slowT>0)f.slowT-=dt;
@@ -2738,17 +2739,24 @@ function stTick(f,dt){
 }
 function capek(f){if(f.isPlayer&&(f.capT||0)<clock){f.capT=clock+0.8;popup('CAPEK!',f.pos,2.3,'info');if(f===player)sfx('swing');}}
 const PERKS=[
-  {k:'nyawa',t:'Badan Badak',d:'Nyawa maksimal +20',max:5},
-  {k:'tinju',t:'Tangan Besi',d:'Semua seranganmu +15% damage',max:5},
-  {k:'tendang',t:'Kaki Kuda',d:'Tendangan +25% damage dan terpental lebih jauh',max:4},
-  {k:'kaki',t:'Langkah Seribu',d:'Lari 10% lebih cepat',max:4},
-  {k:'awet',t:'Tangan Awet',d:'Senjatamu lebih lama patah atau habis',max:2},
-  {k:'mulai',t:'Bawaan Tas',d:'Tiap mulai atau bangkit lagi, langsung pegang senjata acak',max:1},
-  {k:'pasukan',t:'Solidaritas',d:'+6 anak SMEA 70 ikut turun',max:5},
-  {k:'teman',t:'Latihan Bareng',d:'Teman-temanmu +15% nyawa dan damage',max:5},
-  {k:'semangat',t:'Semangat Juang',d:'Tiap KO musuh olehmu, nyawamu pulih 4',max:4},
-  {k:'kebal',t:'Kulit Tebal',d:'Damage dari kendaraan -20%',max:3},
-  {k:'napas',t:'Napas Panjang',d:'Stamina +20 dan pulih 15% lebih cepat',max:4}
+  {k:'nyawa',t:'Badan Badak',d:'Nyawa maksimal +20',max:10},
+  {k:'tinju',t:'Tangan Besi',d:'Semua seranganmu +15% damage',max:10},
+  {k:'tendang',t:'Kaki Kuda',d:'Tendangan & Jurus +25% damage dan terpental lebih jauh',max:8},
+  {k:'kaki',t:'Langkah Seribu',d:'Lari 10% lebih cepat',max:8},
+  {k:'awet',t:'Tangan Awet',d:'Peluang +16% senjatamu tidak berkurang saat dipakai',max:5},
+  {k:'mulai',t:'Bawaan Tas',d:'Tiap mulai/bangkit pegang senjata (makin tinggi makin garang & awet)',max:3},
+  {k:'pasukan',t:'Solidaritas',d:'+6 anak SMEA 70 ikut turun',max:10},
+  {k:'teman',t:'Latihan Bareng',d:'Teman-temanmu +15% nyawa dan damage',max:10},
+  {k:'semangat',t:'Semangat Juang',d:'Tiap KO musuh olehmu, nyawamu pulih +5',max:8},
+  {k:'kebal',t:'Kulit Tebal',d:'Damage dari kendaraan -18%',max:5},
+  {k:'napas',t:'Napas Panjang',d:'Stamina +20 dan pulih 15% lebih cepat',max:8},
+  {k:'jaket',t:'Jaket Tebal',d:'Damage pukulan/senjata musuh -10% dan tahan terpental',max:6},
+  {k:'krit',t:'Pukulan Telak',d:'Peluang +10% serangan kritikal (damage 1.8x & mental jauh)',max:6},
+  {k:'lincah',t:'Gerak Licin',d:'Hindar (dodge) lebih hemat stamina, jeda singkat & kebal lebih lama',max:5},
+  {k:'jangkauan',t:'Tangan Panjang',d:'Jangkauan serangan & ambil senjata +12%',max:5},
+  {k:'kantong',t:'Kantong Tebal',d:'Ambil senjata di jalan dapat ekstra +2 pakai/lemparan',max:5},
+  {k:'darah',t:'Darah Muda',d:'Nyawa pulih otomatis +1.5 HP/detik saat bertarung',max:6},
+  {k:'jurus',t:'Jurus Kilat',d:'Jurus Pamungkas cukup 2 pukulan, waktu siap lebih lama & damage +30%',max:3}
 ];
 const SAVE_KEY='belpulang-save-v1';
 const ACCOUNTS_KEY='belpulang_accounts_v2';
@@ -2898,7 +2906,7 @@ function makeFighter(team,isPlayer,opt){
     weapon:null,held:null,cd:rand(0.6,1.4),flash:0,walk:0,moving:0,inv:0,carCd:0,think:0,target:null,goalW:null,goalP:null,danger:null,
     alert:Math.random(),strafe:Math.random()<0.5?-1:1,tok:false,toks:0,dodgeCd:0,combo:0,comboT:0,buf:null,bufT:0,atk:null,anim:'',hitDone:false,side:'R',dodgeX:0,dodgeZ:1,windDef:null,
     zb:Math.random()<(net&&team===1?0.4:0.5),vb:Math.random()<0.5,boss:!!opt.boss,vip:!!opt.vip,slamN:0,ring:null,wp:0,flee:false,st:80,maxSt:80,stReg:0.4,stD:0,tired:false};
-  if(isPlayer){f.maxHp=net?NET_HP:120+20*P('nyawa');f.dmgMul=1+0.15*P('tinju');}
+  if(isPlayer){f.maxHp=net?NET_HP:120+20*P('nyawa');f.dmgMul=1+0.15*P('tinju');if(!net){f.kbMul=Math.max(0.35,1-0.11*P('jaket'));f.reach=1+0.12*P('jangkauan');}}
   else if(opt.boss){f.maxHp=Math.round(500*(1+0.08*(level/10-1))*cfg.bHp);f.dmgMul=cfg.bDmg*1.2;f.spd=3.6*(1+0.004*(level-1));f.kbMul=0.25;f.reach=1.4;}
   else if(opt.vip){f.maxHp=Math.round(160*(1+0.02*level));f.spd=2.4;}
   else if(team===1&&!net){if(level>=2&&cfg.foe!=null){f.spType=FOE_SP[cfg.foe];f.spCd=rand(3,9);}f.maxHp=Math.round(100*cfg.hpMul);f.dmgMul=cfg.dmgMul;f.spd=4.1*cfg.spdMul;if(FOES[cfg.foe].preman){f.kbMul=0.75;f.cd=rand(0.4,1);}}
@@ -2962,7 +2970,7 @@ function setWeapon(f,type,n){
   if(f===player)codexAdd(type);
   f.weapon={type,n};const m=wMesh(type);m.rotation.x=Math.PI;m.position.set(0,-0.62,0.02);f.r.armR.add(m);f.held=m;
 }
-function armRandom(f,chance){if(Math.random()<chance){const t=pickWeaponType();setWeapon(f,t,WPN[t].n);}}
+function armRandom(f,chance){if(Math.random()<chance){let t=pickWeaponType();if(f.isPlayer&&!net&&P('mulai')>1){for(let i=1;i<P('mulai');i++){const t2=pickWeaponType();if(WPN[t2].dmg>WPN[t].dmg)t=t2;}}const bonus=(f.isPlayer&&!net)?2*P('kantong')+2*Math.max(0,P('mulai')-1):0;setWeapon(f,t,WPN[t].n+bonus);}}
 function dropGround(type,n,x,z){
   const g=new THREE.Group();const m=wMesh(type);m.rotation.z=Math.PI/2;m.position.y=0.25;g.add(m);
   const deadly=WPN[type].deadly;
@@ -2973,7 +2981,8 @@ function dropGround(type,n,x,z){
 }
 function takeGround(f,w){
   if(w.dead)return;w.dead=true;scene.remove(w.g);ground.splice(ground.indexOf(w),1);
-  setWeapon(f,w.type,w.n);
+  const bonus=(f.isPlayer&&!net&&!w.boosted)?2*P('kantong'):0;
+  setWeapon(f,w.type,w.n+bonus);
   if(f.isPlayer){if(f===player)sfx('pick');popup(WPN[w.type].name.toUpperCase()+'!',f.pos,2.6,'info');}
 }
 
@@ -3125,13 +3134,14 @@ function meleeHit(f,w){
 }
 function damage(o,dmg,dx,dz,kb,src,w){
   if(o.inv>0||o.state==='dodge'||!alive(o))return false;
-  if(src){dmg*=src.dmgMul||1;if(src.isPlayer&&w===KICK){dmg*=1+0.25*P('tendang');kb*=1+0.15*P('tendang');}}
-  if(o.isPlayer&&src&&!src.isPlayer&&!net)dmg*=0.75;
+  let krit=false;
+  if(src){dmg*=src.dmgMul||1;if(src.isPlayer&&(w===KICK||w===JURUS)){dmg*=1+0.25*P('tendang')+(w===JURUS?0.3*P('jurus'):0);kb*=1+0.15*P('tendang');}if(src.isPlayer&&!net&&P('krit')&&Math.random()<0.1*P('krit')){dmg*=1.8;kb*=1.35;krit=true;}}
+  if(o.isPlayer&&src&&!src.isPlayer&&!net)dmg*=0.75*Math.max(0.35,1-0.1*P('jaket'));
   kb*=(o.kbMul||1)*wetKb();
   o.hp-=dmg;o.flash=0.12;o.kv.set(dx*kb,0,dz*kb);
   if(o.panji&&M.flag){o.panjiHits=(o.panjiHits||0)+1;if(o.panjiHits>=3||kb>=10)panjiDrop();}
   const s=o.sc;burst(o.pos.x-dx*0.3,1.35*s,o.pos.z-dz*0.3,w&&w.deadly?10:6,w&&w.deadly?0xffffff:0xfff3c4);
-  popup(pick(w.words),o.pos,2.4*s,o===player?'me':'');
+  popup(krit?'TELAK!':pick(w.words),o.pos,(krit?2.65:2.4)*s,krit?'car':(o===player?'me':''));
   const armored=o.boss&&(o.state==='windup'||o.state==='strike');
   if(!armored){release(o);clearRing(o);}
   if(o.isPlayer){o.inv=0.45;if(o===player){hurtFlash();shake=Math.max(shake,0.3);sfx('hurt');chain=0;buzz(kb>=10?'big':'hit');}}
@@ -3151,7 +3161,7 @@ function KO(o,src,w,car){
   setWeapon(o,null);
   if(src&&src.isPlayer&&o.team!==src.team)src.kos=(src.kos||0)+1;
   if(!net&&o.team===1&&player){let sc=0,lb='';if(src===player){sc=1;lb='KO';if(chain>=5){sc=2+Math.min(3,chain/5);lb='COMBO '+chain+' HIT';}if(w===JURUS){sc=4;lb='TENDANGAN PAMUNGKAS';}if(w&&w.words&&/GLUDUK|BRAKK|GUBRAK/.test(w.words[0])){sc=3;lb='KENA '+(w.words[0]==='BRAKK!'?'PAPAN IKLAN':'BARANG JALANAN');}if(w&&w.fx==='boom'){sc=3;lb='DUAR!';}}else if(car&&dist(o,player)<12){sc=3;lb='KETABRAK MOBIL!';}if(o.boss){sc=6;lb=cfg.boss+' TUMBANG';slowmo(0.9);}if(sc)hlEvent(sc,lb);if(src===player)buzz('ko');}
-  if(src&&src===player&&o.team!==player.team){myKO++;if(P('semangat')&&alive(player)){player.hp=Math.min(player.maxHp,player.hp+4*P('semangat'));}}
+  if(src&&src===player&&o.team!==player.team){myKO++;if(P('semangat')&&alive(player)){player.hp=Math.min(player.maxHp,player.hp+5*P('semangat'));}}
   burst(o.pos.x,0.4,o.pos.z,8,0xc9b9a0,0.8);
   if(o.isPlayer){respawnT=3;if(w!==BUSTED)popup('KO!',o.pos,2.6,'me');if(net&&o===player){spectate=true;banner(w===BUSTED?'KAMU BUSTED':'KAMU TUMBANG',w===BUSTED?'Ditangkap Wito. Kamera ikut teman satu sekolah':'Kamera ikut teman satu sekolah',2400);}}
   if(o.boss){sfx('slam');shake=0.6;banner(cfg.boss+' TUMBANG!','',1800);}
@@ -3160,7 +3170,7 @@ function release(f){f.gateHit=false;f.busHit=false;if(f.tok){f.tok=false;if(f.tg
 function clearRing(f){if(f.ring){scene.remove(f.ring);f.ring.children.forEach(c=>{c.geometry.dispose();c.material.dispose();});f.ring=null;}}
 function useUp(f){
   if(!f.weapon)return;
-  if(f.isPlayer&&P('awet')&&Math.random()<0.33*P('awet'))return;
+  if(f.isPlayer&&P('awet')&&Math.random()<Math.min(0.8,0.16*P('awet')))return;
   f.weapon.n--;if(f.weapon.n<=0){if(WPN[f.weapon.type].melee&&f.isPlayer)popup('PATAH!',f.pos,2.6,'info');setWeapon(f,null);}
 }
 function throwAt(f,type,tx,tz){
@@ -3175,7 +3185,7 @@ function carHit(f,c){
   if(f.carCd>0||!alive(f)||f.safe)return;
   f.carCd=1.3;const side=Math.sign(f.pos.z-c.z)||1;
   f.kv.set(c.dir*Math.max(10,c.cur*1.2)*(f.kbMul||1),0,side*4);
-  let dmg=c.dmg;if(f.isPlayer&&!net)dmg*=0.8*Math.max(0.3,1-0.2*P('kebal'));if(f.vip)dmg*=0.6;if(f.boss)dmg*=2;
+  let dmg=c.dmg;if(f.isPlayer&&!net)dmg*=0.8*Math.max(0.15,1-0.18*P('kebal'));if(f.vip)dmg*=0.6;if(f.boss)dmg*=2;
   f.hp-=dmg;f.flash=0.2;release(f);clearRing(f);
   popup('BRAKK!',f.pos,2.6,'car');sfx('crash',f.isPlayer?1:0.6);burst(f.pos.x,1,f.pos.z,10,0xfff3c4,1.4);
   if(f===player){hurtFlash();shake=Math.max(shake,0.6);chain=0;buzz('car');}
@@ -3249,15 +3259,11 @@ function trySwap(p){
   p=p||player;if(!alive(p))return;
   const w=nearGround(p,2.2), old=p.weapon, ox=p.pos.x, oz=p.pos.z;
 
-  if(w){takeGround(p,w);if(old&&old.n>0)dropGround(old.type,old.n,ox+0.6,oz+0.3);}
-  else if(old&&old.n>0){dropGround(old.type,old.n,ox+0.6,oz+0.3);setWeapon(p,null);if(p===player){sfx('swing');popup('BUANG SENJATA',p.pos,2.2,'info');}}
+  if(w){takeGround(p,w);if(old&&old.n>0)dropGround(old.type,old.n,ox+0.6,oz+0.3).boosted=true;}
+  else if(old&&old.n>0){dropGround(old.type,old.n,ox+0.6,oz+0.3).boosted=true;setWeapon(p,null);if(p===player){sfx('swing');popup('BUANG SENJATA',p.pos,2.2,'info');}}
   return;
-
-
-
-
 }
-function nearGround(f,r){let best=null,bd=r;for(const w of ground){const d=Math.hypot(w.g.position.x-f.pos.x,w.g.position.z-f.pos.z);if(d<bd){bd=d;best=w;}}return best;}
+function nearGround(f,r){const mr=r*((f&&f.isPlayer&&!net)?1+0.15*P('jangkauan'):1);let best=null,bd=mr;for(const w of ground){const d=Math.hypot(w.g.position.x-f.pos.x,w.g.position.z-f.pos.z);if(d<bd){bd=d;best=w;}}return best;}
 function playerAttack(kind,p){
   p=p||player;let a,anim;
   const wt=p.weapon?p.weapon.type:null,def=wt?WPN[wt]:null;
@@ -3286,6 +3292,7 @@ function updatePlayer(dt){const i=readInput();updateHuman(player,i[0],i[1],dt);i
 function updateHuman(p,ix,iz,dt){
   if(p.state==='jail'){jailTick(p,dt);return;}
   p.inv-=dt;p.dodgeCd-=dt;p.comboT-=dt;p.bufT-=dt;p.flash-=dt;p.carCd-=dt;stTick(p,dt);
+  if(p.isPlayer&&!net&&P('darah')&&alive(p)&&p.hp<p.maxHp)p.hp=Math.min(p.maxHp,p.hp+1.5*P('darah')*dt);
   const mag=Math.hypot(ix,iz);
   let tg=commonState(p,dt);
   if(!tg){
@@ -3313,7 +3320,7 @@ function updateHuman(p,ix,iz,dt){
     if(!p.weapon||p.weapon.n<=0){const w=nearGround(p,1.9);if(w)takeGround(p,w);}
     if(p.buf&&p.bufT>0){
       const b=p.buf;p.buf=null;
-      if(b==='dodge'){if(p.dodgeCd<=0&&p.st<DODGE_COST)capek(p);else if(p.dodgeCd<=0){stUse(p,DODGE_COST);let dx=ix,dz=iz;if(mag<0.12){dx=Math.sin(p.face);dz=Math.cos(p.face);}else{dx/=mag;dz/=mag;}p.dodgeX=dx;p.dodgeZ=dz;p.state='dodge';p.t=0;p.inv=0.36;p.dodgeCd=0.55;if(p===player)sfx('swing');}}
+      if(b==='dodge'){const dc=dodgeCost(p);if(p.dodgeCd<=0&&p.st<dc)capek(p);else if(p.dodgeCd<=0){stUse(p,dc);let dx=ix,dz=iz;if(mag<0.12){dx=Math.sin(p.face);dz=Math.cos(p.face);}else{dx/=mag;dz/=mag;}p.dodgeX=dx;p.dodgeZ=dz;p.state='dodge';p.t=0;p.inv=0.36+0.07*P('lincah');p.dodgeCd=Math.max(0.22,0.55-0.06*P('lincah'));if(p===player)sfx('swing');}}
       else playerAttack(b==='kick'?'kick':'atk',p);
     }
   }
@@ -3978,7 +3985,7 @@ function netWaves(dt){
   }
 }
 function respawnPlayer(){
-  const p=player;p.maxHp=120+20*P('nyawa');p.hp=p.maxHp;p.maxSt=plSt();p.st=p.maxSt;p.tired=false;p.state='idle';p.t=0;p.inv=1.2;p.kv.set(0,0,0);p.pos.set(GATE.x,0,M.type==='gerbang'?-10.2:-12.5);p.panji=false;p.face=0;p.toks=0;p.r.rig.rotation.set(0,0,0);p.r.rig.position.y=0;setWeapon(p,null);spectate=false;
+  const p=player;p.maxHp=120+20*P('nyawa');p.hp=p.maxHp;p.maxSt=plSt();p.st=p.maxSt;p.dmgMul=1+0.15*P('tinju');p.kbMul=Math.max(0.35,1-0.11*P('jaket'));p.reach=1+0.12*P('jangkauan');p.tired=false;p.state='idle';p.t=0;p.inv=1.2;p.kv.set(0,0,0);p.pos.set(GATE.x,0,M.type==='gerbang'?-10.2:-12.5);p.panji=false;p.face=0;p.toks=0;p.r.rig.rotation.set(0,0,0);p.r.rig.position.y=0;setWeapon(p,null);spectate=false;
   if(P('mulai')&&!noWeaponsNow())armRandom(p,1);
   if(M.phase!=='escape')banner('BANGKIT LAGI','Kamu keluar lagi dari gerbang. Cadangan tersisa '+res[0],1800);
 }
@@ -4260,7 +4267,7 @@ function squadThink(f){
 
 /* ================= v2.5: JURUS PAMUNGKAS (3 pukulan kena lalu tendang) ================= */
 const JURUS={dmg:34,range:2.7,arc:1.7,dur:0.56,hitAt:0.24,kb:20,words:['JURUS!','DUAAAGH!']};
-function jurusReady(p){return p&&(p.hitChain||0)>=3&&clock-(p.lastHitT||0)<1.2;}
+function jurusReady(p){return p&&(p.hitChain||0)>=(P('jurus')?2:3)&&clock-(p.lastHitT||0)<(1.2+0.4*P('jurus'));}
 let _jr=false;
 function jurusUi(){const r=jurusReady(player);if(r!==_jr){_jr=r;const b=document.querySelector('#btns .b.kick');if(b){b.classList.toggle('jurus',r);b.textContent=r?'JURUS!':'TENDANG';}}}
 
@@ -4846,7 +4853,7 @@ function showPerks(){
   const choice=[];while(choice.length<3&&avail.length){choice.push(avail.splice(Math.floor(Math.random()*avail.length),1)[0]);}
   const list=$('#perkList');list.innerHTML='';
   choice.forEach(p=>{const b=document.createElement('button');b.className='perk';
-    b.innerHTML='<b></b><span></span><em></em>';b.querySelector('b').textContent=p.t;b.querySelector('span').textContent=p.d;b.querySelector('em').textContent=P(p.k)?'Sudah punya '+P(p.k)+'x':'Baru';
+    b.innerHTML='<b></b><span></span><em></em>';b.querySelector('b').textContent=p.t;b.querySelector('span').textContent=p.d;b.querySelector('em').textContent=P(p.k)?'Level '+(P(p.k)+1)+'/'+p.max+' (punya '+P(p.k)+'x)':'Baru · Maks '+p.max+'x';
     b.addEventListener('click',()=>{perks[p.k]=P(p.k)+1;writeSave();startLevel();});list.appendChild(b);});
   if(!choice.length){const b=document.createElement('button');b.className='cta';b.textContent='LANJUT KE LEVEL '+level;b.addEventListener('click',startLevel);list.appendChild(b);}
   setTimeout(()=>{const f=list.querySelector('button');f&&f.focus();},50);
