@@ -4051,7 +4051,7 @@ function setupMissionNew(){
   }
   else if(t==='bebas'){
     M.hostages=[];M.timer=110+Math.min(30,level/3);
-    [[22,4.9],[31,-9.3],[38,4.9],[45,-9.3]].forEach(([x,z])=>{
+    [[16,4.9],[24,-9.3],[31,4.9],[38,-9.3]].forEach(([x,z])=>{
       if(res[0]>0)res[0]--;
       const h=makeFighter(0,false);h.pos.set(x,0,z);h.face=z>0?Math.PI:0;h.tied=true;h.safe=true;h.freeT=0;
       const ring=new THREE.Mesh(new THREE.RingGeometry(0.62,0.78,32),new THREE.MeshBasicMaterial({color:0xffd23f,transparent:true,opacity:0.9,depthWrite:false}));ring.rotation.x=-Math.PI/2;ring.position.y=0.06;h.r.group.add(ring);h.tring=ring;
