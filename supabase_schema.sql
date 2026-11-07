@@ -16,7 +16,7 @@ create table if not exists public.game_profiles (
   id           text primary key check (char_length(id) between 2 and 24),
   name         text not null check (char_length(name) between 2 and 24),
   pin_hash     text not null,
-  level        integer not null default 1 check (level between 1 and 50),
+  level        integer not null default 1 check (level between 1 and 99),
   perks        jsonb not null default '{}'::jsonb,
   appearance   jsonb not null default '{}'::jsonb,
   fails        integer not null default 0,
@@ -57,7 +57,7 @@ begin
   if char_length(coalesce(p_name,'')) not between 2 and 24 then return jsonb_build_object('status','bad'); end if;
   insert into public.game_profiles(id, name, pin_hash, level, perks, appearance)
   values (lower(p_id), p_name, crypt(p_pin, gen_salt('bf', 8)),
-          greatest(1, least(50, coalesce(p_level,1))),
+          greatest(1, least(99, coalesce(p_level,1))),
           coalesce(p_perks,'{}'::jsonb), coalesce(p_appearance,'{}'::jsonb))
   on conflict (id) do nothing;
   if not found then return jsonb_build_object('status','taken'); end if;
@@ -82,7 +82,7 @@ begin
   s := public.bp_check_pin(p_id, p_pin);
   if s <> 'ok' then return jsonb_build_object('status', s); end if;
   update public.game_profiles
-     set level = greatest(1, least(50, coalesce(p_level, level))),
+     set level = greatest(1, least(99, coalesce(p_level, level))),
          perks = coalesce(p_perks, perks),
          appearance = coalesce(p_appearance, appearance),
          updated_at = now()
